@@ -57,7 +57,9 @@ ui ──HTTP──► core
 
 ## 归属待裁的事项
 
-有 5 条归属**没定**（`cmd/dualrun`、订单是否建 `exec`、`strategy_state` 迁出的 core 侧义务、`eventstore`/`msgbus`、`testenv`/`testutil`）。
+有 4 条归属**没定**（订单是否建 `exec`、`strategy_state` 迁出的 core 侧义务、`eventstore`/`msgbus`、`testenv`/`testutil`）。
+
+> `cmd/dualrun` 已于 2026-10-20 裁决 **留 core**（同进程链接两个内核 + 引擎验收门），不再是待裁项。
 它们集中登记在 [core `repo-inventory.md` §3.1](https://github.com/ruoxizhnya/tellurion/blob/main/docs/design/qt-decoupling/repo-inventory.md)，
 **单仓文档里只留指针** —— 否则读者不知道该找谁拍。
 
