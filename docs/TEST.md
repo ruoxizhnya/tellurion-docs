@@ -10,7 +10,7 @@ verified-by: AUD-44 路径引用复核 + AUD-47 §5–§7 内容复核（2026-09
 
 > **Version:** 1.1.0 (AGENTS Template v2.0 Migration)
 > **Owner:** 龙少 (Longshao) — AI Assistant
-> **Related:** [VISION.md](VISION.md) (product), [ADR.md](ADR.md) (architecture), [SPEC.md](SPEC.md) (implementation)
+> **Related:** [VISION.md](VISION.md) (product), [ADR.md](ADR.md) (architecture), [SPEC.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md) (implementation)
 >
 > **Changelog v1.1 (Migration):**
 > - 添加标准元数据头部（Status, Last Updated, Related）

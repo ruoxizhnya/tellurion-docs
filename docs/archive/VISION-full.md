@@ -4,7 +4,7 @@
 > **Version:** 2.0.0 (统一研究平台 — 底座 + 双工作面, ADR-022)
 > **Last Updated:** 2026-09-15
 > **Owner:** 龙少 (Longshao) — AI Assistant
-> **Related:** [PRODUCT.md](../PRODUCT.md) (顶层产品定义 — 上游), [SPEC.md](../SPEC.md) (implementation), [ARCHITECTURE.md](../ARCHITECTURE.md) (layout), [TEST.md](../TEST.md) (quality)
+> **Related:** [PRODUCT.md](../PRODUCT.md) (顶层产品定义 — 上游), [SPEC.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md) (implementation), [ARCHITECTURE.md](../ARCHITECTURE.md) (layout), [TEST.md](../TEST.md) (quality)
 >
 > **Changelog v2.0.0 (ADR-022 统一研究平台, 2026-09-15):**
 > - 顶层定位从"横截面量化平台"升级为 **"一个产品 + 两个对等工作面 + 一个共享底座"**（[ADR-022](superseded-adr/adr-022-unified-research-platform.md) 取代 [ADR-021](superseded-adr/adr-021-equitydeep-research-layer.md)）
@@ -708,7 +708,7 @@ The phases below define the build order. All P0 items must be fully done (not "i
 ### Phase 编号映射 (2026-06-12, P1-1 文档一致化 ODR-015)
 
 > **背景**: VISION.md 使用 5-phase roadmap (Phase 1-5), 与
-> [AGENTS.md](../../AGENTS.md#1-项目概述) / [ROADMAP.md](../ROADMAP.md) /
+> [AGENTS.md](https://github.com/ruoxizhnya/tellurion/blob/main/AGENTS.md) / [ROADMAP.md](../ROADMAP.md) /
 > [archive/tasks-phase-2.md](tasks-phase-2.md) 的 canonical 编号存在 off-by-1 偏移。
 > 下表给出完整映射, 后续 Phase 6/7 命名以此为据。
 

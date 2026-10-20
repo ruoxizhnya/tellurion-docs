@@ -1,7 +1,7 @@
 # S7-P3-5: 修复文档漂移 — 同步 ODR-021 服务合并
 
 > **任务来源**: ODR-043-7 已知问题 + ODR-043 P3 任务行
-> **任务追踪**: [docs/TASKS.md](../../TASKS.md) — S7-P3-5
+> **任务追踪**: [docs/TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md) — S7-P3-5
 > **执行规范**: AGENTS.md §8 — 文档任务（一致性审查 + 原子提交）
 
 ---

@@ -7,7 +7,7 @@ supersedes: 2026-09-15 版（"双对等工作面 + 飞轮闭环"）
 
 # PRODUCT — 产品定义
 
-> 设计原则见 [VISION.md](VISION.md) · 架构见 [ARCHITECTURE.md](ARCHITECTURE.md) · 待办见 [TASKS.md](TASKS.md)
+> 设计原则见 [VISION.md](VISION.md) · 架构见 [ARCHITECTURE.md](ARCHITECTURE.md) · 待办见 [TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md)
 
 ---
 

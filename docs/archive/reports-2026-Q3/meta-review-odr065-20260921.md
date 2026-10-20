@@ -188,8 +188,8 @@ cm.inMemoryOHLCVAtomic.Store(&cm.inMemoryOHLCV)  // 存的是同一 map 字段�
 
 | 报告中的链接 | 实测 | 应为 |
 |-------------|------|------|
-| `[ODR-065](../../odr/odr-065-fullstack-static-review.md)` | **DEAD**（`docs/odr/` 不存在） | `../odr/...` |
-| `[docs/TASKS.md](../../../TASKS.md)` | **DEAD**（仓库根无 TASKS.md） | `../../TASKS.md` |
+| `[ODR-065](../odr/odr-065-fullstack-static-review.md)` | **DEAD**（`docs/odr/` 不存在） | `../odr/...` |
+| `[docs/TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md)` | **DEAD**（仓库根无 TASKS.md） | `../../TASKS.md` |
 
 **为什么没被抓到**：`tools/check_doc_links.py` 只扫常青层与活跃层，**显式跳过 `archive/`**（实测输出："扫描 51 个 Markdown 文件（仅常青层与活跃层（跳过 archive/））"）。而归档层恰恰是 ODR/报告最密集、链接层级最容易错的地方——**元检查的盲区正好落在最需要它的区域**。
 

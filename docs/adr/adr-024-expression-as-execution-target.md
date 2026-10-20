@@ -3,7 +3,7 @@
 > **Status**: Accepted —— **Superseded (部分) by [ADR-029](adr-029-ai-layer-2026-agent-practice-alignment.md)**（2026-10-06）
 > **Date**: 2026-09-17
 > **Category**: Architecture
-> **Related**: [ADR-023](adr-023-ai-experimenter-lab.md) · [ADR-001](adr-001-plugin-loading.md) · [ADR-015](adr-015-ai-agent-architecture.md) · **[ADR-029](adr-029-ai-layer-2026-agent-practice-alignment.md)** · [TASKS.md](../TASKS.md) P0-5
+> **Related**: [ADR-023](adr-023-ai-experimenter-lab.md) · [ADR-001](adr-001-plugin-loading.md) · [ADR-015](adr-015-ai-agent-architecture.md) · **[ADR-029](adr-029-ai-layer-2026-agent-practice-alignment.md)** · [TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md) P0-5
 > **Upstream**: 用户（若曦）2026-09-17 决策（P0-5 修法三选一）
 
 > ### ⚠️ 2026-10-06 部分被取代（ADR-029 §2）
@@ -36,7 +36,7 @@
 
 > ### 🔗 2026-10-08 对齐：与「四层表达力」模型的关系（D2 裁决）
 >
-> 上文（2026-10-06 注记）的「双轨」需与 2026-10-08 拍板的**四层表达力模型**对齐（见 [design/kernel/target-architecture-modular-kernel.md](../design/kernel/target-architecture-modular-kernel.md) §6）：
+> 上文（2026-10-06 注记）的「双轨」需与 2026-10-08 拍板的**四层表达力模型**对齐（见 [design/kernel/target-architecture-modular-kernel.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/design/kernel/target-architecture-modular-kernel.md) §6）：
 >
 > - **轨道 A 不是只有 L1 表达式** —— 它内部含三层：L0 固定模板 / L1 表达式 DSL / **L2 确定性有状态算子**（EWMA / RMA / IIR / Kalman，作为 DSL 扩展算子，可枚举、warmup 可静态推导、可白盒校验）。
 > - **轨道 B = L3（WASM）**，仅在 **L2 确定性算子也无法表达**时（自定义状态机、非标准滤波）才启用。

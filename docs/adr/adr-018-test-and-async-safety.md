@@ -178,7 +178,7 @@ assert.GreaterOrEqual(t, highICFactors, 10, "Phase 4 S8-11 fail-gate: must have 
 
 ## Implementation Roadmap
 
-| Sprint | Tasks (见 [TASKS.md §Sprint 6](../../../tellurion/docs/TASKS.md)) | Effort | Owner |
+| Sprint | Tasks (见 [TASKS.md §Sprint 6](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md)) | Effort | Owner |
 |---|---|---|---|
 | **Sprint 6 P0-1** (1d) | LLMClient interface 化 + pkg/strategy 测试 mock | Critical | TBD |
 | **Sprint 6 P0-2** (1d) | pkg/live/engine.go::Stop 重复 close panic 修复 | Critical | TBD |

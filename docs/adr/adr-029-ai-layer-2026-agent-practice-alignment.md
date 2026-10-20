@@ -10,7 +10,7 @@
 > - **ADR-015**（Go-native agents 作为自主研究层）—— 已由 ODR-046 事实上弃用，本 ADR 正式收口
 >
 > **Activates**: **ADR-007 Phase 3**（「Optional: WASM sandbox via `wazero`」）—— 从 Optional 转为**轨道 B 的主路径**，收口它与 ADR-024 悬置半年的矛盾（§Context③）
-> **Upstream**: 用户（若曦）2026-10-06 提供 [`docs/archive/agent-best-practice-2026-10.md`](../archive/agent-best-practice-2026-10.md) 并授权大规模重设计 + 七项裁决（双轨共存 / 混合模型 / 只 MCP 化 tools 门面 / 外层状态图 + HITL / pgvector 下沉 / 先落 ADR-029）
+> **Upstream**: 用户（若曦）2026-10-06 提供 [`docs/archive/agent-best-practice-2026-10.md`](https://github.com/ruoxizhnya/tellurion-agent/blob/main/docs/archive/agent-best-practice-2026-10.md) 并授权大规模重设计 + 七项裁决（双轨共存 / 混合模型 / 只 MCP 化 tools 门面 / 外层状态图 + HITL / pgvector 下沉 / 先落 ADR-029）
 
 ---
 
@@ -36,7 +36,7 @@ grep `jsonrpc` / `tools/list` / `tools/call` / `modelcontextprotocol` → **唯�
 实际形态是自定义 REST：`GET /api/tools` 返回 `{tools: []ToolInfo, count: int}`
 + `POST /api/tools/:name` + JWT RBAC + `pkg/tools/sideeffect.go` 副作用分级。
 
-但 [`docs/hermes/config/hermes.yaml:9`](../hermes/config/hermes.yaml) 的注释写的是
+但 [`docs/hermes/config/hermes.yaml:9`](https://github.com/ruoxizhnya/tellurion-agent/blob/main/docs/hermes/config/hermes.yaml) 的注释写的是
 「Go 端只通过 **MCP (GET /api/tools)** 暴露工具」，AGENTS.md 写「21 个 MCP 工具」。
 **术语与实现不符**，所以「MCP 化」不是扩展，是**从零引入协议**。
 
@@ -52,7 +52,7 @@ staticcheck/staticcheck.go 298
 wasm/sandbox.go            505
 ```
 
-[`wasm/sandbox.go:8-16`](../../internal/sandbox/wasm/sandbox.go) 的包注释：
+[`wasm/sandbox.go:8-16`](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/sandbox/wasm/sandbox.go) 的包注释：
 
 > The production implementation will use **wazero** (a pure-Go WebAssembly runtime);
 > **until wazero is added to go.mod**, an `InProcessRuntime` fallback is provided.
@@ -82,7 +82,7 @@ generate_signals(bars_ptr: i32, bars_len: i32) → i64
 
 **④ 模型是本地 8B，隐私优先。**
 
-[`hermes.yaml:17-29`](../hermes/config/hermes.yaml)：`provider: ollama` /
+[`hermes.yaml:17-29`](https://github.com/ruoxizhnya/tellurion-agent/blob/main/docs/hermes/config/hermes.yaml)：`provider: ollama` /
 `model: hermes-3:8b`，注释「隐私优先：本地 Ollama 部署（**因子公式 / 回测数据不离开本机**）」；
 可切云端 `together` / `nous-hermes-3-70b`。`temperature: 0.3`（「因子挖掘需要稳定性
 而非创造性」）。
@@ -147,7 +147,7 @@ prompt 实际在 `docs/hermes/prompts/quant-research.md`（Hermes 端 markdown�
 
 **⑬ 编译链路已完整就位，且 fail-closed。**
 
-[`pkg/strategy/copilot.go`](../../pkg/strategy/copilot.go)：
+[`pkg/strategy/copilot.go`](https://github.com/ruoxizhnya/tellurion-agent/blob/main/pkg/copilot/copilot.go)：
 
 ```go
 codeChecker   CodeChecker    // regex-based staticcheck 门禁，nil → run() fails closed
@@ -568,7 +568,7 @@ Proposed → Accepted 的判据：
 ---
 
 _Date: 2026-10-06_
-_Author: AI 实验员（Hermes）+ 实验室主任（若曦），基于 [`agent-best-practice-2026-10.md`](../archive/agent-best-practice-2026-10.md) 的逐条对照_
+_Author: AI 实验员（Hermes）+ 实验室主任（若曦），基于 [`agent-best-practice-2026-10.md`](https://github.com/ruoxizhnya/tellurion-agent/blob/main/docs/archive/agent-best-practice-2026-10.md) 的逐条对照_
 _Method: 文档主张 × 源码现状四分类 —— 已做对 9 项（不动）/ 真缺口 9 项（B1–B9）/
 正面冲突 4 项（C1–C4，已裁决）/ 不适用 2 项（§9 拒绝）_
 _Evidence: `internal/sandbox/{wasm/sandbox.go:8-28, runner/rlimit_windows.go, staticcheck/}` ·

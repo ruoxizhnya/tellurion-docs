@@ -280,7 +280,7 @@
 ### D7: 数据同步增强 (ADR-013) (Week 7-9)
 
 > **依赖**: ADR-003 (Background Worker), ADR-006 (Job Queue)
-> **设计文档**: [docs/design/pages/data-sync.md](../design/pages/data-sync.md)
+> **设计文档**: [docs/design/pages/data-sync.md](https://github.com/ruoxizhnya/tellurion-ui/blob/main/docs/design/pages/data-sync.md)
 > **ADR**: [docs/adr/adr-013-data-sync-enhancement.md](../adr/adr-013-data-sync-enhancement.md)
 
 #### Phase 1: 后端任务队列 (Week 7)
@@ -501,12 +501,12 @@
 | CR-08 | `types/api.ts` `BacktestJob.params: Record<string, any>` (公开类型)     | [web/src/types/api.ts:67](file:///Users/ruoxi/longshaosWorld/quant-trading/web/src/types/api.ts#L67) | ✅ | F-006 |
 | CR-09 | `PipelineDashboard.vue` `jobHistory` 累积无上限 (潜在内存泄漏) ⚠️ 文件已删除 (S7-P2-7, ODR-043/045) | ~~[components/ai/PipelineDashboard.vue:308](file:///Users/ruoxi/longshaosWorld/quant-trading/web/src/components/ai/PipelineDashboard.vue#L308)~~ | ✅ (moot) | F-007 |
 | CR-10 | ADR.md 索引缺失 6 条已存在的 ADR (ADR-011~016)                       | [docs/ADR.md:13-25](../ADR.md#L13) | ✅ | D-001 |
-| CR-11 | SPEC.md Backtest API 路径缺少 `/api` 前缀 (与实际 `/api/backtest` 不一致) | [docs/SPEC.md:543-560](../SPEC.md#L543) | ✅ | D-002 |
-| CR-12 | SPEC.md 把 `/api/datasource/*` 错误归在 AI Service,实际 Analysis + Data | [docs/SPEC.md:711-715](../SPEC.md#L711) | ✅ | D-003 |
-| CR-13 | Data Service 实际 30+ 端点未在 SPEC.md 记录 (sync/factor/screen 全部)   | [docs/SPEC.md:395-435](../SPEC.md#L395) | ✅ | D-004 |
+| CR-11 | SPEC.md Backtest API 路径缺少 `/api` 前缀 (与实际 `/api/backtest` 不一致) | [docs/SPEC.md:543-560](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md) | ✅ | D-002 |
+| CR-12 | SPEC.md 把 `/api/datasource/*` 错误归在 AI Service,实际 Analysis + Data | [docs/SPEC.md:711-715](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md) | ✅ | D-003 |
+| CR-13 | Data Service 实际 30+ 端点未在 SPEC.md 记录 (sync/factor/screen 全部)   | [docs/SPEC.md:395-435](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md) | ✅ | D-004 |
 | CR-14 | ARCHITECTURE.md "6 张核心表" 与内部 "18 张活跃表" 自相矛盾              | [docs/ARCHITECTURE.md:297](../ARCHITECTURE.md#L297) | ✅ | D-005 |
 | CR-15 | ODR-011 Sprint 1-4 新增的 13 张表 (realtime_quote/capital_flow/sectors/...) 未在 ARCHITECTURE.md | [docs/ARCHITECTURE.md:387-398](../ARCHITECTURE.md#L387) | ✅ | D-006 |
-| CR-16 | SPEC.md AI Research Service 章节列出 35+ 端点但实际只注册 3 个             | [docs/SPEC.md:647-723](../SPEC.md#L647) | ✅ | D-011 |
+| CR-16 | SPEC.md AI Research Service 章节列出 35+ 端点但实际只注册 3 个             | [docs/SPEC.md:647-723](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md) | ✅ | D-011 |
 
 ### P1 High — 20 项 ✅ 2026-06-10 完成 (ODR-012)
 
@@ -524,14 +524,14 @@
 | CR-26 | `stores/sync.ts` SSE 重连时旧连接未 close (泄漏)                    | [stores/sync.ts:117-127](file:///Users/ruoxi/longshaosWorld/quant-trading/web/src/stores/sync.ts#L117) | ✅ | F-012 |
 | CR-27 | `FitnessChart.vue` resize 监听器无清理 (组件销毁后仍执行)             | [components/ai/FitnessChart.vue:200-203](file:///Users/ruoxi/longshaosWorld/quant-trading/web/src/components/ai/FitnessChart.vue#L200) | ✅ | F-013 |
 | CR-28 | `TradeTable.vue` (用户核心组件) + `useAsyncBacktest.ts` 0 测试覆盖   | [components/backtest/TradeTable.vue](file:///Users/ruoxi/longshaosWorld/quant-trading/web/src/components/backtest/TradeTable.vue) | ✅ | Test Gap |
-| CR-29 | SPEC.md Analysis Service 章节遗漏 30+ 实际 plugin/paper trading 端点 | [docs/SPEC.md:535-600](../SPEC.md#L535) | ✅ | D-007 |
+| CR-29 | SPEC.md Analysis Service 章节遗漏 30+ 实际 plugin/paper trading 端点 | [docs/SPEC.md:535-600](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md) | ✅ | D-007 |
 | CR-30 | ADR-015 引用 `*_agent.go` 实际文件无后缀 (`research.go` 等)         | [docs/adr/adr-015-ai-agent-architecture.md:193-196](../adr/adr-015-ai-agent-architecture.md#L193) | ✅ | D-008 |
 | CR-31 | ADR-016 迁移文件名引用错位 (off-by-one,全部小 1)                     | [docs/adr/adr-016-multi-source-data-architecture.md:351-355](../adr/adr-016-multi-source-data-architecture.md#L351) | ✅ | D-009 |
 | CR-32 | ODR-011 声称 "8 个新数据源" 实际注册 9 个 adapter (含 Eastmoney 3 slot) | [docs/archive/odr/odr-011-multi-source-integration.md:158-159](odr/odr-011-multi-source-integration.md#L158) | ✅ | D-010 |
-| CR-33 | Strategy 接口 Signal 类型三处文档 (SPEC/VISION/AGENTS) 未指定包名     | [docs/SPEC.md:160-172](../SPEC.md#L160) | ✅ | D-012 |
-| CR-34 | SPEC.md/VISION.md 声称 "ai 覆盖率 ≥75%" 实际 0% 顶层,16-95% 子包     | [docs/SPEC.md:30-37](../SPEC.md#L30) | ✅ | D-013 |
+| CR-33 | Strategy 接口 Signal 类型三处文档 (SPEC/VISION/AGENTS) 未指定包名     | [docs/SPEC.md:160-172](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md) | ✅ | D-012 |
+| CR-34 | SPEC.md/VISION.md 声称 "ai 覆盖率 ≥75%" 实际 0% 顶层,16-95% 子包     | [docs/SPEC.md:30-37](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md) | ✅ | D-013 |
 | CR-35 | ADR-015/016 Status 仍为 "Proposed" 但实施已 98% 完成                  | [docs/adr/adr-015-ai-agent-architecture.md:3](../adr/adr-015-ai-agent-architecture.md#L3) | ✅ | D-014 |
-| CR-36 | AGENTS.md 技术栈表缺失 risk-service(8083)/execution-service(8084) | [AGENTS.md:23-32](../../AGENTS.md#L23) | ✅ | D-015 |
+| CR-36 | AGENTS.md 技术栈表缺失 risk-service(8083)/execution-service(8084) | [AGENTS.md:23-32](https://github.com/ruoxizhnya/tellurion/blob/main/AGENTS.md) | ✅ | D-015 |
 
 ### P2 Medium — 14 项 (Backlog)
 
@@ -547,9 +547,9 @@
 | CR-44 | `useAsyncBacktest.ts` 进度 90→100 跳跃                          | [composables/useAsyncBacktest.ts:103-109](file:///Users/ruoxi/longshaosWorld/quant-trading/web/src/composables/useAsyncBacktest.ts#L103) | ✅ | F-015 |
 | CR-45 | `BacktestEngine.vue` `strategiesCache` 类型 `string[]` 污染    | [pages/BacktestEngine.vue:211](file:///Users/ruoxi/longshaosWorld/quant-trading/web/src/pages/BacktestEngine.vue#L211) | ✅ | F-016 |
 | CR-46 | `api/client.ts` retry 退避公式不直观                              | [api/client.ts:92-95](file:///Users/ruoxi/longshaosWorld/quant-trading/web/src/api/client.ts#L92) | ✅ | F-017 |
-| CR-47 | AGENTS.md 文档导航说 "6 张表" 与 ARCHITECTURE.md "18 张" 不一致  | [AGENTS.md:492](../../AGENTS.md#L492) | ✅ | D-016 |
-| CR-48 | AGENTS.md 已知问题表未反映 ODR-011 引入的 5 个新风险 (mootdx SDK/反爬/对账)  | [AGENTS.md:581-587](../../AGENTS.md#L581) | ✅ | D-017 |
-| CR-49 | SPEC.md §6.4 `SetLiveTrader` 等方法名需对照代码验证 (未直接验证)   | [docs/SPEC.md:856-877](../SPEC.md#L856) | ✅ | D-018 |
+| CR-47 | AGENTS.md 文档导航说 "6 张表" 与 ARCHITECTURE.md "18 张" 不一致  | [AGENTS.md:492](https://github.com/ruoxizhnya/tellurion/blob/main/AGENTS.md) | ✅ | D-016 |
+| CR-48 | AGENTS.md 已知问题表未反映 ODR-011 引入的 5 个新风险 (mootdx SDK/反爬/对账)  | [AGENTS.md:581-587](https://github.com/ruoxizhnya/tellurion/blob/main/AGENTS.md) | ✅ | D-017 |
+| CR-49 | SPEC.md §6.4 `SetLiveTrader` 等方法名需对照代码验证 (未直接验证)   | [docs/SPEC.md:856-877](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md) | ✅ | D-018 |
 | CR-50 | `api/client.ts` 单元测试缺失 (超时/retry/abort 关键路径)              | [api/client.ts](file:///Users/ruoxi/longshaosWorld/quant-trading/web/src/api/client.ts) | ✅ | Test Gap |
 
 ### P3 Low — 4 项 (Backlog)
@@ -788,7 +788,7 @@
   — DR-3-R2: `docs/ADR.md` 尾注 Implementation 31 ≠ 30（ODR-022 已被索引表归入 Refactor，属"分类计数"与"区间枚举"口径混用）→ 改为显式枚举 `ODR-016~021 + ODR-023~042 + ODR-050~053`
   — DR-4-R1: `AGENTS.md` 目录树 `odr/ # (ODR-001~049)` → `(ODR-001~054)`
 - **改进**: 尾注拆分改写为**可验算形式**（各分类之和 = 声明总数），使下一轮漏改立即暴露为「和 ≠ 总数」
-- **文档同步**: [ADR.md](../ADR.md) index 3.10.0 → 3.10.1（ODR 53 → 54, Audit 9 → 10）；[AGENTS.md](../../AGENTS.md) §1 版本行「P1 底座契约已全部关闭」
+- **文档同步**: [ADR.md](../ADR.md) index 3.10.0 → 3.10.1（ODR 53 → 54, Audit 9 → 10）；[AGENTS.md](https://github.com/ruoxizhnya/tellurion/blob/main/AGENTS.md) §1 版本行「P1 底座契约已全部关闭」
 - **统计更新**: 总计 233 不变；待处理 11 → 10, 已完成 220 → 221（Sprint 8 内 9/1/7 → 9/0/8）；**阶段 P1 完成度 4/4**
 
 ### 2026-09-15 (v3.28.0) — Sprint 8 阶段 P3 起步: EQD-P1-1 `fundamentals_detail` 表落地
@@ -859,9 +859,9 @@
   新增 `020_add_ingest_raw.sql` / `021_add_research_schema.sql`；
   预留 `022_*`（EQD-P1-1）/ `025_*`（EQD-P3-1）
 - **文档同步**: [ARCHITECTURE.md](../ARCHITECTURE.md) 表数 32 → **38 张活跃表**（内联 20 + 迁移 18）；
-  [SPEC.md](../SPEC.md) Evidence API 由"草案"改为"已实现"；
+  [SPEC.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md) Evidence API 由"草案"改为"已实现"；
   [openapi.yaml](openapi.yaml) 新增 `/api/evidence/{content_hash}` + `RawIngest` schema；
-  [AGENTS.md](../../AGENTS.md) CR-47 表数复核更新
+  [AGENTS.md](https://github.com/ruoxizhnya/tellurion/blob/main/AGENTS.md) CR-47 表数复核更新
 - **统计更新**: 总计 233 不变；待处理 18 → 15, 已完成 213 → 216（Sprint 8 内 16/1/0 → 13/1/3）
 
 ### 2026-09-15 (v3.24.0) — ADR-022 下游一致性收口（文档审计）
@@ -871,8 +871,8 @@
 - **修复**: 头部版本号 3.22.0 → 3.24.0（原与正文 v3.23.0 自相矛盾）
 - **修复**: 关联文档引用 ADR-021 → ADR-022（Sprint 8 章节 + 文末文档表）
 - **同步**: [ROADMAP.md](../ROADMAP.md) Sprint 8 列 → 统一研究平台落地（原 "AI Factor Discovery" 含已废弃的 Factor Lab UI）
-- **同步**: [AGENTS.md](../../AGENTS.md) / [archive/RESEARCH-equitydeep-legacy.md](RESEARCH-equitydeep-legacy.md) / [design/index.md](../design/index.md) ADR-021 引用收口
-- **同步**: [SPEC.md](../SPEC.md) 补 ADR-022 四层模型 + Evidence API（v1.4.2 → v1.5.0）
+- **同步**: [AGENTS.md](https://github.com/ruoxizhnya/tellurion/blob/main/AGENTS.md) / [archive/RESEARCH-equitydeep-legacy.md](RESEARCH-equitydeep-legacy.md) / [design/index.md](https://github.com/ruoxizhnya/tellurion-ui/blob/main/docs/design/index.md) ADR-021 引用收口
+- **同步**: [SPEC.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md) 补 ADR-022 四层模型 + Evidence API（v1.4.2 → v1.5.0）
 - **无任务增减**（统计不变：233 项）
 
 ### 2026-09-15 (v3.23.0) — Sprint 8 按 ADR-022 执行路线重排: 统一研究平台落地
@@ -1311,7 +1311,7 @@
 - **过程**: 逐项消除 3 处文档冲突 (验收标准 ≥ 3):
   - ✅ **CQ-009 Strategy interface 4-way 更新**:
     - [docs/VISION.md](../VISION.md) §B Strategy Layer (line 167-203): 旧单 interface → 4 ISP sub-interfaces + 复合 `Strategy` 嵌入
-    - [docs/SPEC.md](../SPEC.md) §Strategy Interface (line 170-226): 重写为 4 子接口 + 责任表 (Required? Default? Purpose) + As* helper 文档
+    - [docs/SPEC.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md) §Strategy Interface (line 170-226): 重写为 4 子接口 + 责任表 (Required? Default? Purpose) + As* helper 文档
     - [docs/ARCHITECTURE.md](../ARCHITECTURE.md) §策略架构 (line 488-519): 同步更新, canonical 文件指向 `pkg/strategy/interfaces.go`
   - ✅ **Phase 3/4 编号映射** (最小破坏方案, 不 renumber):
     - 删除矛盾注释 "(Rebranded as Phase 4)"
@@ -1895,7 +1895,7 @@ edit docs/TASKS.md  # 修正路径/依赖声明
 ## 🔴 Sprint 7 — ODR-043 综合审计改进任务 (2026-06-29 ⏳ Pending)
 
 > **来源**: [ODR-043](odr/odr-043-comprehensive-audit-2026-06-29.md) — 4 维度综合审计 (Go 静态质量 / Go 模块化 / Go 测试 / 前端质量)
-> **执行规范**: 每个任务必须 (1) 编写测试用例 (2) 通过代码审查 (3) 采用 atomic commit 提交 — 详见 [AGENTS.md §8.3 执行规范](../../AGENTS.md#83-执行规范)
+> **执行规范**: 每个任务必须 (1) 编写测试用例 (2) 通过代码审查 (3) 采用 atomic commit 提交 — 详见 [AGENTS.md §8.3 执行规范](https://github.com/ruoxizhnya/tellurion/blob/main/AGENTS.md)
 > **总计**: 9 项任务 (P0×1 + P1×3 + P2×2 + P3×3)
 
 ### 🔴 P0 — 立即修复（真实 bug，2-3 天）
@@ -1962,7 +1962,7 @@ edit docs/TASKS.md  # 修正路径/依赖声明
 
 > **来源**: [ADR-022](superseded-adr/adr-022-unified-research-platform.md)（架构决策）+ [ODR-048](odr/odr-048-top-level-product-redefinition.md)（重构记录）
 > **顶层定义**: [PRODUCT.md](../PRODUCT.md)（canonical）; **工作面 1 详案**: [archive/RESEARCH-equitydeep-legacy.md](RESEARCH-equitydeep-legacy.md)（⚠️ 待按 ADR-022 修订）
-> **执行规范**: 每个任务必须 (1) 编写测试用例 (2) 通过代码审查 (3) 采用 atomic commit 提交 — 详见 [AGENTS.md §8.3 执行规范](../../AGENTS.md#83-执行规范)
+> **执行规范**: 每个任务必须 (1) 编写测试用例 (2) 通过代码审查 (3) 采用 atomic commit 提交 — 详见 [AGENTS.md §8.3 执行规范](https://github.com/ruoxizhnya/tellurion/blob/main/AGENTS.md)
 > **阶段划分**: 任务按 ADR-022 执行路线 P1~P5 编排（P0 顶层定义已完成）。`EQD-*` 为**稳定任务 ID**（保留原编号以维持跨文档引用），阶段归属以本节分组为准。
 > **定位变更**: ~~「补充非改变」—— Quant Lab 保持横截面层不变~~ → ADR-022：**Quant Lab 降维为共享底座（L0+L1+L2），横截面选股升为工作面 2**，与工作面 1（EquityDeep 纵向深研）对等。
 > **总计**: 17 项任务 (P1×7 + P2×4 + P3×3 + P4×2 + P5×1)

@@ -47,7 +47,7 @@ Configure(params map[string]interface{}) error
 
 **修复操作**:
 - [VISION.md:128-140](../../VISION.md#L128-L140) — 重写接口定义，添加 Canonical 标注 + 完整 7 个方法
-- [SPEC.md:131-143](../../SPEC.md#L131-L143) — 上轮已修复（本次审查确认一致）
+- [SPEC.md:131-143](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md) — 上轮已修复（本次审查确认一致）
 - [ARCHITECTURE.md:188-200](../../ARCHITECTURE.md#L188-L200) — 同步更新为 Canonical 定义
 
 #### C-02: 未实现服务被描述为当前规格 ⚠️→✅
@@ -57,8 +57,8 @@ Configure(params map[string]interface{}) error
 **影响**: 新开发者会误以为这些端点可用并尝试调用。
 
 **修复操作**:
-- [SPEC.md:333](../../SPEC.md#L333) — Risk Service 标题添加 `⚠️ *Planned — Phase 3*` + Status 说明
-- [SPEC.md:354](../../SPEC.md#L354) — Execution Service 同上，补充实际状态（接口已定义，mock 存在）
+- [SPEC.md:333](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md) — Risk Service 标题添加 `⚠️ *Planned — Phase 3*` + Status 说明
+- [SPEC.md:354](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md) — Execution Service 同上，补充实际状态（接口已定义，mock 存在）
 
 ---
 

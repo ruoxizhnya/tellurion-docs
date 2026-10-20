@@ -5,12 +5,15 @@ last-verified: 2026-10-17
 verified-by: 拆仓后状态横幅 + 跨仓链接显式化（REV-14，2026-10-17）—— 实现章节已失效，定位收缩为「目标架构愿景 + 历史 Reference」，拓扑/端口/表数以 core 仓为唯一事实源；4 条跨仓死链改为显式相对路径。此前：模块化内核融入 + 文档治理（2026-10-08）—— 新增「目标架构：模块化内核」节（D1–D5 已拍板，蓝图 design/kernel/）；删 :8086 死图（cmd/ai 已删）/ ADR-022 废弃正文 / 前端 AI 组件 DEPRECATED 清单；策略接口与 ExpressionStrategy 双写归 SPEC（单一事实源）。（前次：代码审查 2026-09-16 + AUD-14 校准 2026-09-21）
 ---
 
+> ⚠️ **现行总体设计见 [SYSTEM-DESIGN.md](SYSTEM-DESIGN.md)**；本文是**拆仓前的历史 Reference**（端口 / 表数 / 包归属均以 core 为准），只用于查历史判断。
+
+
 > ## ⚠️ 拆仓后状态（2026-10-09 起拆仓，2026-10-17 校准）
 >
 > 三仓拆分后，**本文的实现章节已失效**：前端 → `tellurion-ui` 仓、AI 服务 →
 > `tellurion-agent` 仓、后端内核留在 `tellurion` 仓。
 > **拓扑 / 端口 / 表数 / 包归属一律以 `tellurion` 仓的
-> [docs/ARCHITECTURE.md](../../tellurion/docs/ARCHITECTURE.md) 为准**，不要引用本文的这些数字。
+> [docs/ARCHITECTURE.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/ARCHITECTURE.md) 为准**，不要引用本文的这些数字。
 >
 > 本文最后一版实测停在拆仓前夜，与现状已多处不一致：曾称「`:8086` 已删除」（实际已复活为
 > ai-service）、曾称「`pkg/ai` 在本仓 Active」（实际已整体迁往 `tellurion-agent`）、
@@ -26,7 +29,7 @@ verified-by: 拆仓后状态横幅 + 跨仓链接显式化（REV-14，2026-10-17
 >
 > **不适合入门**：先读 [README.md](README.md) 导航 → [PRODUCT.md](PRODUCT.md)（是什么）→ 本文顶部「架构总览」（怎么搭）。
 >
-> 设计原则见 [VISION.md](VISION.md) · API 契约见 [SPEC.md](../../tellurion/docs/SPEC.md) · 待办见 [TASKS.md](../../tellurion/docs/TASKS.md)。
+> 设计原则见 [VISION.md](VISION.md) · API 契约见 [SPEC.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md) · 待办见 [TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md)。
 
 _原文截至 2026-04-08 (Phase 3)，2026-09-16 补充架构总览与现状对比。_
 
@@ -103,7 +106,7 @@ L1  数据层       行情 | 财务 | 产业链图谱 | 研究洞察 | 实验日
 
 三层模型不动。**变化发生在 L2 能力层内部**：回测与实盘将改造为 **nautilus-like 的模块化内核**——一个 Kernel 装配 11 个模块，回测与实盘**共享同一内核**，只在三处替换边界换实现（Clock / DataSource / Broker），**策略代码一行不动**。
 
-- **详细蓝图**：[design/kernel/target-architecture-modular-kernel.md](../../tellurion/docs/design/kernel/target-architecture-modular-kernel.md)（11 模块四件套矩阵、数据流图、4 个 user case、分期路线 P0–P7）
+- **详细蓝图**：[design/kernel/target-architecture-modular-kernel.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/design/kernel/target-architecture-modular-kernel.md)（11 模块四件套矩阵、数据流图、4 个 user case、分期路线 P0–P7）
 - **双模式策略接口**：现有批式 `SignalGenerator`（L0/L1 横截面）保留；新增流式 `BarHandler`（`OnBar` + `SaveState`/`LoadState`）服务 L2/L3 有状态策略（Kalman/EWMA/累积量）。同一份策略代码，回测换 VirtualClock + PG 快照，实盘换 LiveClock + 推送 feed。
 - **四层表达力**：L0 模板 / L1 表达式 DSL / L2 确定性有状态算子 / L3 WASM 沙箱 + 外部模型信号注入；**能用 L2 表达的不允许上 L3**（D2，维持 ADR-024「自由度是负债」）。
 - **实盘-ready（D1）**：核心抽象（`Broker`/`DataFeed`/`Clock`/`ExecEngine`）按真实券商设计留冗余，当前只实现 paper/模拟撮合；真实券商对接与合规报送留作将来。见 [ADR-023](adr/adr-023-ai-experimenter-lab.md) 补条款。
@@ -323,7 +326,7 @@ updated_at TIMESTAMPTZ DEFAULT NOW()
 
 ### Analysis Service (8085)
 
-> 完整 API 定义见 [SPEC.md](../../tellurion/docs/SPEC.md)
+> 完整 API 定义见 [SPEC.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md)
 
 ```
 GET  /health              — 健康检查
@@ -416,7 +419,7 @@ POST /screen                  — 选股筛选
 > ⚠️ **「内联 N 张 + 迁移新增 M 张 = 总数」这个口径不成立。**
 > `migrations/` 与 `docs/migrations/` 里的 `.sql` **不被执行**
 > （`migration_manager.go` 已于 2026-09-18 删除，零调用方；见
-> [`../migrations/README.md`](../../tellurion/docs/migrations/README.md)）。迁移那一半从来不参与建表，
+> [`../migrations/README.md`](https://github.com/ruoxizhnya/tellurion/blob/main/docs/migrations/README.md)）。迁移那一半从来不参与建表，
 > 加进去只是把两个不相干的数拼成一个看起来合理的数 —— 而且会掩盖「ETL 要写的表
 > 压根没被创建」这类真问题（C5 就是这么埋了几个月）。
 >
@@ -621,9 +624,9 @@ TTL 自动选择：
 
 ### 策略接口 (pkg/strategy/interfaces.go)
 
-> **Canonical 定义（单一事实源）见 [SPEC.md §Strategy Interface](../../tellurion/docs/SPEC.md)** —— 本文不再重复接口签名（消除双写）。
+> **Canonical 定义（单一事实源）见 [SPEC.md §Strategy Interface](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md)** —— 本文不再重复接口签名（消除双写）。
 >
-> **双模式（2026-10-08 起，目标形态）**：现有批式 `SignalGenerator` 服务 L0/L1 横截面；模块化内核将新增流式 `BarHandler`（`OnBar` + `SaveState`/`LoadState`）服务 L2/L3 有状态策略（Kalman/EWMA/累积量）。详见 [design/kernel/target-architecture-modular-kernel.md](../../tellurion/docs/design/kernel/target-architecture-modular-kernel.md) §6。
+> **双模式（2026-10-08 起，目标形态）**：现有批式 `SignalGenerator` 服务 L0/L1 横截面；模块化内核将新增流式 `BarHandler`（`OnBar` + `SaveState`/`LoadState`）服务 L2/L3 有状态策略（Kalman/EWMA/累积量）。详见 [design/kernel/target-architecture-modular-kernel.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/design/kernel/target-architecture-modular-kernel.md) §6。
 
 ### 策略列表
 
@@ -646,7 +649,7 @@ TTL 自动选择：
 
 ### ExpressionStrategy 架构 (pkg/strategy/expression/, S7-P3-1)
 
-> DSL 表达式 → 策略的端到端流水线。**单一事实源见 [SPEC.md §ExpressionStrategy](../../tellurion/docs/SPEC.md)**（GenerateSignals Pipeline + 组件职责表），本文不再重复（消除双写）。
+> DSL 表达式 → 策略的端到端流水线。**单一事实源见 [SPEC.md §ExpressionStrategy](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md)**（GenerateSignals Pipeline + 组件职责表），本文不再重复（消除双写）。
 
 ---
 
@@ -917,7 +920,7 @@ SPA 的部署在 AUD-32 补上（宿主 8080）后才执行的删除，所以没
 >
 > 保留本节仅供溯源。**现行决策以 [adr/](adr/) 中未废弃的条目为准。**
 
-> 本节正文已删（数据归属 A-E 分区表与 [SPEC.md §数据归属](../../tellurion/docs/SPEC.md) 双写、定位已被 ADR-023 取代）。完整原文见 [archive/superseded-adr/adr-022](archive/superseded-adr/adr-022-unified-research-platform.md)。
+> 本节正文已删（数据归属 A-E 分区表与 [SPEC.md §数据归属](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md) 双写、定位已被 ADR-023 取代）。完整原文见 [archive/superseded-adr/adr-022](archive/superseded-adr/adr-022-unified-research-platform.md)。
 
 ---
 
@@ -1120,7 +1123,7 @@ type Config struct {
 > `LoadStrategy → registerOrConfigure → RunBacktest`。适用于 AI 迭代
 > 调参场景（同 YAML 多次执行 / 微调 expression 后重跑）。同名策略
 > 重复执行时走 `Configure` in-place 重配，异类型冲突报错。详见
-> [SPEC.md](../../tellurion/docs/SPEC.md#direct-execution-via-executefromyaml)。
+> [SPEC.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md)。
 
 ### 表达式引擎 (Factor Expression DSL)
 

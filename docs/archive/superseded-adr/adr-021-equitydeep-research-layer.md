@@ -28,7 +28,7 @@ Quant Lab 是**横截面**量化研究平台：研究对象是策略与因子；
 
 这暴露三个结构性缺口（详见 [ODR-047](../odr/odr-047-equitydeep-integration-audit.md)）：
 
-1. **基本面深度缺口** — `stock_fundamentals` 仅 `pe/pb/roe` 三个标量。所谓 value / quality 因子（[SPEC.md §因子定义](../../SPEC.md)）本质是"三个数的分位数"，无三表明细、无现金流质量、无杜邦分解。
+1. **基本面深度缺口** — `stock_fundamentals` 仅 `pe/pb/roe` 三个标量。所谓 value / quality 因子（[SPEC.md §因子定义](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md)）本质是"三个数的分位数"，无三表明细、无现金流质量、无杜邦分解。
 2. **"事实正确性"门禁缺失** — [VISION.md](../../VISION.md) Principle 7「Evidence Over Intuition」目前是口号而非机制。现有 L1-L4 验证门禁（[ADR-015](../../adr/adr-015-ai-agent-architecture.md)）只校验**代码正确性**（语法 / IC / 回测 / 走查），不校验**事实正确性**（数字是否真有出处）。
 3. **叙事解释层缺失 / L5 审查悬空** — 回测出 Sharpe 0.8 时，系统能给出 IC 却给不出"这家公司怎么了"。且 L5 人工审查 UI 已随 [ODR-045](../odr/odr-045-frontend-ai-component-deprecation.md) 删除，审查需求无处落地。
 

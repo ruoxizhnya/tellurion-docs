@@ -247,7 +247,7 @@ func AsResourceManaged(s any) ResourceManaged { ... }
 
 ## Implementation Roadmap
 
-| Sprint | Tasks (见 [TASKS.md §Sprint 6](../TASKS.md)) | Effort | Status |
+| Sprint | Tasks (见 [TASKS.md §Sprint 6](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md)) | Effort | Status |
 |---|---|---|---|
 | **Sprint 6 P1-16** (3d) | 拆 CacheManager + FactorCacheAccessor 子包 | Major | ✅ Done (v3.13.0) |
 | **Sprint 6 P1-17** (3d) | 拆 LiveBridge + ExecutionBridge 子包 | Major | ✅ Done (v3.13.0) |

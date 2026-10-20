@@ -100,7 +100,7 @@ L1  数据层       行情 | 财务 | 产业链图谱 | 研究洞察 | 实验日
 
 ### 6. 核心部件按实盘-ready 设计（2026-10-08 补充，D1）
 
-本 ADR 的「不上实盘、只验证逻辑」前提**不推翻**。但模块化内核改造（见 [design/kernel/target-architecture-modular-kernel.md](../design/kernel/target-architecture-modular-kernel.md)）引入一条补充原则：
+本 ADR 的「不上实盘、只验证逻辑」前提**不推翻**。但模块化内核改造（见 [design/kernel/target-architecture-modular-kernel.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/design/kernel/target-architecture-modular-kernel.md)）引入一条补充原则：
 
 **核心部件的抽象（`Broker` / `DataFeed` / `Clock` / `ExecEngine` / `Reconciliation`）本着将来做实盘去设计、留足冗余**——接口形状按真实券商设计（支持部分成交、撤单、订单状态机、断线重连语义），但当前只实现 paper / 模拟撮合。**实盘专属部件（真实券商 SDK 对接、FIX 协议、合规报送）不做，留作将来。**
 

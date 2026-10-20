@@ -6,7 +6,7 @@
 > **Related ADRs**: [ADR-007](../../adr/adr-007-ai-sandbox.md), [ADR-008](../../adr/adr-008-inter-service-comm.md), [ADR-017](../../adr/adr-017-observability-and-auth.md), [ADR-018](../../adr/adr-018-test-and-async-safety.md), [ADR-019](../../adr/adr-019-service-merge-ai-copilot.md), [ADR-020](../../adr/adr-020-engine-decomposition.md)
 > **Supersedes**: N/A
 > **Author**: AI Assistant (Trae IDE)
-> **Related Task Tracker**: [TASKS.md §Sprint 6](../../TASKS.md)
+> **Related Task Tracker**: [TASKS.md §Sprint 6](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md)
 
 ---
 
@@ -44,7 +44,7 @@ ODR-012 (Sprint 5 综合代码审查) 56 项完成后第 3 天，用户要求对
 |---|---|---|---|
 | 架构决策已变更/补齐 | **ADR** | 6 | ADR-007 补 Decision、ADR-008 补 regime 决策；新建 ADR-017/018/019/020 |
 | 审查记录 + 任务汇总 | **ODR-013**（本文件） | 1 | 73 项问题索引 + 整合策略 |
-| 可执行任务 | **TASKS.md §Sprint 6** | 73 | 详见 [TASKS.md](../../TASKS.md) |
+| 可执行任务 | **TASKS.md §Sprint 6** | 73 | 详见 [TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md) |
 | 维护型工程审计 | 未来 ODR-014 | 1 | 计划下次全面审查 |
 
 ### 2. 文档类型选择理由
@@ -188,7 +188,7 @@ ODR-013 综合审查通过 4 个并行子代理在 ~5 分钟内完成 73 项任�
 | P1-21/22/23 | `pkg/statistics/`, `pkg/fees/`, `pkg/id/` (新建) | 对应任务实施时创建 |
 | P1-29 | `pkg/alert/` (新建) | P1-29 实施时创建 |
 
-**任务追踪**: 已迁移到 [TASKS.md §Sprint 6 启动期 待校核项](../../TASKS.md#-sprint-6-启动期-待校核项-6-项) 作为 Sprint 6 启动期检查清单
+**任务追踪**: 已迁移到 [TASKS.md §Sprint 6 启动期 待校核项](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md) 作为 Sprint 6 启动期检查清单
 
 ### 路径引用规范（新发现的原则）
 

@@ -36,7 +36,7 @@
 
 > ### 🔗 2026-10-08 对齐：轨道 B 在四层表达力模型中的位置（D2 裁决）
 >
-> 按 2026-10-08 拍板的四层表达力模型（[design/kernel/target-architecture-modular-kernel.md](../design/kernel/target-architecture-modular-kernel.md) §6），本 ADR 的轨道 B（WASM）= **L3a**，是表达力的**最后一层**，仅在 L2 确定性有状态算子（EWMA / RMA / IIR / Kalman）也无法表达时启用（D2：能用 L2 表达的不允许上 L3）。上文的前视修正（`on_bar(t)` + `get_bar(t_offset ≤ 0)`，越界 trap）与四层模型完全一致，**不变**。
+> 按 2026-10-08 拍板的四层表达力模型（[design/kernel/target-architecture-modular-kernel.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/design/kernel/target-architecture-modular-kernel.md) §6），本 ADR 的轨道 B（WASM）= **L3a**，是表达力的**最后一层**，仅在 L2 确定性有状态算子（EWMA / RMA / IIR / Kalman）也无法表达时启用（D2：能用 L2 表达的不允许上 L3）。上文的前视修正（`on_bar(t)` + `get_bar(t_offset ≤ 0)`，越界 trap）与四层模型完全一致，**不变**。
 
 ## Context
 
@@ -101,7 +101,7 @@ Only allow strategies from a curated library. AI Copilot helps modify existing s
 
 ## Review
 
-Phase 2 implementation tied to Sprint 6 (P0-4, P1-11 in [TASKS.md §Sprint 6](../TASKS.md)).
+Phase 2 implementation tied to Sprint 6 (P0-4, P1-11 in [TASKS.md §Sprint 6](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md)).
 Final review checkpoint at Sprint 6 retrospective.
 
 ## Related

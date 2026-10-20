@@ -115,7 +115,7 @@ CREATE INDEX idx_audit_endpoint ON audit_logs(endpoint, timestamp DESC);
 
 ## Implementation Roadmap
 
-| Sprint | Tasks (见 [TASKS.md §Sprint 6](../../../tellurion/docs/TASKS.md)) | Effort |
+| Sprint | Tasks (见 [TASKS.md §Sprint 6](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md)) | Effort |
 |---|---|---|
 | **Sprint 6 P0-3** (2 days) | OTel SDK + middleware + /metrics + request_id 透传 | Critical |
 | **Sprint 6 P0-1** (1 day) | AI service token bucket 限流 (10 req/min/user) | Critical |

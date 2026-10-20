@@ -1,0 +1,40 @@
+---
+status: active
+last-verified: 2026-10-20
+verified-by: 知识库改造时建立；只登记本仓维护类事项，施工单在 core
+---
+
+# TASKS — tellurion-docs
+
+> **本仓台账只放"知识库维护"**：导航、坏链、过时声明、索引补齐。
+> **跨仓施工任务不在这里**——它们在 [core `docs/TASKS.md`](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md)。建单前先问：这件事是不是"改文档结构"？不是就别在本仓建。
+
+## 一、状态图例
+
+| 标记 | 含义 |
+|---|---|
+| ⬜ | 未开始 |
+| 🔶 | 进行中 |
+| ✅ | 已完成（保留一行结论，便于追溯） |
+
+## 二、本仓任务
+
+| # | 事项 | 状态 | 说明 |
+|---|---|---|---|
+| DOC-01 | 拆仓后链接修复 | ✅ | 153 条跨仓相对链接改绝对 URL（含 `file:///Users/.../quant-trading/*` 本机路径）；活跃层 196 条链接 0 断 |
+| DOC-02 | 总体层三份建立 | ✅ | `SYSTEM-DESIGN.md`（分层 / 四条主链路 / 数据归属 / 边界原则 / 阶梯）+ `REPO-MAP.md` + `SERVICE-INDEX.md` |
+| DOC-03 | `ARCHITECTURE.md` 降级为历史 Reference | ✅ | 顶部留指针指向 `SYSTEM-DESIGN.md`；导航行改标"拆仓前历史 Reference（端口/表数已失效）" |
+| DOC-04 | 链接检查进 CI | ✅ | `tools/check_doc_links.py` + `.github/workflows/ci.yml`；活跃层断链即红，历史层只统计 |
+| DOC-05 | 历史层 166 条断链的处置 | ⬜ | 现状：全部在 `docs/archive/`，指向已删除/已搬走的源码文件。**待裁**：① 保持原样（档案属历史快照）② 统一降级为纯文本 ③ 补一段"文件已删除"说明。倾向 ①，因为 ADR/档案不该被事后改写 |
+| DOC-06 | `PRODUCT.md` / `VISION.md` 按新定位重写 | ⬜ | 导航里已标"待重写"；需先有产品口径（分仓后单一产品变成"底座 + 实验员 + 前端 + 六服务"） |
+| DOC-07 | 12 仓文档一致性巡检脚本 | ⬜ | 现在靠人眼：每仓应有 `AGENTS.md` + `db-schema` / `api-schema` / `dataflow` + `TASKS` + `adr/` + `odr/`。可写成 `tools/check_repo_docs.py`（与 core 的 `check_repo_autonomy.py` 互补：那边查仓自治，这边查文档齐套） |
+| DOC-08 | `docs/guides/` 按 12 仓更新 | ⬜ | `local-dev.md` / `deploy-config.md` / `data-dependencies.md` 仍是单仓口径（一份 docker-compose），分仓后需说明"同时 checkout 哪些仓"与 `go.work` 的用法 |
+
+## 三、跨仓指针（不在本仓，勿双写）
+
+| 事项 | 去哪 |
+|---|---|
+| 仓自治不变量 R1~R6 的机械检查 | core `tools/check_repo_autonomy.py`（QT-08 ①，未写） |
+| 契约层落代码 / 打 tag | core `docs/TASKS.md` 的 QT-05 / QT-07 |
+| 各仓功能边界正文 | 各仓 `docs/db-schema.md` / `api-schema.md` / `dataflow.md` |
+| 施工顺序 | core `docs/TASKS.md` |

@@ -44,7 +44,7 @@
 
 ### 缺陷 1: 限流阈值硬编码 → 配置驱动
 
-e2e 并发压测下四服务自我 429（首轮 81 失败的主导因素）。修复：`RATE_LIMIT_PER_MINUTE`（data/analysis）与 `AI_RATE_LIMIT_PER_MIN`（ai）从配置/环境读取，默认值保守，e2e 场景调高。涉及 `cmd/data/setup.go`、`cmd/analysis/setup.go`、`config/data-service.yaml`、`config/analysis-service.yaml`。算法级缺陷（滑动窗口整窗重置，窗口边界突发 2×）**未修**，登记 [TASKS.md](../../TASKS.md) P1-29。
+e2e 并发压测下四服务自我 429（首轮 81 失败的主导因素）。修复：`RATE_LIMIT_PER_MINUTE`（data/analysis）与 `AI_RATE_LIMIT_PER_MIN`（ai）从配置/环境读取，默认值保守，e2e 场景调高。涉及 `cmd/data/setup.go`、`cmd/analysis/setup.go`、`config/data-service.yaml`、`config/analysis-service.yaml`。算法级缺陷（滑动窗口整窗重置，窗口边界突发 2×）**未修**，登记 [TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md) P1-29。
 
 ### 缺陷 2: worker 饥饿 — JobService 直写 DB 不通知空闲 worker（产品缺陷）
 
@@ -98,7 +98,7 @@ e2e 并发压测下四服务自我 429（首轮 81 失败的主导因素）。�
 
 ---
 
-## 遗留缺陷（本轮不修，登记 [TASKS.md](../../TASKS.md)）
+## 遗留缺陷（本轮不修，登记 [TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md)）
 
 ### D-1: backtest 入口校验缺失（P1-25）
 `POST /api/backtest` 缺 `stock_pool` / 非法 body → `engine.RunBacktest` 错误统一 500（`cmd/analysis/handlers_backtest.go:67`），应 400 fail-fast。负面用例 `api-negative :27` 期望 400 实得 500。

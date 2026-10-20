@@ -11,13 +11,13 @@
 
 ## Context
 
-当前 Quant Lab 的数据同步实现（详见 [cmd/data/main.go](../../../tellurion/cmd/data/main.go)）存在以下结构性问题：
+当前 Quant Lab 的数据同步实现（详见 [cmd/data/main.go](https://github.com/ruoxizhnya/tellurion/blob/main/cmd/data/main.go)）存在以下结构性问题：
 
 1. **全手动触发**: 所有 13 个 `/sync/*` 端点均为手动 POST 调用，无定时自动同步机制
 2. **无统一任务管理**: 同步操作直接调用 Tushare API，缺乏任务队列、状态追踪和进度反馈
 3. **前端无数据管理界面**: 用户无法直观查看数据覆盖度、同步状态或历史记录
 4. **错误恢复能力弱**: 失败任务仅记录 Warn 日志，无重试机制和失败隔离
-5. **EventBus 未充分利用**: [pkg/marketdata/eventbus.go](../../../tellurion/pkg/marketdata/eventbus.go) 已实现但未在同步流程中实际使用
+5. **EventBus 未充分利用**: [pkg/marketdata/eventbus.go](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/marketdata/eventbus.go) 已实现但未在同步流程中实际使用
 
 这些问题在 Phase 3 质量优化阶段成为主要瓶颈，特别是在以下场景：
 - 研究员每日开盘前需要确认数据已更新至最新交易日

@@ -4,7 +4,7 @@
 > **性质**: 全项目自上而下静态审查（架构 / 回测正确性 / 数据面 / 后端工程 / 安全运维 / 测试 / 前端）
 > **范围**: 全仓 Go 后端 + Vue 3 前端 + E2E + 数据库 DDL + CI/部署 + 文档
 > **环境限制**: 本机无 Go 工具链（`go` 不在 PATH，全盘搜索无 `go.exe`），`go build` / `go vet` / `go test -race` 未执行。全部结论来自**静态审查 + 源码逐行取证**，动态复验清单见附录 D。
-> **说明**: 本报告为**一次性审计快照**（AGENTS.md Rule 3：报告不进常青层）。审计决策归档于 [ODR-065](../odr/odr-065-fullstack-static-review.md)；可执行修复任务已登记 [docs/TASKS.md](../../TASKS.md)（P0-7~P0-11 / P1-15~P1-22 / P2-14~P2-16，AUD-xx 编号与任务一一对应）。2026-09-21 自 `docs/review-report/` 归位至此，相对链接层级已同步修正。本文件覆盖了此前误存入本文件的过程性草稿内容。
+> **说明**: 本报告为**一次性审计快照**（AGENTS.md Rule 3：报告不进常青层）。审计决策归档于 [ODR-065](../odr/odr-065-fullstack-static-review.md)；可执行修复任务已登记 [docs/TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md)（P0-7~P0-11 / P1-15~P1-22 / P2-14~P2-16，AUD-xx 编号与任务一一对应）。2026-09-21 自 `docs/review-report/` 归位至此，相对链接层级已同步修正。本文件覆盖了此前误存入本文件的过程性草稿内容。
 
 ---
 
@@ -75,7 +75,7 @@
 | Go 测试 | 230 文件 / 61,321 行（测试:源码 ≈ 45%，规模真实） |
 | 前端 (web/src) | 82 文件 / 9,992 行 |
 | 文档 | 158 个 Markdown / 30,240 行 |
-| 内联 DDL 建表 | 22 张（[pkg/storage/postgres.go](../../../pkg/storage/postgres.go) `migrate()` 数组，grep `CREATE TABLE IF NOT EXISTS` 实测） |
+| 内联 DDL 建表 | 22 张（[pkg/storage/postgres.go](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/storage/postgres.go) `migrate()` 数组，grep `CREATE TABLE IF NOT EXISTS` 实测） |
 | `migrations/` 目录 | 10+ 个 .sql，**不被任何代码执行** |
 | Git | `main` 领先 `origin/main` **51 提交**（2026-09-21 实测），未走 feature branch 流程 |
 
@@ -89,7 +89,7 @@
 
 ### C1 日收益率公式错误 — 夏普/索提诺/波动率全部失真
 
-- **位置**: [pkg/backtest/metrics/performance.go#L78-L100](../../../pkg/backtest/metrics/performance.go#L78-L100)（`CalculateReturns`）
+- **位置**: [pkg/backtest/metrics/performance.go#L78-L100](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/backtest/metrics/performance.go)（`CalculateReturns`）
 - **置信度**: 确证（代数推导 + 代码逐行复核）
 - **影响面**: 回测报告全部风险调整指标 → walk-forward L1-L5 门禁 → 基因池 fitness 排序 → Hermes 自主因子挖掘
 
@@ -142,9 +142,9 @@ dailyReturn := (currValue - prevValue) / prevValue
 ### C2 Walk-forward 并发窗口共享同一引擎实例 — 跨窗口前视偏差
 
 - **位置**:
-  - [pkg/backtest/walkforward/walkforward.go#L19-L23](../../../pkg/backtest/walkforward/walkforward.go#L19-L23)（`runner contracts.EngineRunner` 共享字段）
-  - [pkg/backtest/walkforward/walkforward.go#L142-L160](../../../pkg/backtest/walkforward/walkforward.go#L142-L160)（固定 4 并发跑全部窗口）
-  - [cmd/analysis/setup.go#L342](../../../cmd/analysis/setup.go#L342)（`NewWalkForwardEngine(engine, store)` 注入单例）
+  - [pkg/backtest/walkforward/walkforward.go#L19-L23](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/backtest/walkforward/walkforward.go)（`runner contracts.EngineRunner` 共享字段）
+  - [pkg/backtest/walkforward/walkforward.go#L142-L160](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/backtest/walkforward/walkforward.go)（固定 4 并发跑全部窗口）
+  - [cmd/analysis/setup.go#L342](https://github.com/ruoxizhnya/tellurion/blob/main/cmd/analysis/setup.go)（`NewWalkForwardEngine(engine, store)` 注入单例）
 - **置信度**: 确证（结构体字段 + 调用链复核）
 
 **证据**：
@@ -157,7 +157,7 @@ type WalkForwardEngine struct {
 }
 ```
 
-[setup.go](../../../cmd/analysis/setup.go) 中所有 walk-forward 请求共享同一个 `engine` 实例：
+[setup.go](https://github.com/ruoxizhnya/tellurion/blob/main/cmd/analysis/setup.go) 中所有 walk-forward 请求共享同一个 `engine` 实例：
 
 ```go
 wfEngine := backtest.NewWalkForwardEngine(engine, store)
@@ -236,10 +236,10 @@ func saveStrategyHandler(c *gin.Context) {              // L174
 ### C4 授权（RBAC）缺失：viewer 可下单、可调用全部 19 个 MCP 工具
 
 - **位置**:
-  - [cmd/analysis/handlers_execution.go#L69-L92](../../../cmd/analysis/handlers_execution.go#L69-L92)（`/api/execution/*` 零角色校验，含 legacy 根路径 `/orders`）
+  - [cmd/analysis/handlers_execution.go#L69-L92](https://github.com/ruoxizhnya/tellurion/blob/main/cmd/analysis/handlers_execution.go)（`/api/execution/*` 零角色校验，含 legacy 根路径 `/orders`）
   - [cmd/analysis/handlers_tools.go#L55-L64](../../../cmd/analysis/handlers_tools.go#L55-L64)（`/api/tools/*` 零角色校验）
-  - [cmd/analysis/handlers_auth.go#L30](../../../cmd/analysis/handlers_auth.go#L30)（全仓唯一 `RequireRole` 调用点）
-  - [pkg/auth/auth.go#L34](../../../pkg/auth/auth.go#L34)（`RoleViewer` 只读语义定义了但没接线）
+  - [cmd/analysis/handlers_auth.go#L30](https://github.com/ruoxizhnya/tellurion/blob/main/cmd/analysis/handlers_auth.go)（全仓唯一 `RequireRole` 调用点）
+  - [pkg/auth/auth.go#L34](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/auth/auth.go)（`RoleViewer` 只读语义定义了但没接线）
 - **置信度**: 确证（全仓 grep `RequireRole` 仅 1 处；`CanTrade()` 无生产调用点）
 
 **证据**：
@@ -262,7 +262,7 @@ RoleViewer Role = "viewer" // read-only
 
 **缓解因素**（如实陈述，故定为 C4 而非"可直接资金损失"）：
 
-1. 认证层 fail-closed：[cmd/analysis/setup.go#L617-L629](../../../cmd/analysis/setup.go#L617-L629) 全局 `authSvc.Middleware()`；`allow_insecure` 仅 loopback 生效（[config/analysis-service.yaml#L19-L25](../../../config/analysis-service.yaml#L19-L25)）；
+1. 认证层 fail-closed：[cmd/analysis/setup.go#L617-L629](https://github.com/ruoxizhnya/tellurion/blob/main/cmd/analysis/setup.go) 全局 `authSvc.Middleware()`；`allow_insecure` 仅 loopback 生效（[config/analysis-service.yaml#L19-L25](https://github.com/ruoxizhnya/tellurion/blob/main/config/analysis-service.yaml)）；
 2. 执行层当前是 MockTrader，非真实券商。
 
 **影响推演**：一旦接真实券商（Phase 4 live），或 `/api/tools` 中的写入型工具（save_factor / 数据同步 / 回测触发）被滥用，viewer/任何泄漏的 token 均可执行。授权模型已经写好却没接线，属于"最后一公里"缺失。
@@ -291,10 +291,10 @@ tools.POST("/:name", h.toolGate(registry), h.handleExecute)
 ### C5 迁移双轨断层：ETL 要写的 11 张表，内联 DDL 从不创建
 
 - **位置**:
-  - [pkg/storage/bulk_insert.go#L48-L62](../../../pkg/storage/bulk_insert.go#L48-L62)（`TableMapper` 13 个映射）
-  - [pkg/storage/postgres.go#L97-L575](../../../pkg/storage/postgres.go#L97-L575)（内联 `migrate()`，grep 实测 22 张 `CREATE TABLE`）
-  - [pkg/storage/postgres.go#L82-L96](../../../pkg/storage/postgres.go#L82-L96)（注释明确 `migrations/` **不被执行**）
-  - [cmd/data/registry_init.go#L171-L207](../../../cmd/data/registry_init.go#L171-L207)（11 类数据的摄取链路已实盘注册）
+  - [pkg/storage/bulk_insert.go#L48-L62](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/storage/bulk_insert.go)（`TableMapper` 13 个映射）
+  - [pkg/storage/postgres.go#L97-L575](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/storage/postgres.go)（内联 `migrate()`，grep 实测 22 张 `CREATE TABLE`）
+  - [pkg/storage/postgres.go#L82-L96](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/storage/postgres.go)（注释明确 `migrations/` **不被执行**）
+  - [cmd/data/registry_init.go#L171-L207](https://github.com/ruoxizhnya/tellurion/blob/main/cmd/data/registry_init.go)（11 类数据的摄取链路已实盘注册）
 - **置信度**: 确证（建表清单 vs 写入清单求差集 + 全仓 Go grep 无覆盖）
 
 **证据 — TableMapper 声明的 13 个映射**：
@@ -317,14 +317,14 @@ tools.POST("/:name", h.toolGate(registry), h.handleExecute)
 
 **这 11 类数据不是死代码**——摄取链路已实盘接线：
 
-- [pkg/data/source/adapter.go#L47-L58](../../../pkg/data/source/adapter.go#L47-L58) 定义全部 DataType 常量；
-- [yahoo_finance_adapter.go#L44-L72](../../../pkg/data/source/yahoo_finance_adapter.go#L44-L72) 产 `global_ohlcv`、[xueqiu_adapter.go#L41-L80](../../../pkg/data/source/xueqiu_adapter.go#L41-L80) 产 `hot_search`/`news`，mootdx/eastmoney 产 realtime/sector/top_list 系；
-- [registry_init.go#L171-L207](../../../cmd/data/registry_init.go#L171-L207) 为全部类型 `SetChain` 注册；
-- [pkg/data/source/etl.go#L113-L123](../../../pkg/data/source/etl.go#L113-L123) `p.Store.BulkInsert(ctx, req.DataType, ...)` 落库。
+- [pkg/data/source/adapter.go#L47-L58](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/data/source/adapter.go) 定义全部 DataType 常量；
+- [yahoo_finance_adapter.go#L44-L72](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/data/source/yahoo_finance_adapter.go) 产 `global_ohlcv`、[xueqiu_adapter.go#L41-L80](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/data/source/xueqiu_adapter.go) 产 `hot_search`/`news`，mootdx/eastmoney 产 realtime/sector/top_list 系；
+- [registry_init.go#L171-L207](https://github.com/ruoxizhnya/tellurion/blob/main/cmd/data/registry_init.go) 为全部类型 `SetChain` 注册；
+- [pkg/data/source/etl.go#L113-L123](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/data/source/etl.go) `p.Store.BulkInsert(ctx, req.DataType, ...)` 落库。
 
 **执行路径事实**：postgres.go L86-L96 注释明确——`migrations/` 与 `docs/migrations/` **不被执行**，golang-migrate 封装 2026-09-18 已删除；唯一 DDL 真相是内联数组。但 11 张表从未被追加进去，**违反了该项目自己写下的约定**（"加表/加列就在这个数组末尾追加一条"，L94-L96）。
 
-**影响推演**：全新部署（新环境 / CI 集成库 / 同事本机）→ 任一多源同步任务触发 → `INSERT INTO realtime_quote ...` → **`relation "realtime_quote" does not exist`**。且 [etl.go#L114-L123](../../../pkg/data/source/etl.go#L114-L123) 错误上抛（不静默），整批同步失败。多源数据面（ODR-011/012 核心成果）在干净环境**开箱不可用**。存量库靠手工跑过 .sql 才活着——这是隐性运维债。
+**影响推演**：全新部署（新环境 / CI 集成库 / 同事本机）→ 任一多源同步任务触发 → `INSERT INTO realtime_quote ...` → **`relation "realtime_quote" does not exist`**。且 [etl.go#L114-L123](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/data/source/etl.go) 错误上抛（不静默），整批同步失败。多源数据面（ODR-011/012 核心成果）在干净环境**开箱不可用**。存量库靠手工跑过 .sql 才活着——这是隐性运维债。
 
 **修复建议**：
 
@@ -349,7 +349,7 @@ func TestTableMapperTablesExistInInlineDDL(t *testing.T) {
 
 ### H1 印花税默认值是实际的 2 倍
 
-- **位置**: [pkg/fees/ashare.go#L53](../../../pkg/fees/ashare.go#L53)
+- **位置**: [pkg/fees/ashare.go#L53](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/fees/ashare.go)
 - **证据**: `DefaultStampTaxRate = 0.001`，注释称"0.2% 减半到 0.1%"——史实错误。实际沿革：2023-08-28 起 **0.1% → 0.05%**，当前应为 `0.0005`。
 - **影响**: 高换手策略交易成本被系统性高估约一倍（仅卖方，但量化组合年换手常达 10-50 倍）→ 成本敏感的真因子被误杀、假因子被误留。与 C1 叠加后回测结论双重失真。
 - **修复**: 改 `0.0005`；注释写清费率沿革（含生效日期）以便未来再调时溯源；补费率史测试用例（按日期分段验证）。
@@ -357,7 +357,7 @@ func TestTableMapperTablesExistInInlineDDL(t *testing.T) {
 
 ### H2 涨跌停判定缺板块维度
 
-- **位置**: [pkg/backtest/engine_daily.go#L168-L178](../../../pkg/backtest/engine_daily.go#L168-L178)
+- **位置**: [pkg/backtest/engine_daily.go#L168-L178](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/backtest/engine_daily.go)
 - **证据**: 仅 Normal(±10%) / New(±20%) / ST(±5%) 三档，无创业板(300/301, ±20%)、科创板(688/689, ±20%)、北交所(±30%) 分档；涨停价未做 0.01 元取整。
 - **影响**: 300/688 标的按 10% 判停 → 该拦的没拦（20% 涨幅日被误判可成交）、该放的没放；价格取整缺失导致与真实盘面限价不一致，成交判定边缘错误。
 - **修复**: 按 symbol 前缀+名称建立档位函数 `limitPct(symbol, name, board)`；`math.Round(price*100)/100` 取整到分；北交所 30% 一并纳入。
@@ -365,7 +365,7 @@ func TestTableMapperTablesExistInInlineDDL(t *testing.T) {
 
 ### H3 `*ST` 识别永久失效
 
-- **位置**: [pkg/backtest/engine.go#L1503-L1509](../../../pkg/backtest/engine.go#L1503-L1509)
+- **位置**: [pkg/backtest/engine.go#L1503-L1509](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/backtest/engine.go)
 - **证据**:
 
 ```go
@@ -379,14 +379,14 @@ prefix := name[:2]           // 只取前 2 字符
 
 ### H4 测试把 H3 的 bug 固化为预期
 
-- **位置**: [pkg/backtest/engine_accessors_test.go#L286-L290](../../../pkg/backtest/engine_accessors_test.go#L286-L290)
+- **位置**: [pkg/backtest/engine_accessors_test.go#L286-L290](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/backtest/engine_accessors_test.go)
 - **证据**: `{"*STXYZ.SH", false}` —— 断言 *ST 返回 false，把 bug 写成了规格。
 - **影响**: 修 H3 时该测试会红，容易被误判为"回归"而回滚正确修复。**这是测试反模式的典型样本**（AGENTS.md §8 规范 1 明确要求测试覆盖边界条件，此测试做到了覆盖却固化了错误行为）。
 - **修复**: 与 H3 **同一 commit** 修正断言（原子性要求）。
 
 ### H5 MockTrader 在 RLock 下经指针写共享对象
 
-- **位置**: [pkg/live/mock_trader.go#L44](../../../pkg/live/mock_trader.go#L44)、[#L301-L338](../../../pkg/live/mock_trader.go#L301-L338)
+- **位置**: [pkg/live/mock_trader.go#L44](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/live/mock_trader.go)、[#L301-L338](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/live/mock_trader.go)
 - **证据**:
 
 ```go
@@ -419,7 +419,7 @@ func (m *MockTrader) GetAccount(...) {     // L317-338, RLock 内同类写
 
 ### H8 CI 未执行项目自己的强制规范
 
-- **位置**: [.github/workflows/ci.yml#L47-L48](../../../.github/workflows/ci.yml#L47-L48)
+- **位置**: [.github/workflows/ci.yml#L47-L48](https://github.com/ruoxizhnya/tellurion/blob/main/.github/workflows/ci.yml)
 - **证据**:
 
 ```yaml
@@ -435,7 +435,7 @@ func (m *MockTrader) GetAccount(...) {     // L317-338, RLock 内同类写
 
 ### H9 docker-compose 把 PG/Redis 暴露到宿主机所有接口
 
-- **位置**: [docker-compose.yml#L27-L28](../../../docker-compose.yml#L27-L28)、[#L39-L40](../../../docker-compose.yml#L39-L40)
+- **位置**: [docker-compose.yml#L27-L28](https://github.com/ruoxizhnya/tellurion/blob/main/docker-compose.yml)、[#L39-L40](https://github.com/ruoxizhnya/tellurion/blob/main/docker-compose.yml)
 - **证据**:
 
 ```yaml
@@ -457,7 +457,7 @@ ports:
 
 - **证据**（2026-09-21 实测）:
   - AGENTS.md v3.3（2026-09-15）仍以 ADR-022「四层 L0-L3 / 双工作面 / equitydeep-research 容器待建」为顶层定义；但 [docs/adr/](../../../docs/adr) 现有 [adr-023-ai-experimenter-lab.md](../../../docs/adr/adr-023-ai-experimenter-lab.md) 与 [adr-024-expression-as-execution-target.md](../../../docs/adr/adr-024-expression-as-execution-target.md) 后出，ADR-021/022 已移入 [docs/archive/superseded-adr/](../../../docs/archive/superseded-adr)——架构基线已迁移，AGENTS.md 未跟上；
-  - AGENTS.md §3 称 "`ingest.raw` / `research` schema … 尚未落盘"，实际 [postgres.go#L281-L318](../../../pkg/storage/postgres.go#L281-L318) 已创建 `ingest.raw`、`research.profile/conclusion/question`——"规划中"标注过期；
+  - AGENTS.md §3 称 "`ingest.raw` / `research` schema … 尚未落盘"，实际 [postgres.go#L281-L318](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/storage/postgres.go) 已创建 `ingest.raw`、`research.profile/conclusion/question`——"规划中"标注过期；
   - AGENTS.md 称 "共 22 条 ADR：ADR-001~022"，实际存在 ADR-024。
 - **影响**: AI 编码助手与新人以 AGENTS.md 为第一入口（本仓设计的核心机制），文档漂移会系统性误导后续开发——C5 正是"文档/注释约定与执行不一致"的同类病。
 - **修复**: 按 ADR-023/024 重写 AGENTS.md §1/§2/§3 顶层叙述；建表状态改为"已落盘清单 + 未落盘清单"。
@@ -469,8 +469,8 @@ ports:
 
 ### M3 双 migrations 死文档持续制造歧义
 
-- **位置**: [migrations/](../../../migrations)、[docs/migrations/](../../../docs/migrations)
-- **证据**: [postgres.go#L82-L96](../../../pkg/storage/postgres.go#L82-L96) 注释确认两目录均不被执行、只读不维护；[postgres_test.go#L516-L532](../../../pkg/storage/postgres_test.go#L516-L532) 测试注释亦标注"文档副本"。但 13 个 .sql 仍在仓库中被任务/文档引用（C5 的根因即开发时引用了 015-018）。
+- **位置**: [migrations/](../../../migrations)、[docs/migrations/](https://github.com/ruoxizhnya/tellurion/blob/main/docs/migrations)
+- **证据**: [postgres.go#L82-L96](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/storage/postgres.go) 注释确认两目录均不被执行、只读不维护；[postgres_test.go#L516-L532](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/storage/postgres_test.go) 测试注释亦标注"文档副本"。但 13 个 .sql 仍在仓库中被任务/文档引用（C5 的根因即开发时引用了 015-018）。
 - **修复**: 二选一——(a) 归档到 `docs/archive/migrations-history/` 并加 stale 横幅；(b) 若短期无法补 DDL（C5），至少在目录加 README："此目录不执行，加表请改 postgres.go"。(a) 更彻底。
 
 ### M4 staticcheck 为正则黑名单，可被绕过
@@ -489,7 +489,7 @@ ports:
 
 ### M6 `fundamentals_detail` 表已建但摄取链路未通
 
-- **位置**: [pkg/storage/postgres.go#L333](../../../pkg/storage/postgres.go#L333)（表存在）；摄取侧 EQD-P1-2 未完成（AGENTS.md §14 已知问题，本次复核确认表结构在、数据摄取代码未见）
+- **位置**: [pkg/storage/postgres.go#L333](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/storage/postgres.go)（表存在）；摄取侧 EQD-P1-2 未完成（AGENTS.md §14 已知问题，本次复核确认表结构在、数据摄取代码未见）
 - **影响**: 纵向因子若直接查该表会**静默拿到空集**（SQL 不报错）→ 因子全空/NaN，易被误判为"策略无效"。
 - **修复**: 短期在因子读取处加空集防御（行数 0 时显式报错或告警）；中期完成 EQD-P1-2 摄取。
 
@@ -508,17 +508,17 @@ ports:
 
 ## 8. 正面发现（值得保留与推广的工程实践）
 
-1. **认证层 fail-closed 设计扎实**——[cmd/analysis/setup.go#L617-L629](../../../cmd/analysis/setup.go#L617-L629)：CORS 白名单回显（不再硬编码 `*`，未配置=不回显）、全局 JWT 中间件；[config/analysis-service.yaml#L19-L25](../../../config/analysis-service.yaml#L19-L25)：`allow_insecure` 仅 loopback 生效、非 loopback 监听时豁免无效并打 WARN。注释里甚至预判了"0.0.0.0 上 open-access 等于把下单接口开给整个局域网"——安全意识在线，缺的只是授权接线（C4）。
+1. **认证层 fail-closed 设计扎实**——[cmd/analysis/setup.go#L617-L629](https://github.com/ruoxizhnya/tellurion/blob/main/cmd/analysis/setup.go)：CORS 白名单回显（不再硬编码 `*`，未配置=不回显）、全局 JWT 中间件；[config/analysis-service.yaml#L19-L25](https://github.com/ruoxizhnya/tellurion/blob/main/config/analysis-service.yaml)：`allow_insecure` 仅 loopback 生效、非 loopback 监听时豁免无效并打 WARN。注释里甚至预判了"0.0.0.0 上 open-access 等于把下单接口开给整个局域网"——安全意识在线，缺的只是授权接线（C4）。
 
-2. **DDL 单一真相的取舍有书面论证**——[pkg/storage/postgres.go#L76-L96](../../../pkg/storage/postgres.go#L76-L96)：明确写了为什么不用 golang-migrate（baseline 对不上则后续每条迁移都在错误假设上跑；"为了工程整洁去动能用的库，收益是洁癖，风险是数据"），并给出"加表追加到数组末尾"的可执行约定。C5 是**执行没跟上约定**，不是设计缺陷——这比没有约定好得多。
+2. **DDL 单一真相的取舍有书面论证**——[pkg/storage/postgres.go#L76-L96](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/storage/postgres.go)：明确写了为什么不用 golang-migrate（baseline 对不上则后续每条迁移都在错误假设上跑；"为了工程整洁去动能用的库，收益是洁癖，风险是数据"），并给出"加表追加到数组末尾"的可执行约定。C5 是**执行没跟上约定**，不是设计缺陷——这比没有约定好得多。
 
-3. **order_manager.go 并发是正确范本**——[pkg/live/order_manager.go#L212-L225](../../../pkg/live/order_manager.go#L212-L225)：`syncOrderStatus` 先 RLock 拷贝 pending 再释放锁调 broker（copy-under-lock）；全文件 42 处共享字段访问全部在锁内。与 mock_trader.go（H5）形成同仓对比，说明团队掌握正确写法，H5 是疏漏而非能力缺口。
+3. **order_manager.go 并发是正确范本**——[pkg/live/order_manager.go#L212-L225](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/live/order_manager.go)：`syncOrderStatus` 先 RLock 拷贝 pending 再释放锁调 broker（copy-under-lock）；全文件 42 处共享字段访问全部在锁内。与 mock_trader.go（H5）形成同仓对比，说明团队掌握正确写法，H5 是疏漏而非能力缺口。
 
-4. **ETL 错误不静默**——[pkg/data/source/etl.go#L114-L123](../../../pkg/data/source/etl.go#L114-L123)：`BulkInsert` 失败 `fmt.Errorf("etl: persist %s: %w", ...)` 上抛而非 log-and-continue。这让 C5 的故障模式是"响亮失败"而非"静默丢数"。
+4. **ETL 错误不静默**——[pkg/data/source/etl.go#L114-L123](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/data/source/etl.go)：`BulkInsert` 失败 `fmt.Errorf("etl: persist %s: %w", ...)` 上抛而非 log-and-continue。这让 C5 的故障模式是"响亮失败"而非"静默丢数"。
 
 5. **测试规模真实**——61,321 行测试 / 230 文件，历史覆盖率 risk 85.3%、compliance 91.6%、fees 100%、marketdata 79.0%。发现的测试问题（H4、M5）是质量缺口而非"测试是摆设"。
 
-6. **CI 有自研一致性元检查**——[.github/workflows/ci.yml#L64-L70](../../../.github/workflows/ci.yml#L64-L70)：`check_doc_links.py`（文档死链）+ `check_deploy_consistency.py`（compose ↔ k8s 漂移）。这类"检查检查工具"的元实践很少见。建议未来把 C5 的一致性断言做成同类元检查。
+6. **CI 有自研一致性元检查**——[.github/workflows/ci.yml#L64-L70](https://github.com/ruoxizhnya/tellurion/blob/main/.github/workflows/ci.yml)：`check_doc_links.py`（文档死链）+ `check_deploy_consistency.py`（compose ↔ k8s 漂移）。这类"检查检查工具"的元实践很少见。建议未来把 C5 的一致性断言做成同类元检查。
 
 ---
 
@@ -529,7 +529,7 @@ ports:
 | "`contracts/` 契约目录不存在（D1）" | **误报**。Glob 实测存在 4 个文件：`profile.schema.json`、`snapshot.schema.json`、`fundamentals_detail.schema.sql`、`field_dictionary.yaml` | 剔除 |
 | "MockTrader 撕裂写，Critical（D4）" | **降级 High（H5）**。确证数据竞争，但两读者写入同一确定值（同一 PriceProvider），无数据损坏 | 降级并改写定性 |
 | "`order_manager.go` 锁外读共享字段（D4）" | **误报**。42 处访问逐条核对均在锁内，`syncOrderStatus` 是标准 copy-under-lock | 剔除 |
-| "ETL 写不存在表 → 静默丢数（D3）" | **修正**。[etl.go#L114-L123](../../../pkg/data/source/etl.go#L114-L123) 错误上抛，是响亮失败非静默丢失（危害仍在——开箱不可用——但故障模式不同，影响排障方式） | 修正表述后保留为 C5 |
+| "ETL 写不存在表 → 静默丢数（D3）" | **修正**。[etl.go#L114-L123](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/data/source/etl.go) 错误上抛，是响亮失败非静默丢失（危害仍在——开箱不可用——但故障模式不同，影响排障方式） | 修正表述后保留为 C5 |
 
 ---
 
@@ -656,7 +656,7 @@ ports:
 
 ## 16. 修复实施方案（2026-09-21 增补）
 
-> 落地前已核实现行签名：`staticcheck.CheckOrError(code string) error`（[staticcheck.go#L210](../../../internal/sandbox/staticcheck/staticcheck.go#L210)）、`backtest.NewEngine(v *viper.Viper, provider marketdata.Provider, logger zerolog.Logger)`（[engine.go#L171](../../../pkg/backtest/engine.go#L171)）、`ToolInfo` 位于 `pkg/tools/tool.go#L112`（无副作用字段；AGENTS.md 所写 `pkg/tools/server.go` 不存在，属又一处文档漂移）。
+> 落地前已核实现行签名：`staticcheck.CheckOrError(code string) error`（[staticcheck.go#L210](../../../internal/sandbox/staticcheck/staticcheck.go#L210)）、`backtest.NewEngine(v *viper.Viper, provider marketdata.Provider, logger zerolog.Logger)`（[engine.go#L171](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/backtest/engine.go)）、`ToolInfo` 位于 `pkg/tools/tool.go#L112`（无副作用字段；AGENTS.md 所写 `pkg/tools/server.go` 不存在，属又一处文档漂移）。
 
 ### 16.0 全局约定
 
@@ -705,7 +705,7 @@ filePath := filepath.Join("./pkg/strategy/plugins", "strategy_"+req.StrategyName
 
 #### Commit 2（AUD-02 / C4）RBAC 接线
 
-**文件**：[handlers_execution.go](../../../cmd/analysis/handlers_execution.go)、[handlers_tools.go](../../../cmd/analysis/handlers_tools.go)
+**文件**：[handlers_execution.go](https://github.com/ruoxizhnya/tellurion/blob/main/cmd/analysis/handlers_execution.go)、[handlers_tools.go](../../../cmd/analysis/handlers_tools.go)
 
 ```go
 // execution：三个动作端点挂角色（GET 保持任何已认证用户）
@@ -725,13 +725,13 @@ if !ok { minRole = auth.RoleAdmin }
 // 已认证用户 role < minRole → 403
 ```
 
-**实施时必须验证的一处**：[setup.go#L626-L629](../../../cmd/analysis/setup.go#L626-L629) 只在 `authSvc.Enabled()` 时挂 Middleware；auth disabled（本地 dev）时 RequireRole 不应生效。方案：RequireRole 检查 context 中无认证链标记时直接放行，或在 disabled 分支改挂 no-op 版本——以 `pkg/auth` 现有测试（`TestRequireRole_NoUser_401`）为准做兼容设计。
+**实施时必须验证的一处**：[setup.go#L626-L629](https://github.com/ruoxizhnya/tellurion/blob/main/cmd/analysis/setup.go) 只在 `authSvc.Enabled()` 时挂 Middleware；auth disabled（本地 dev）时 RequireRole 不应生效。方案：RequireRole 检查 context 中无认证链标记时直接放行，或在 disabled 分支改挂 no-op 版本——以 `pkg/auth` 现有测试（`TestRequireRole_NoUser_401`）为准做兼容设计。
 
 **测试**：viewer 下单 403 / trader 下单 200 / viewer 调写型工具 403 / 调只读工具 200 / auth disabled 全放行 / legacy 路径与 `/api` 路径行为一致。
 
 #### Commit 3（AUD-03 / C1）日收益率公式
 
-**文件**：[pkg/backtest/metrics/performance.go#L84-L97](../../../pkg/backtest/metrics/performance.go#L84-L97)
+**文件**：[pkg/backtest/metrics/performance.go#L84-L97](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/backtest/metrics/performance.go)
 
 ```go
 // CalculateReturns calculates daily returns from portfolio values.
@@ -764,7 +764,7 @@ func CalculateReturns(portfolioValues []domain.PortfolioValue) []float64 {
 
 #### Commit 4（AUD-04 / C2）walk-forward runner 工厂化
 
-**文件**：[pkg/backtest/walkforward/walkforward.go](../../../pkg/backtest/walkforward/walkforward.go)、[cmd/analysis/setup.go#L342](../../../cmd/analysis/setup.go#L342)
+**文件**：[pkg/backtest/walkforward/walkforward.go](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/backtest/walkforward/walkforward.go)、[cmd/analysis/setup.go#L342](https://github.com/ruoxizhnya/tellurion/blob/main/cmd/analysis/setup.go)
 
 ```go
 // 字段与构造器：共享实例 → 工厂
@@ -812,11 +812,11 @@ func TestTableMapper_TablesDeclaredInInlineDDL(t *testing.T) {
 
 #### Commit 6（AUD-13 / H9）compose 端口绑定
 
-[docker-compose.yml](../../../docker-compose.yml)：`"5432:5432"` → `"127.0.0.1:5432:5432"`、`"6379:6379"` → `"127.0.0.1:6379:6379"`。**验证**：容器启动后从宿主机 `Test-NetConnection localhost -Port 5432` 通、同网段另一主机探测不通。Redis 密码（D-3）另立任务。
+[docker-compose.yml](https://github.com/ruoxizhnya/tellurion/blob/main/docker-compose.yml)：`"5432:5432"` → `"127.0.0.1:5432:5432"`、`"6379:6379"` → `"127.0.0.1:6379:6379"`。**验证**：容器启动后从宿主机 `Test-NetConnection localhost -Port 5432` 通、同网段另一主机探测不通。Redis 密码（D-3）另立任务。
 
 #### Commit 7（AUD-12 / H8）CI 门禁
 
-[ci.yml](../../../.github/workflows/ci.yml)：
+[ci.yml](https://github.com/ruoxizhnya/tellurion/blob/main/.github/workflows/ci.yml)：
 1. Test step → `go test ./... -count=1 -race`；
 2. 新增 frontend job：node 20 → `npm ci` → `npm run lint` → `npm run typecheck` → `npm test`；
 3. 可选：`gofmt -l .` 非空即 fail。
@@ -827,11 +827,11 @@ func TestTableMapper_TablesDeclaredInInlineDDL(t *testing.T) {
 
 #### Commit 8（AUD-06 / H1）印花税
 
-[ashare.go#L49-L53](../../../pkg/fees/ashare.go#L49-L53)：`DefaultStampTaxRate = 0.0005`，注释改为 *"0.1% halved to 0.05% effective 2023-08-28 (CSRC [2023] No. 17)"*。**测试**：断言常量 0.0005 + 卖出 100,000 元印花税 = 50 元。**波及**：grep 存量断言 `0.001` 的费用测试——这些测试此前固化了错误值，一并修正。
+[ashare.go#L49-L53](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/fees/ashare.go)：`DefaultStampTaxRate = 0.0005`，注释改为 *"0.1% halved to 0.05% effective 2023-08-28 (CSRC [2023] No. 17)"*。**测试**：断言常量 0.0005 + 卖出 100,000 元印花税 = 50 元。**波及**：grep 存量断言 `0.001` 的费用测试——这些测试此前固化了错误值，一并修正。
 
 #### Commit 9（AUD-07 / H2）板块涨跌停分档 + 取整
 
-[engine_daily.go#L168-L178](../../../pkg/backtest/engine_daily.go#L168-L178) 抽出纯函数：
+[engine_daily.go#L168-L178](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/backtest/engine_daily.go) 抽出纯函数：
 
 ```go
 func resolvePriceLimit(symbol, name string, tradeDays int, cfg PriceLimitConfig) float64 {
@@ -849,11 +849,11 @@ func resolvePriceLimit(symbol, name string, tradeDays int, cfg PriceLimitConfig)
 }
 ```
 
-上/下限价各做 `math.Round(x*100)/100` 后再参与 `>=`/`<=` 比较（[engine_daily.go#L175-L178](../../../pkg/backtest/engine_daily.go#L175-L178) 的 `limitPrice` 同步取整）。**测试**：表驱动 600/000/002/300/688/830 × {Normal, ST, *ST, 新股}；取整用例 prevClose=10.05 → 上限 11.06。**波及**：`Config` struct + `config/*.yaml` 示例 + SPEC 文档同步。
+上/下限价各做 `math.Round(x*100)/100` 后再参与 `>=`/`<=` 比较（[engine_daily.go#L175-L178](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/backtest/engine_daily.go) 的 `limitPrice` 同步取整）。**测试**：表驱动 600/000/002/300/688/830 × {Normal, ST, *ST, 新股}；取整用例 prevClose=10.05 → 上限 11.06。**波及**：`Config` struct + `config/*.yaml` 示例 + SPEC 文档同步。
 
 #### Commit 10（AUD-08 / H3+H4，同一 commit）*ST 识别 + 测试断言修正
 
-[engine.go#L1502-L1508](../../../pkg/backtest/engine.go#L1502-L1508)：
+[engine.go#L1502-L1508](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/backtest/engine.go)：
 
 ```go
 func hasSTPrefix(name string) bool {
@@ -866,7 +866,7 @@ func hasSTPrefix(name string) bool {
 }
 ```
 
-[engine_accessors_test.go#L286-L290](../../../pkg/backtest/engine_accessors_test.go#L286-L290) 同 commit 修正：`{"*STXYZ.SH", true}`、`{"SSTXXX.SZ", true}`、`{"S*STX.SZ", true}`、`{"平安银行", false}`。**必须与 H3 同 commit**（H4 固化了 H3 的 bug，分开提交会造成中途红灯）。
+[engine_accessors_test.go#L286-L290](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/backtest/engine_accessors_test.go) 同 commit 修正：`{"*STXYZ.SH", true}`、`{"SSTXXX.SZ", true}`、`{"S*STX.SZ", true}`、`{"平安银行", false}`。**必须与 H3 同 commit**（H4 固化了 H3 的 bug，分开提交会造成中途红灯）。
 
 #### Commit 11（AUD-09 / H6）整手取整
 
@@ -874,7 +874,7 @@ func hasSTPrefix(name string) bool {
 
 #### Commit 12（AUD-10 / H5）MockTrader 值拷贝
 
-[mock_trader.go#L301-L338](../../../pkg/live/mock_trader.go#L301-L338)：`GetPositions`/`GetAccount` 在 RLock 内构造**值拷贝**后再写 `CurrentPrice`（写只发生在局部副本）：
+[mock_trader.go#L301-L338](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/live/mock_trader.go)：`GetPositions`/`GetAccount` 在 RLock 内构造**值拷贝**后再写 `CurrentPrice`（写只发生在局部副本）：
 
 ```go
 cp := *pos            // 值拷贝，非共享指针
@@ -898,7 +898,7 @@ out = append(out, cp)
 #### Commit 15（AUD-15 / M5+M6）测试与防御
 
 - 删除 [e2e/tests/ai-research.spec.ts](../../../e2e/tests/ai-research.spec.ts)（:8086 已随 cmd/ai 删除）；AI 能力 E2E 改走 `/api/tools/*` 另立任务；
-- [fundamentals_detail](../../../pkg/storage/postgres.go#L333) 读取处加空集防御：行数 0 → 显式错误/告警，杜绝纵向因子静默拿空集。
+- [fundamentals_detail](https://github.com/ruoxizhnya/tellurion/blob/main/pkg/storage/postgres.go) 读取处加空集防御：行数 0 → 显式错误/告警，杜绝纵向因子静默拿空集。
 
 ### 16.6 顺序依赖与总验证
 

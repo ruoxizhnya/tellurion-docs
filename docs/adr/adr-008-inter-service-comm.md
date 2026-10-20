@@ -51,7 +51,7 @@ All inter-service communication is synchronous HTTP blocking.
 
 ## Review
 
-Implementation tracked in [TASKS.md §Sprint 6](../TASKS.md) tasks P1-15 (Service Merge).
+Implementation tracked in [TASKS.md §Sprint 6](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md) tasks P1-15 (Service Merge).
 
 ## Related
 

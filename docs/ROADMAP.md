@@ -7,7 +7,7 @@ supersedes: archive/ROADMAP-history.md（Phase 1-4 / Sprint 1-8）
 
 # ROADMAP — 阶段规划
 
-> 任务明细见 [TASKS.md](TASKS.md) · 定位见 [PRODUCT.md](PRODUCT.md) · 架构见 [ARCHITECTURE.md](ARCHITECTURE.md)
+> 任务明细见 [TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md) · 定位见 [PRODUCT.md](PRODUCT.md) · 架构见 [ARCHITECTURE.md](ARCHITECTURE.md)
 
 ---
 

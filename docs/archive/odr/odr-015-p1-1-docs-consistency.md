@@ -33,7 +33,7 @@ ODR-013 审查 (CQ-005/009) 标记 3 处文档冲突:
    (single source of truth, P1-24 拆出)。
 
 2. **Phase 3/4 编号映射** (而非破坏性 renumber): VISION.md 内部使用
-   5-phase roadmap (Phase 1-5), 与 [AGENTS.md](../../../AGENTS.md) /
+   5-phase roadmap (Phase 1-5), 与 [AGENTS.md](https://github.com/ruoxizhnya/tellurion/blob/main/AGENTS.md) /
    [ROADMAP.md](../../ROADMAP.md) / [archive/tasks-phase-2.md](../tasks-phase-2.md)
    的 canonical 4-phase 编号 (Phase 3 = Integration, Phase 4 = AI-Native)
    存在 **off-by-1 偏移**。最简最小破坏方案:

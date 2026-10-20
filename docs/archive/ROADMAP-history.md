@@ -5,12 +5,12 @@
 > **Last Updated:** 2026-05-03
 > **Created:** 2026-03-24
 > **Owner:** 龙少 (Longshao) — AI Assistant / Product Manager
-> **Related:** [VISION.md](../VISION.md) (product), [TEST.md](../TEST.md) (quality), [TASKS.md](../TASKS.md) (current tasks)
+> **Related:** [VISION.md](../VISION.md) (product), [TEST.md](../TEST.md) (quality), [TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md) (current tasks)
 >
 > **文档使用指南**:
 > | 需求 | 应查阅文档 |
 > |------|-----------|
-> | **查看当前待办任务** | [TASKS.md](../TASKS.md) |
+> | **查看当前待办任务** | [TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md) |
 > | **了解 Sprint 里程碑** | **本文档** |
 > | **查看历史审查发现** | [archive/NEXT_STEPS.md](NEXT_STEPS.md) |
 >
@@ -170,7 +170,7 @@ This roadmap covers all sprints for **Phase 1** (Foundation & Accuracy), **Phase
 
 **Status: Phase 3 COMPLETE — Core Complete, Quality Optimization**
 
-> **当前任务追踪**: 详见 [TASKS.md](../TASKS.md) Phase 3 实施任务 (D1-D7)
+> **当前任务追踪**: 详见 [TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md) Phase 3 实施任务 (D1-D7)
 
 ### Phase 3 已完成项
 
@@ -253,7 +253,7 @@ This roadmap covers all sprints for **Phase 1** (Foundation & Accuracy), **Phase
 | Sprint | Focus | Duration | Key Deliverables | Dependencies |
 |--------|-------|----------|-----------------|-------------|
 | **Sprint 7** | AI Infrastructure | 2 weeks | Expression Engine, Backtest Client, Research Agent MVP | Phase 3 ✅ |
-| **Sprint 8** | 统一研究平台落地 (ADR-022) | — | L0 单一数据面 + 工作面 1（EquityDeep）跑通 + 飞轮闭环 —— 阶段 P1~P5, 详见 [TASKS.md](../TASKS.md) Sprint 8 | Sprint 7 |
+| **Sprint 8** | 统一研究平台落地 (ADR-022) | — | L0 单一数据面 + 工作面 1（EquityDeep）跑通 + 飞轮闭环 —— 阶段 P1~P5, 详见 [TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md) Sprint 8 | Sprint 7 |
 | **Sprint 9** | Strategy Generation | 2 weeks | Strategy templates, Code generation pipeline, Strategy Workshop UI | Sprint 8 |
 | **Sprint 10** | Optimization & Evolution | 2 weeks | AutoML parameter tuning, Genetic algorithm, Drift detection | Sprint 9 |
 | **Sprint 11** | Live Trading & Integration | 2 weeks | ExecutionService abstraction, Paper trading, Live Engine | Sprint 7 |

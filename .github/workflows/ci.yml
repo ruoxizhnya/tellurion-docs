@@ -1,0 +1,22 @@
+name: docs
+
+# 纯文档仓的唯一门禁：链接不许烂。
+# 活跃层（README / docs 顶层 / guides / design）断链 = 红；
+# 历史层（docs/adr / docs/archive）只打印计数，不判红 —— 它们是只读档案，
+# 指向已删除的源码文件属于预期（见 docs/TASKS.md DOC-05）。
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Check markdown links
+        run: python tools/check_doc_links.py

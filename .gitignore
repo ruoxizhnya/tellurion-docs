@@ -1,0 +1,13 @@
+# 本仓是纯文档仓，没有构建产物；只忽略编辑器与系统垃圾。
+.DS_Store
+Thumbs.db
+.desktop
+
+# 编辑器
+.idea/
+.vscode/
+*.swp
+*~
+
+# 链接检查的本地输出
+.doc-links-report.txt

@@ -43,17 +43,17 @@ Revisit when: legacy HTML pages are fully removed from the codebase.
 ## Update (2026-09-22)
 
 **The revisit condition above is now met** — legacy HTML was removed in
-[AUD-33](../TASKS.md): the 6 files under `cmd/analysis/static/`, the 10 HTML
+[AUD-33](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md): the 6 files under `cmd/analysis/static/`, the 10 HTML
 routes plus the `/static` mount in `cmd/analysis/main.go`, and the 4 no-prefix
 data mirrors in `cmd/analysis/handlers_proxy.go`.
 
 It took **two** changes, in this order — which is the part worth recording:
 
-1. [AUD-32](../TASKS.md) gave the SPA an actual deployment (nginx on host port
+1. [AUD-32](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md) gave the SPA an actual deployment (nginx on host port
    8080). Until then `web/` could only run under `npm run dev` on `:5173`, so the
    legacy pages were the *only* server-side UI — deleting them would have left
    `:8085` serving nothing but API responses.
-2. [AUD-33](../TASKS.md) then deleted the legacy pages.
+2. [AUD-33](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md) then deleted the legacy pages.
 
 This ADR said "deprecated ... should not be modified" but never scheduled the
 removal. That gap — deprecated with no date — is exactly where

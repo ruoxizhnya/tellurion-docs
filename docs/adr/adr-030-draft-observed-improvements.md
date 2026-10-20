@@ -5,7 +5,7 @@
 > **路径注记（2026-10-09）**：本文出现的 `pkg/ai/expression` 现为 **`pkg/expression`**、`pkg/ai/contracts` 现为 **`pkg/backtest/contracts`**（ADR-027 §5 第 3 步已执行）；正文保留 2026-10-07 时点的取证记录。
 > **Date**: 2026-10-07
 >
-> **吸收状态（2026-10-08）**：本清单是 [design/kernel/target-architecture-modular-kernel.md](../design/kernel/target-architecture-modular-kernel.md)（模块化内核目标架构，D1–D5 已拍板）的直接输入。**已被吸收 / 裁决**：OBS-02 / 03 / 04 → 数据契约与 msgbus（同步分发）；OBS-05 → D2（能用 L2 不上 L3）；OBS-13 → D1（实盘-ready）；OBS-15 → eventstore（先记录后分发）。**未吸收、留作独立工单**：OBS-01（空票池假成功，最高优先级）/ OBS-06 / 07 / 08 / 09 / 10 / 11 / 12；OBS-14 为外部先例参考（非工单）。
+> **吸收状态（2026-10-08）**：本清单是 [design/kernel/target-architecture-modular-kernel.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/design/kernel/target-architecture-modular-kernel.md)（模块化内核目标架构，D1–D5 已拍板）的直接输入。**已被吸收 / 裁决**：OBS-02 / 03 / 04 → 数据契约与 msgbus（同步分发）；OBS-05 → D2（能用 L2 不上 L3）；OBS-13 → D1（实盘-ready）；OBS-15 → eventstore（先记录后分发）。**未吸收、留作独立工单**：OBS-01（空票池假成功，最高优先级）/ OBS-06 / 07 / 08 / 09 / 10 / 11 / 12；OBS-14 为外部先例参考（非工单）。
 > **Category**: Architecture / Governance
 > **Related**: [ADR-023](adr-023-ai-experimenter-lab.md) · [ADR-024](adr-024-expression-as-execution-target.md) ·
 > [ADR-027](adr-027-modular-decomposition-to-independent-services.md) ·
@@ -218,7 +218,7 @@ ADR-028 附录 B 已逐条判为「真能力缺口」：
 - **后果**：AI 挖因子在空表上**静默产出垃圾**，与 OBS-01 同源。
 - **建议**：`SeriesSpec` 增加 `availability`（行数 / 标的覆盖率 / 最后更新日期），
   DAG 求值前对不可用序列 **fail-loud**；`Provider.GetSeries` 在缺失时返回明确错误而非空切片。
-- **执行状态（2026-10-09）**：**切片 1 已完成**（详见 [TASKS.md](../TASKS.md) §三 OBS-08 切片 1）——
+- **执行状态（2026-10-09）**：**切片 1 已完成**（详见 [TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md) §三 OBS-08 切片 1）——
   字段名一侧的「双真相」已消除：`DataProvider` 加 `Fields()` 能力声明、字段注册表带来源
   （market / fundamentals / group）、修误拒（`ps` / `roa` 现被闸门接受）、补实现
   （`revenue` / `profit` 由 `domain.Fundamental` 接线）、清掉 3 个**永不可求值**的假合法字段

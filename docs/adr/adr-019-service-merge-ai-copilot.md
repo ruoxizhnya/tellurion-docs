@@ -128,7 +128,7 @@ type Client struct {
 
 ## Implementation Roadmap
 
-| Sprint | Tasks (见 [TASKS.md §Sprint 6](../TASKS.md)) | Effort |
+| Sprint | Tasks (见 [TASKS.md §Sprint 6](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md)) | Effort |
 |---|---|---|
 | **Sprint 6 P0-4** (1d) | Copilot `WorkingDir` 配置 + 静态分析闸 | Critical |
 | **Sprint 6 P0-1** (1d) | LLMClient interface 化 | Critical |

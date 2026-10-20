@@ -119,4 +119,4 @@
 
 ---
 _ODR created as part of document consolidation operation_
-_See: [TASKS.md](../../TASKS.md) for the unified task tracker_
+_See: [TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md) for the unified task tracker_

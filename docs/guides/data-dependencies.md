@@ -16,7 +16,7 @@ verified-by: 读取 `cmd/data/registry_init.go` / `pkg/data/tushare.go` / `confi
 # P2 数据部分：外部依赖与凭据清单
 
 > 回答两个问题：**P2 剩下的四项数据任务各需要什么外部依赖**、**要配哪些 key**。
-> 部署侧的环境变量名见 [deploy-config.md](deploy-config.md)；任务状态见 [TASKS.md](../TASKS.md)。
+> 部署侧的环境变量名见 [deploy-config.md](deploy-config.md)；任务状态见 [TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md)。
 
 ---
 
@@ -190,7 +190,7 @@ qfq 已落 `ohlcv_daily_qfq`，hfq 未落库（表结构只有一套价格列）
 **「票池被改写」要不要接受？** 不回答就落，拿到的仍是「与 qfq 差十几个百分点、而且差在
 票池上」的另一个数 —— 只不过这次它是**确定性的、可解释的**（不再是路径混沌）。
 **21.6pp 也不能读成「前视偏差值 21.6 个百分点」**，它里面含着一块与「前视」无关的成分。
-详见 [TASKS.md](../TASKS.md) 的「P2-8 取证说明」。
+详见 [TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md) 的「P2-8 取证说明」。
 
 积分（`adj_factor` 官方原文）：**2000 积分起，5000 以上可高频调取** —— 与
 `stk_factor`（5000 起）相比门槛低一档。
