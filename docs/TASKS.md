@@ -29,6 +29,7 @@ verified-by: 知识库改造时建立；只登记本仓维护类事项，施工�
 | DOC-06 | `PRODUCT.md` / `VISION.md` 按新定位重写 | ⬜ | 导航里已标"待重写"；需先有产品口径（分仓后单一产品变成"底座 + 实验员 + 前端 + 六服务"） |
 | DOC-07 | 12 仓文档一致性巡检脚本 | ⬜ | 现在靠人眼：每仓应有 `AGENTS.md` + `db-schema` / `api-schema` / `dataflow` + `TASKS` + `adr/` + `odr/`。可写成 `tools/check_repo_docs.py`（与 core 的 `check_repo_autonomy.py` 互补：那边查仓自治，这边查文档齐套） |
 | DOC-08 | `docs/guides/` 按 12 仓更新 | ⬜ | `local-dev.md` / `deploy-config.md` / `data-dependencies.md` 仍是单仓口径（一份 docker-compose），分仓后需说明"同时 checkout 哪些仓"与 `go.work` 的用法 |
+| DOC-09 | ADR-D24/D25/D29/D30 升格为正式 ADR | ⬜ | refactor-plan-review **M9** 修复传播（2026-10-20 登记）：qt-decoupling 设计集里 D24（`ai.*` schema 自持）、D25（载体顺序：M0 市场级先行）、D29（待裁决表压缩/连带 L1）、D30 等仍是「D 序讨论态」条目，需升格为正式 ADR 归档本仓 `adr/`（D31 可视情况并入）。升格时逐条核对与现行裁决一致（含 refactor 修复后的三值口径、依赖方向 `kit ← contracts(含 domain) ← core` 订正），不得照抄已失效假设；源文在 `tellurion:docs/design/qt-decoupling/`（README 待裁决表 + 各设计文档） |
 
 ## 三、跨仓指针（不在本仓，勿双写）
 
