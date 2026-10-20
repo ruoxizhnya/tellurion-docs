@@ -25,7 +25,7 @@
 |---|---|---|---|
 | [`tellurion`](https://github.com/ruoxizhnya/tellurion) | **core** | 回测引擎 / 策略运行时 / 撮合 / 组合结算 / 仪器域存储 / 内核装配。**热路径全在这里，不出进程** | [docs](https://github.com/ruoxizhnya/tellurion/tree/main/docs) |
 | [`tellurion-contracts`](https://github.com/ruoxizhnya/tellurion-contracts) | 库（契约） | 只定义跨边界交换的**形状**：port / DTO / 值对象 / 四契约 / 哨兵错误。**零实现、零 DB** | [docs](https://github.com/ruoxizhnya/tellurion-contracts/tree/main/docs) |
-| [`tellurion-kit`](https://github.com/ruoxizhnya/tellurion-kit) | 库（工具） | 横切工具：logging / errors / decimal / statistics / httpclient / httpserver / auth{z} / observability / clock / sandbox / db。**零业务概念、零表结构** | [docs](https://github.com/ruoxizhnya/tellurion-kit/tree/main/docs) |
+| [`tellurion-kit`](https://github.com/ruoxizhnya/tellurion-kit) | 库（工具） | 横切工具：logging / errors / decimal / statistics / httpclient / httpserver / `auth`+`authz` / observability / clock / sandbox / db。**零业务概念、零表结构** | [docs](https://github.com/ruoxizhnya/tellurion-kit/tree/main/docs) |
 | [`tellurion-agent`](https://github.com/ruoxizhnya/tellurion-agent) | 应用（AI） | AI 实验员：探索 / 生成 / pipeline / 工具注册表。**运行期只走 HTTP 调 core** | [docs](https://github.com/ruoxizhnya/tellurion-agent/tree/main/docs) |
 | [`tellurion-ui`](https://github.com/ruoxizhnya/tellurion-ui) | 应用（前端） | 只消费 HTTP，**不直连库、不复制 openapi** | [docs](https://github.com/ruoxizhnya/tellurion-ui/tree/main/docs) |
 | [`tellurion-data`](https://github.com/ruoxizhnya/tellurion-data) | 服务（触发式） | 数据面唯一入口：connector → 归一化 → 存储 → aggregator；`market` / `ingest` 的 DDL owner | [docs](https://github.com/ruoxizhnya/tellurion-data/tree/main/docs) |
