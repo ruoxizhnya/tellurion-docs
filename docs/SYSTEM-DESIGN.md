@@ -87,9 +87,10 @@ verified-by: 分仓后的总体设计重写（12 仓已建、ADR-D29/D30/D31 已
 | `strategy` | `tellurion-strategy` | 写侧 HTTP / 读侧 resolve | 定义住 core 的 `quant.strategies`（X2 迁） |
 | `risk` | `tellurion-risk` | run 前拉快照（内容寻址）；事件异步回传 | 规则住 core 的 `pkg/risk` + `quant.risk_events`（X3 迁） |
 | `analysis` | `tellurion-analytics` | 只读上游结果，写自己的报告 | 今天在 core `cmd/analysis` 内直接算（X4 迁） |
-| `run` | `tellurion-orchestration` | 任务状态 / artifact 指针 | 今天 `backtest_jobs` 等无 schema 归属（X5 迁） |
+| `run` | `tellurion-orchestration` | 任务状态 / artifact 指针 / **`strategy_state` 检查点**（**不含**订单、成交、持仓——那是 `quant`） | 今天 `backtest_jobs` 等无 schema 归属（X5 迁） |
 | `ai` | `tellurion-agent` | 自持自读 | 今天住 core 的 `quant` + `research`（QT-17 迁） |
-| `quant` | `tellurion`（core） | 只有 core 写 | 运行态真相：订单/成交/持仓/`strategy_state`/快照/对账/`risk_events` |
+| `quant` | `tellurion`（core） | 只有 core 写 | 运行态真相：订单/成交/持仓/组合快照/对账/`risk_events`（`strategy_state` 将迁 `run`） |
+| `audit` | `tellurion`（core，`pkg/eventstore` + `pkg/msgbus`） | 只追加；用于消息重放 | 与 `risk.audit_logs`（人操作审计）**不是一回事** |
 | 无表 | `contracts` / `kit` / `broker` / `ui` | — | 见各仓 `db-schema.md` 的"为什么没有表" |
 
 > 迁移纪律：**按 schema 搬，不按表搬**；每次搬都是"先建第二写者 → 对拍 → 切读 → 停写"，不允许一步切换（QT-17 的四步样板）。
@@ -103,6 +104,8 @@ verified-by: 分仓后的总体设计重写（12 仓已建、ADR-D29/D30/D31 已
 3. **撮合与结算**：需要 bar 级一致性与事务性。
 4. **仪器域存储**（trading calendar / 上市窗口）：被引擎热路径读，且是"偏差维"的口径来源。
 5. **契约实现**：`contracts` 里永远只有形状；一旦出现函数体里的业务判断，边界就没了。
+6. **事件存储与消息总线**（`pkg/eventstore` / `pkg/msgbus`）：拆出去等于把热路径变成远程调用；`audit.message_log` 会被卷进网络抖动。
+7. **订单/成交/持仓的真相**：`quant` 是"钱和仓位发生了什么"，`run` 是"某个任务跑到哪了"。两者事务边界与审计要求不同，**混在一起就再也拆不开**。
 
 **"该不该建一个新仓"的判据**：需要独立伸缩 / 独立部署，**且**只走高频之外路径。逐 bar、逐笔、裁决三条一律不满足 → 不建。
 

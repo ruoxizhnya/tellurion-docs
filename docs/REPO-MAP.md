@@ -19,8 +19,8 @@ verified-by: 与 core `repo-inventory.md`（仓名唯一源）+ 各仓 `AGENTS.m
 | 7 | `tellurion-strategy` | 服务 | `tellurion-strategy` | 策略**资产**：定义 / 版本（`version_hash`）/ artifact 字节码 / resolve | **不计算信号**；不跑回测；不做参数优化 | `strategy` | 写侧 7 端点 + 读侧 2 端点 | 占位（X2） |
 | 8 | `tellurion-risk` | 服务 | `tellurion-risk` | 规则真相源（定义/版本/审批/审计）+ 聚合监控 + 熔断下发 | **同步裁决**（`CheckOrder` 留 core 进程内）；不下单；不碰资金 | `risk` | 规则 5 + 运行 4 + 监控 3 | 占位（X3） |
 | 9 | `tellurion-analytics` | 服务 | `tellurion-analytics` | 指标 / 基准 / Brinson 与因子归因 / 敏感性 / 蒙特卡洛 / 报告导出 | 不生产数据；不改回测结果；**不读时钟、不读随机**（`seed` 必填） | `analysis` | 8 端点（2 个异步） | 占位（X4） |
-| 10 | `tellurion-orchestration` | 服务 | `tellurion-orchestration` | job 队列 / batch / walkforward / worker 注册 / `run_artifacts` 三 hash 留痕 | **不解释结果**、不重算指标、不做风控裁决 | `run` | 任务 4 + 批量 4 + 算力 2 + `/provenance` | 占位（X5） |
-| 11 | `tellurion-broker` | 服务 | `tellurion-broker` | 交易通道适配（`MockTrader` → `XTPTrader`）：下单/撤单/查单/持仓/成交 | 不做风控判断；不改订单内容（除柜台最小单位换算）；**无对账+幂等+熔断不接真钱** | 无（订单/成交/持仓归运行域，`run` vs `exec` 待裁） | `BrokerGateway` port | 占位（X6） |
+| 10 | `tellurion-orchestration` | 服务 | `tellurion-orchestration` | job 队列 / batch / walkforward / worker 注册 / `run_artifacts` 三 hash 留痕 | **不解释结果**、不重算指标、不做风控裁决；**`run` 是任务域，不含订单/持仓** | `run`（含 `strategy_state` 检查点） | 任务 4 + 批量 4 + 算力 2 + `/provenance` | 占位（X5） |
+| 11 | `tellurion-broker` | 服务 | `tellurion-broker` | 交易通道适配（`MockTrader` → `XTPTrader`）：下单/撤单/查单/持仓/成交 | 不做风控判断；不改订单内容（除柜台最小单位换算）；**无对账+幂等+熔断不接真钱**；不做本地交易真相 | 无（订单/成交/持仓在 **core `quant`**；将来建 `exec` 镜像须先立 ADR） | `BrokerGateway` port | 占位（X6） |
 | 12 | `tellurion-docs` | 文档 | — | 总体设计 / 跨领域 ADR / 运维指南 / 历史档案 | 不复制服务仓的 db/api/dataflow；不放过期现状数字 | 无 | 本仓 | 现行 |
 
 ---
@@ -52,6 +52,14 @@ ui ──HTTP──► core
 | **生产代码** | 有真实实现、跑在今天的系统里 |
 | **占位** | 有仓、有边界、有 `go.mod` + `doc.go` + 文档，**无实现**；台账出现本仓单号前不写代码 |
 | **过渡态** | 已生产，但存在已知违反不变量的地方（必须写清是哪一条） |
+
+---
+
+## 归属待裁的事项
+
+有 5 条归属**没定**（`cmd/dualrun`、订单是否建 `exec`、`strategy_state` 迁出的 core 侧义务、`eventstore`/`msgbus`、`testenv`/`testutil`）。
+它们集中登记在 [core `repo-inventory.md` §3.1](https://github.com/ruoxizhnya/tellurion/blob/main/docs/design/qt-decoupling/repo-inventory.md)，
+**单仓文档里只留指针** —— 否则读者不知道该找谁拍。
 
 ---
 
