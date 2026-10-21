@@ -1,7 +1,7 @@
 ---
 status: active
-last-verified: 2026-10-20
-verified-by: 知识库改造时建立；只登记本仓维护类事项，施工单在 core
+last-verified: 2026-10-22
+verified-by: DOC-09 结案（ADR-032~035 四张升格 + 本轮 A/D/E/F/G/H 附录；工单里 D24/D10 的两处描述订正）
 ---
 
 # TASKS — tellurion-docs
@@ -29,7 +29,7 @@ verified-by: 知识库改造时建立；只登记本仓维护类事项，施工�
 | DOC-06 | `PRODUCT.md` / `VISION.md` 按新定位重写 | ⬜ | 导航里已标"待重写"；需先有产品口径（分仓后单一产品变成"底座 + 实验员 + 前端 + 六服务"） |
 | DOC-07 | 12 仓文档一致性巡检脚本 | ⬜ | 现在靠人眼：每仓应有 `AGENTS.md` + `db-schema` / `api-schema` / `dataflow` + `TASKS` + `adr/` + `odr/`。**豁免注记（2026-10-21 裁决，spec 审查 H1/L3）**：core 与本仓豁免三件薄规格与 `adr/0001-*`（API/DB/流程真相由 `tellurion:docs/openapi.yaml` / `tellurion:pkg/storage/postgres.go` / `tellurion:docs/SPEC.md` 直接承载），巡检脚本须实现该豁免分支，不得对两仓报缺件。可写成 `tools/check_repo_docs.py`（与 core 的 `check_repo_autonomy.py` 互补：那边查仓自治，这边查文档齐套） |
 | DOC-08 | `docs/guides/` 按 12 仓更新 | ⬜ | `local-dev.md` / `deploy-config.md` / `data-dependencies.md` 仍是单仓口径（一份 docker-compose），分仓后需说明"同时 checkout 哪些仓"与 `go.work` 的用法 |
-| DOC-09 | ADR-D24/D25/D29/D30 升格为正式 ADR | ⬜ | refactor-plan-review **M9** 修复传播（2026-10-20 登记）：qt-decoupling 设计集里 D24（`ai.*` schema 自持）、D25（载体顺序：M0 市场级先行）、D29（待裁决表压缩/连带 L1）、D30 等仍是「D 序讨论态」条目，需升格为正式 ADR 归档本仓 `adr/`（D31 可视情况并入）。升格时逐条核对与现行裁决一致（含 refactor 修复后的三值口径、依赖方向 `kit ← contracts(含 domain) ← core` 订正），不得照抄已失效假设；源文在 `tellurion:docs/design/qt-decoupling/`（README 待裁决表 + 各设计文档） |
+| DOC-09 | ADR-D24/D25/D29/D30 升格为正式 ADR | ✅（2026-10-22） | 升格为四张：**ADR-032**（D24 模块拓扑与跨进程边界）· **ADR-033**（D25 执行载体落地顺序）· **ADR-034**（D29 分仓拓扑与 S0~S3 阶梯）· **ADR-035**（D30 仓清单与命名，**含本轮待裁决 A/D/E/F/G/H 附录**）。四处失效假设就地标注不得照抄：D24 第 1 条已被 M1/D29 §5 替代（domain 并入 contracts）、R 系列是 R1~R6（源文仍写五条）、host 函数 12 个（原写 13）、D29 的 S1 形态已被 ADR-D31 替代。**两处工单描述订正**：① 本行原称「D24（`ai.*` schema 自持）」——那条内容实为 **D10**（`ai.*` 的 DDL/migrate 归 agent，源文 core `target-module-topology.md` 的 ADR-D10 节），本批按源文实际内容升格，**D10 未列入本轮四张**（要升格请另立单）；② 原称「D29（待裁决表压缩/连带 L1)」，现行 D29 的承重内容是拓扑与 R/C/S 阶梯，待裁决表在 core `README.md` 而非 D29 正文。D31 未并入（它替代的是 D29 的 S1 形态，本身仍是设计集条目，升格与否待单独裁决）。索引表 + `ADR.md` 尾注 + 四份文件头三处一致 |
 
 ## 三、跨仓指针（不在本仓，勿双写）
 
