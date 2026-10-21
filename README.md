@@ -50,6 +50,8 @@
 | 施工顺序与在做什么 | [core `docs/TASKS.md`](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md) |
 | 跨领域架构决策 | 本仓 `docs/adr/`；单仓决策在该仓 `docs/adr/` |
 
+> **豁免声明（2026-10-21 裁决，豁免+声明）**：`core` 与 `tellurion-docs` 豁免随仓三件薄规格（`db-schema` / `api-schema` / `dataflow`）与 `docs/adr/0001-*` 边界裁决单——API / DB / 流程真相直接由 `tellurion:docs/openapi.yaml` / `tellurion:pkg/storage/postgres.go` / `tellurion:docs/SPEC.md` 承载，详见 [docs/REPO-MAP.md](docs/REPO-MAP.md)。
+
 ---
 
 ## 四、本仓目录

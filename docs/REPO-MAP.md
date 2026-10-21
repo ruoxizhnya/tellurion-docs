@@ -1,7 +1,7 @@
 ---
 status: evergreen
-last-verified: 2026-10-20
-verified-by: 与 core `repo-inventory.md`（仓名唯一源）+ 各仓 `AGENTS.md` / `docs/db-schema.md` 逐条对齐
+last-verified: 2026-10-21
+verified-by: 系统规格审查（2026-10-21）修正依赖图箭头方向与四件套口径 + 同日用户裁决 H1/L3（core 与本仓豁免三件薄规格与 `adr/0001` 边界裁决单，豁免+声明）；此前与 core `repo-inventory.md`（仓名唯一源）+ 各仓 `AGENTS.md` / `docs/db-schema.md` 逐条对齐
 ---
 
 # 仓地图（REPO MAP）
@@ -28,13 +28,16 @@ verified-by: 与 core `repo-inventory.md`（仓名唯一源）+ 各仓 `AGENTS.m
 ## 依赖方向（只有这些边）
 
 ```
-kit ← contracts ← core ← (HTTP) ← agent
-                     ↑
-                     ├── HTTP ── data / strategy / risk / analytics / orchestration / broker
-                     └── 版本依赖（require）
-
-ui ──HTTP──► core
+ui ──(HTTP)──► core ◄──(HTTP)── agent
+                │
+                ├──(HTTP，run 前 / 异步)──► data / strategy / risk / analytics / orchestration / broker
+                └──(require)──► contracts ──(require)──► kit
 ```
+
+> **箭头图例**：`A ──► B` = A 调用 / 依赖 B，箭头指向**被调方**（与下表「从 → 到」同向）。
+> 六服务的 HTTP 边一律是 **core → 各服务的「对外面」**（run 前取数 / 异步派活），
+> 六服务在此是**被调方** —— 与上表「对外面」列、各仓 `docs/ARCHITECTURE.md` §5
+> 的读侧（引擎读服务端点）同向。
 
 | 边 | 机制 | 违反的后果 |
 |---|---|---|
@@ -67,6 +70,6 @@ ui ──HTTP──► core
 
 ## 每仓文档入口
 
-每仓都有同一套结构：`AGENTS.md`（行为入口）+ `docs/README.md`（导航）+ `docs/TASKS.md`（本仓台账）+ `docs/ARCHITECTURE.md` + `docs/{db-schema,api-schema,dataflow}.md` + `docs/adr/` + `docs/odr/`。
+每仓都有同一套结构：`AGENTS.md`（行为入口）+ `docs/README.md`（导航）+ `docs/TASKS.md`（本仓台账）+ `docs/ARCHITECTURE.md` + `docs/adr/` + `docs/odr/`。其中 10 仓另有 `docs/{db-schema,api-schema,dataflow}.md`（四件套齐全）；**core 与本仓豁免三件薄规格（2026-10-21 裁决：豁免+声明，不补件）**——API / DB / 流程真相直接由 `tellurion:docs/openapi.yaml` / `tellurion:pkg/storage/postgres.go`（内联 DDL）/ `tellurion:docs/SPEC.md` 承载。同裁决**一并豁免 `docs/adr/0001-*` 边界裁决单**（其余 10 仓有）：core 的边界裁决在 `tellurion:docs/design/qt-decoupling/`（ADR-D 系），本仓边界即本文件与跨领域 `docs/adr/`。
 
 **逐仓直达链接见 [SERVICE-INDEX.md](SERVICE-INDEX.md)。**

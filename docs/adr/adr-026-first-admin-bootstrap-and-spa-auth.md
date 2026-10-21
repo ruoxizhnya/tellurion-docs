@@ -3,7 +3,7 @@
 > **Status**: Accepted
 > **Date**: 2026-09-25
 > **Category**: Architecture / Security / Frontend
-> **Related**: [ADR-017](adr-017-observability-and-auth.md)（API 鉴权 / RBAC / 审计）· [ADR-025](adr-025-auth-exposure-publish-layer.md)（open-access 的发布层判据）· [TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md)（AUD-52 的收尾项）· [guides/local-dev.md](../guides/local-dev.md)
+> **Related**: [ADR-017](adr-017-observability-and-auth.md)（API 鉴权 / RBAC / 审计）· [ADR-025](adr-025-auth-exposure-publish-layer.md)（open-access 的发布层判据）· `tellurion:docs/TASKS.md`（AUD-52 的收尾项）· [guides/local-dev.md](../guides/local-dev.md)
 > **Upstream**: 用户（若曦）2026-09-25 决策（「一次性 HTTP 引导（推荐）」+「去做让前端 UI 可用的项目」）
 
 ---

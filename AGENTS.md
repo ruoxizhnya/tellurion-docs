@@ -59,7 +59,7 @@ python tools/check_doc_links.py --all    # 连历史层明细一起看
 | 仓名与 module path | [core `repo-inventory.md`](https://github.com/ruoxizhnya/tellurion/blob/main/docs/design/qt-decoupling/repo-inventory.md) | 唯一名字源 |
 | 拓扑 / R1~R6 / C1~C5 / S0~S3 | [core `repo-topology-and-naming.md`](https://github.com/ruoxizhnya/tellurion/blob/main/docs/design/qt-decoupling/repo-topology-and-naming.md) | 唯一拓扑源 |
 | 施工顺序 | [core `docs/TASKS.md`](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md) | 唯一台账 |
-| 各仓表 / 接口 / 链路 | 各仓 `docs/{db-schema,api-schema,dataflow}.md` | 本仓只索引 |
+| 各仓表 / 接口 / 链路 | 各仓 `docs/{db-schema,api-schema,dataflow}.md`（core 与本仓豁免，真相直接承载，见 REPO-MAP） | 本仓只索引 |
 
 ## 6. 台账入口
 

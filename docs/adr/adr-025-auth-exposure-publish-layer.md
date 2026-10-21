@@ -3,7 +3,7 @@
 > **Status**: Accepted
 > **Date**: 2026-09-25
 > **Category**: Architecture / Security
-> **Related**: [ADR-017](adr-017-observability-and-auth.md)（API 鉴权）· [ADR-019](adr-019-service-merge-ai-copilot.md) · [ODR-021](../archive/odr/odr-021-p1-15-service-merge-risk-execution.md)（risk+execution 并入 analysis）· [TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md) AUD-52
+> **Related**: [ADR-017](adr-017-observability-and-auth.md)（API 鉴权）· [ADR-019](adr-019-service-merge-ai-copilot.md) · [ODR-021](../archive/odr/odr-021-p1-15-service-merge-risk-execution.md)（risk+execution 并入 analysis）· `tellurion:docs/TASKS.md` AUD-52
 > **Upstream**: 用户（若曦）2026-09-25 决策（「两段都修」+「端口仅 127.0.0.1 发布」）
 
 ---

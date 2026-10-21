@@ -138,7 +138,7 @@ verified-by: 分仓后的总体设计重写（12 仓已建、ADR-D29/D30/D31 已
 | R3 | 有行为入口 | 仓根 `AGENTS.md`（构建/边界/依赖版本/禁止事项/台账指针） |
 | R4 | 有任务台账 | 本仓 `docs/TASKS.md` 只放本仓可完成的单 |
 | R5 | 契约是版本依赖 | 升级 = 改 `require` + 跑测试，不需读契约仓源码 |
-| R6 | 功能边界有契约 | `docs/{db-schema,api-schema,dataflow}.md` 三份存在且非空 |
+| R6 | 功能边界有契约 | `docs/{db-schema,api-schema,dataflow}.md` 三份存在且非空（**core 与本仓豁免**，2026-10-21 裁决：真相由 `openapi.yaml` / `postgres.go` / `SPEC.md` 直接承载，见 REPO-MAP） |
 | C1~C5 | 跨仓规则 | 只认 tag / `go.work` 不入库 / 契约变更由使用方触发 / 准入 ≥2 使用方 / breaking 保留一个版本周期 |
 
 > 权威定义在 [core `repo-topology-and-naming.md`](https://github.com/ruoxizhnya/tellurion/blob/main/docs/design/qt-decoupling/repo-topology-and-naming.md) §2 与 §9；本文只做摘要，冲突时以那份为准。
@@ -152,5 +152,5 @@ verified-by: 分仓后的总体设计重写（12 仓已建、ADR-D29/D30/D31 已
 | 每个仓拥有什么、依赖谁 | [REPO-MAP.md](REPO-MAP.md) |
 | 某功能该放哪个仓 | [SERVICE-INDEX.md](SERVICE-INDEX.md) |
 | 决策为什么这么定 | [ADR.md](ADR.md) / `adr/`（跨领域）+ 各仓 `docs/adr/`（单仓） |
-| 具体表 / 接口 / 链路 | 各仓 `docs/db-schema.md` · `api-schema.md` · `dataflow.md` |
+| 具体表 / 接口 / 链路 | 各仓 `docs/db-schema.md` · `api-schema.md` · `dataflow.md`（core 与本仓豁免，见 REPO-MAP） |
 | 施工顺序 | [core `docs/TASKS.md`](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md) |

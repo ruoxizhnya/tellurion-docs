@@ -209,7 +209,7 @@ NT 定位扩展——从「权重回放对拍考官」升格为**完整第二核
 |------|-----------|----------|------|------|
 | analysis-service | 8085 | 8085 | 回测 API 网关 + in-process risk/execution | ✅ 运行中 |
 | data-service | 8081 | 8081 | 数据同步 + 选股 API | ✅ 运行中 |
-| strategy-service | 8082 | - | 外部策略服务（备用）| 🔄 备用 |
+| ~~strategy-service~~ | ~~8082~~ | - | ~~外部策略服务（备用）~~ — **已删除**（2026-10-17，`tellurion:docs/ARCHITECTURE.md` REV-16）：OBS-11 删掉信号端点后只剩 `/health` 与恒空的 `/strategies`，零调用方；ADR-012 已关闭 | ❌ 不存在 |
 | ~~ai-research-service~~ | ~~8086~~ | - | ~~AI 研究服务~~ — **已删除**（2026-09-18，TASKS P2-5）：零调用方且建在废弃交互层上 | ❌ 不存在 |
 | postgres | 5432 | - | 数据库 | ✅ 运行中 |
 | redis | 6379 | - | 缓存层 | ✅ 运行中 |
@@ -743,7 +743,7 @@ tellurion/
 ├── cmd/
 │   ├── analysis/        — 回测/分析服务 (:8085，纯 API；UI 见 web/)
 │   ├── data/           — 数据同步服务 (:8081)
-│   └── strategy/       — 外部策略服务 (:8082, 备用)
+│   └── strategy/       — 外部策略服务 (:8082, 备用)（已删除 2026-10-17，core REV-16）
 ├── pkg/
 │   ├── backtest/       — 回测引擎
 │   │   ├── engine.go    — 主引擎 (因子缓存预热 + 股息/送股 + 指数成分股)
@@ -1045,10 +1045,15 @@ var bar market.OHLCV
 > ⚠️ 原文此处写的是 `cmd/ai/main.go` (:8086)。该服务已于 2026-09-18 删除
 > （TASKS P2-5）：它只有 2 个端点且零调用方，建在废弃交互层的定位上。
 > AI 能力现在由 `cmd/analysis` 的 MCP 工具层（20 个工具）承载。
+>
+> ⚠️ **（2026-10-21 补注）此注也已失效**：`:8086` 后又复活为 ai-service ——
+> Hermes AI 实验员（L3 编排层，ADR-027 拆仓后源码在 `tellurion-agent:cmd/ai`）。
+> 因此下文「AI 能力由 `cmd/analysis` 承载」「AI 能力不由独立服务承载」两处表述
+> 随之失效；现状以 `tellurion:docs/ARCHITECTURE.md` §1 服务拓扑为准（同本文顶部横幅）。
 
 ### 服务架构
 
-AI 能力不由独立服务承载——`cmd/ai` (:8086) 已于 2026-09-18 删除（TASKS P2-5，零调用方）。现状链路：**外部 Hermes Agent → MCP 工具层（`/api/tools`，`cmd/analysis` :8085）→ 能力实现**（回测 / 因子 / 验证器链）。`pkg/ai/` 内的 Go-native agent（Generate/Validate/Evolve）已在 [ODR-046](archive/odr/odr-046-hermes-agent-integration-decision.md) 标记 deprecated，保留向后兼容。
+⚠️ **（本段已失效，见上注）** AI 能力不由独立服务承载——`cmd/ai` (:8086) 已于 2026-09-18 删除（TASKS P2-5，零调用方）。现状链路：**外部 Hermes Agent → MCP 工具层（`/api/tools`，`cmd/analysis` :8085）→ 能力实现**（回测 / 因子 / 验证器链）。`pkg/ai/` 内的 Go-native agent（Generate/Validate/Evolve）已在 [ODR-046](archive/odr/odr-046-hermes-agent-integration-decision.md) 标记 deprecated，保留向后兼容。
 
 ### 核心组件
 
