@@ -7,7 +7,7 @@ verified-by: 知识库改造时建立；只登记本仓维护类事项，施工�
 # TASKS — tellurion-docs
 
 > **本仓台账只放"知识库维护"**：导航、坏链、过时声明、索引补齐。
-> **跨仓施工任务不在这里**——它们在 [core `docs/TASKS.md`](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md)。建单前先问：这件事是不是"改文档结构"？不是就别在本仓建。
+> **跨仓施工任务不在这里**——它们在 [`tellurion:docs/TASKS.md`](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md)。建单前先问：这件事是不是"改文档结构"？不是就别在本仓建。
 
 ## 一、状态图例
 
