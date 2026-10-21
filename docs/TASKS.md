@@ -25,7 +25,7 @@ verified-by: 知识库改造时建立；只登记本仓维护类事项，施工�
 | DOC-02 | 总体层三份建立 | ✅ | `SYSTEM-DESIGN.md`（分层 / 四条主链路 / 数据归属 / 边界原则 / 阶梯）+ `REPO-MAP.md` + `SERVICE-INDEX.md` |
 | DOC-03 | `ARCHITECTURE.md` 降级为历史 Reference | ✅ | 顶部留指针指向 `SYSTEM-DESIGN.md`；导航行改标"拆仓前历史 Reference（端口/表数已失效）" |
 | DOC-04 | 链接检查进 CI | ✅ | `tools/check_doc_links.py` + `.github/workflows/ci.yml`；活跃层断链即红，历史层只统计 |
-| DOC-05 | 历史层 166 条断链的处置 | ⬜ | 现状：全部在 `docs/archive/`，指向已删除/已搬走的源码文件。**待裁**：① 保持原样（档案属历史快照）② 统一降级为纯文本 ③ 补一段"文件已删除"说明。倾向 ①，因为 ADR/档案不该被事后改写 |
+| DOC-05 | 历史层 166 条断链的处置 | ✅（2026-10-21） | **裁决：① 保持原样，不修**。档案属历史快照，事后改写链接等于篡改历史；历史层在 DOC-04 的 CI 里本就只统计不判红，零成本。落地动作仅为在 `docs/archive/` 索引加一行总说明「历史档案，链接指向已删除/已搬走的源码，不修」，不逐条改动 |
 | DOC-06 | `PRODUCT.md` / `VISION.md` 按新定位重写 | ⬜ | 导航里已标"待重写"；需先有产品口径（分仓后单一产品变成"底座 + 实验员 + 前端 + 六服务"） |
 | DOC-07 | 12 仓文档一致性巡检脚本 | ⬜ | 现在靠人眼：每仓应有 `AGENTS.md` + `db-schema` / `api-schema` / `dataflow` + `TASKS` + `adr/` + `odr/`。**豁免注记（2026-10-21 裁决，spec 审查 H1/L3）**：core 与本仓豁免三件薄规格与 `adr/0001-*`（API/DB/流程真相由 `tellurion:docs/openapi.yaml` / `tellurion:pkg/storage/postgres.go` / `tellurion:docs/SPEC.md` 直接承载），巡检脚本须实现该豁免分支，不得对两仓报缺件。可写成 `tools/check_repo_docs.py`（与 core 的 `check_repo_autonomy.py` 互补：那边查仓自治，这边查文档齐套） |
 | DOC-08 | `docs/guides/` 按 12 仓更新 | ⬜ | `local-dev.md` / `deploy-config.md` / `data-dependencies.md` 仍是单仓口径（一份 docker-compose），分仓后需说明"同时 checkout 哪些仓"与 `go.work` 的用法 |

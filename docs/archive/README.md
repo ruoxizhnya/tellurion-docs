@@ -2,6 +2,8 @@
 
 > This directory contains documents that have been superseded, completed, or are no longer actively referenced.
 > These files are retained for audit trails and historical reference only.
+>
+> ⚠️ **历史档案的链接不修（2026-10-21 DOC-05 裁决）**：本目录内的相对/绝对链接可能指向已删除或已搬走的源码与文档，属历史快照的一部分，**保持原样、不逐条修改**；CI 对历史层只统计断链数、不判红。
 
 ## Directory Structure
 
