@@ -11,3 +11,7 @@ Thumbs.db
 
 # 链接检查的本地输出
 .doc-links-report.txt
+
+# Python 工具跑测试时生成
+__pycache__/
+*.pyc

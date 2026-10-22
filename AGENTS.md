@@ -9,15 +9,20 @@
 
 ## 1. 构建 / 检查
 
-本仓无代码，唯一可执行物是链接检查：
+本仓无代码，可执行物是两个巡检脚本：
 
 ```bash
 python tools/check_doc_links.py          # 活跃层 0 断链才通过（退出码 0/1，CI 同款）
 python tools/check_doc_links.py --all    # 连历史层明细一起看
+
+python tools/check_repo_docs.py          # 12 仓文档齐套（默认 workspace = 本仓父目录）
+python tools/check_repo_docs.py --explain   # 另打印每仓的豁免理由
+python tools/test_check_repo_docs.py     # 巡检脚本自身的夹具测试（17 条）
 ```
 
 - Python 3.9+，仅标准库，无依赖、无虚拟环境。
 - 没有 `make` 目标：一条命令就是全部。
+- `check_repo_docs.py` **不进 CI**：CI 只 checkout 本仓，看不到另外 11 个仓；它是工作区级的本地巡检（`--workspace` 指向 12 仓同级目录）。
 
 ## 2. 目录职责（写东西前先确认落在哪）
 

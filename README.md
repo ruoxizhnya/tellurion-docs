@@ -68,6 +68,7 @@
 | [`docs/design/`](docs/design/) | 跨领域功能规格（EquityDeep 等） |
 | [`docs/archive/`](docs/archive/) | 历史档案（只读，不维护） |
 | [`tools/check_doc_links.py`](https://github.com/ruoxizhnya/tellurion/blob/main/tools/check_doc_links.py) | 链接检查（活跃层必须 0 断链） |
+| [`tools/check_repo_docs.py`](tools/check_repo_docs.py) | 12 仓文档齐套巡检（AGENTS / TASKS / 三件套 / adr / odr；core 与本仓按具名豁免） |
 
 ---
 
