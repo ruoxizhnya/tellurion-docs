@@ -4,6 +4,11 @@ name: docs
 # 活跃层（README / docs 顶层 / guides / design）断链 = 红；
 # 历史层（docs/adr / docs/archive）只打印计数，不判红 —— 它们是只读档案，
 # 指向已删除的源码文件属于预期（见 docs/TASKS.md DOC-05）。
+#
+# DOC-08 追加一条：docs/guides 里的 `repo:path` 纯文本跨仓引用。
+# `check_doc_links.py` 只认 Markdown 链接，看不见这种写法 ——
+# 于是仓名拼错（`telliurion:...`）在 CI 里完全没有执法者。
+# 只跑**仓名腿**：路径存在性要看见 12 个仓目录，而本 workflow 只 checkout 自己。
 
 on:
   push:
@@ -20,3 +25,7 @@ jobs:
           python-version: '3.x'
       - name: Check markdown links
         run: python tools/check_doc_links.py
+      - name: Check guides cross-repo refs (repo names only)
+        run: python tools/check_guide_refs.py
+      - name: Self-test the guides checker
+        run: python tools/test_check_guide_refs.py
