@@ -1,7 +1,7 @@
 ---
 status: evergreen
-last-verified: 2026-10-20
-verified-by: 2026-10-20 拆仓后重构导航：新增 SYSTEM-DESIGN / REPO-MAP / SERVICE-INDEX 三份总体层索引；ARCHITECTURE 降级为历史 Reference；跨仓链接改绝对 URL（同批修 153 条）
+last-verified: 2026-10-25
+verified-by: DOC-06 成文同批改导航（2026-10-25）：PRODUCT / VISION 两行从「待重写」换成「现行」，并写明各自**改了什么、没动什么**；此前 2026-10-20 的拆仓导航重构不变
 ---
 
 # Quant Lab 文档入口
@@ -32,8 +32,8 @@ verified-by: 2026-10-20 拆仓后重构导航：新增 SYSTEM-DESIGN / REPO-MAP 
 
 | 我想…… | 读这个 | 状态 |
 |---|---|---|
-| 了解这个产品是什么、为谁做 | [PRODUCT.md](PRODUCT.md) | 待按新定位重写 |
-| 了解设计原则 | [VISION.md](VISION.md) | 待重写（74KB 原文见 `archive/VISION-full.md`） |
+| 了解这个产品是什么、为谁做 | [PRODUCT.md](PRODUCT.md) | **现行**（2026-10-25 DOC-06 成文：哲学层 2026-09-16 定稿未动，新增「系统构成」一节按**功能角色**写，仓级清单只指 [REPO-MAP.md](REPO-MAP.md) 不复制） |
+| 了解设计原则 | [VISION.md](VISION.md) | **现行**（八条原则与优先级序未动；74KB 原文见 `archive/VISION-full.md`。2026-10-25 口径②拍定：分仓工程纪律**不升入原则**，改为文件头与边界表各留一条指针指 SYSTEM-DESIGN §2/§8） |
 | 了解系统怎么搭 | [SYSTEM-DESIGN.md](SYSTEM-DESIGN.md) → 细节查 [ARCHITECTURE.md](ARCHITECTURE.md) | **SYSTEM-DESIGN 现行**；ARCHITECTURE 是**拆仓前历史 Reference**（端口/表数已失效） |
 | 后端架构设计蓝图（模块化内核） | `tellurion:docs/design/kernel/`（kernel-pluggable-nt-ready.md → 已升格 [ADR-031](adr/adr-031-kernel-pluggable-nt-ready.md)） | Draft（D1–D5 已拍板；ADR-031 已 Accepted） |
 | 解耦与模块化重构设计集（ADR-D1~D30） | `tellurion:docs/design/qt-decoupling/`（先读其 [README 索引](https://github.com/ruoxizhnya/tellurion/blob/main/docs/design/qt-decoupling/README.md)） | **部分已裁决**：D24/D25/D26/D28 已由用户拍板，**D29（分仓拓扑）与 D30（仓清单与命名）已裁决**，其余仍为草案。**引用任何 ADR-D 编号前先查索引**；正式升格走本仓 ADR-NNN（先例：kernel 蓝图 → ADR-031） |

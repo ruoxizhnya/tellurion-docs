@@ -1,13 +1,14 @@
 ---
 status: evergreen
-last-verified: 2026-09-16
-verified-by: 产品重构讨论（2026-09-16）
+last-verified: 2026-10-25
+verified-by: DOC-06 成文（2026-10-25 口径②拍定：分仓工程纪律**不升入原则清单**，只留指针）——八条原则与优先级序一字未改；新增的是**两处指针**（文件头一句 + 边界表最后一行各一条，指向 SYSTEM-DESIGN §2/§8），并把"怎么搭"的链接从 ARCHITECTURE.md 换到 SYSTEM-DESIGN.md
 supersedes: archive/VISION-full.md（74KB 原文）
 ---
 
 # VISION — 设计原则
 
-> 本文件只写**原则**（为什么这样设计）。做什么见 `PRODUCT.md`，怎么搭见 `ARCHITECTURE.md`。
+> 本文件只写**原则**（为什么这样设计）。做什么见 `PRODUCT.md`，怎么搭见 [SYSTEM-DESIGN.md](SYSTEM-DESIGN.md)。
+> **分仓的工程纪律不在这里**（契约只认版本号 / 禁 `replace` / 禁 `go.work` 入库）——那些由 SYSTEM-DESIGN §2 的 P2·P4 与 §8 的 R5·C1 **机械执行**，本文件只留指针，见下方边界表最后一行。
 > 原文 74KB 已归档至 `archive/VISION-full.md`，本页是其提炼。
 
 ---
@@ -60,6 +61,7 @@ AI 的产出必须是**可证伪的主张 + 证据 + 存疑项**，不是结论�
 | 多 agent 投票 / arbitrator 仲裁 | 错误相关，放大偏差且不可解释 |
 | 让 EquityDeep 成为第二个 agent | 它提供数据与洞察，不做独立编排 |
 | SaaS / 多租户 | 服务单个个体，不为此增加复杂度 |
+| 把分仓工程纪律（契约只认版本号 / 禁 `replace` / 禁 `go.work` 入库）写成第九条原则 | 它**没有裁决对象**——原则要在两个同样正当的选择之间判胜负，而这条已由 [SYSTEM-DESIGN.md](SYSTEM-DESIGN.md) §8 的 R5·C1 在 CI 上机械执行（2026-10-25 口径②拍定）。写进来只会稀释「原则」这个词，还逼着末尾的优先级序重排 |
 
 ---
 

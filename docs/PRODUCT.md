@@ -1,13 +1,13 @@
 ---
 status: evergreen
-last-verified: 2026-09-16
-verified-by: 产品重构讨论（2026-09-16）
+last-verified: 2026-10-25
+verified-by: DOC-06 成文（2026-10-25 口径三问拍定：扩展舱按"可选项"叙事 / 工程纪律不升入 VISION / 系统构能用功能粒度）——哲学层未动，只补「系统构成」一节并把架构指针从 ARCHITECTURE.md 换到 SYSTEM-DESIGN.md
 supersedes: 2026-09-15 版（"双对等工作面 + 飞轮闭环"）
 ---
 
 # PRODUCT — 产品定义
 
-> 设计原则见 [VISION.md](VISION.md) · 架构见 [ARCHITECTURE.md](ARCHITECTURE.md) · 待办见 [TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md)
+> 设计原则见 [VISION.md](VISION.md) · 架构见 [SYSTEM-DESIGN.md](SYSTEM-DESIGN.md)（现行总体设计；`ARCHITECTURE.md` 已于 DOC-03 降级为**拆仓前历史 Reference**，不再作现状依据）· 待办见 [TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md)
 
 ---
 
@@ -43,6 +43,24 @@ supersedes: 2026-09-15 版（"双对等工作面 + 飞轮闭环"）
 | **底座** | 系统 | 行情 / 财务 / 因子 / 回测 / 证据 + 验证器链 | 确定性，无人值守 |
 
 **为什么必须是验证器而不是"再跑一遍"**：用同一把尺子量第二次，置信度不会增加（1.0 × 1.0 还是 1.0）。只有换一种错误来找，两边的结论才会真正相乘。
+
+---
+
+## 系统构成：五种角色，一座底座
+
+> 只写**功能角色**。仓级清单（谁管什么 / 拥有哪块 schema / 对外面 / 状态）唯一在 [REPO-MAP.md](REPO-MAP.md)，本节刻意不复制——同一事实写两份必然漂移。
+
+| 角色 | 在产品里干什么 | 由哪些仓承担 |
+|---|---|---|
+| **仪器** | 回测 / 撮合 / 组合结算 / 策略运行时 / 仪器域存储——给定输入必有确定输出，可无人值守 | `tellurion`（core）。**一名多角色**：它既是仪器本体，又是仪器域数据的唯一写者 |
+| **实验员** | 挖因子、调系数、跑回测、看结果、决定下一步（唯一会自主循环的那个） | `tellurion-agent` |
+| **观察窗** | 让人能审阅、能干预、能拍板（5 分钟知道该关注什么） | `tellurion-ui` |
+| **扩展舱** | 数据面 / 策略资产 / 风控规则 / 分析 / 编排 / 交易通道——按需触发、可独立部署的能力单元 | `tellurion-data` · `-strategy` · `-risk` · `-analytics` · `-orchestration` · `-broker` |
+| **契约底座** | 跨边界只交换**形状**与**纯技术能力**，不交换实现 | `tellurion-contracts`（port / DTO / 值对象 / 哨兵错误）+ `tellurion-kit`（日志 / 十进制 / 统计 / DB 连接…） |
+
+**扩展舱不是"已经如此"的名单。** 今天真的被 core 消费的远程调用只有一条（回测取数走 `tellurion-data`）；`tellurion-risk` 的客户端已在 core 装配好、带开关带测试，但本部署那两个开关默认关；其余四条（策略资产 / 分析 / 编排 / 交易通道）**今天连调用方都没有**。逐条接线现实登记在 [本仓台账 §四](TASKS.md)——那个数会随施工漂移，所以刻意**不写进上面这张角色表**。
+
+**为什么产品叙事不数进程**：承重句是「AI 操作底座、人拍板」。底座拆成几个可独立部署的单元，不改变这句话；拆与不拆的判据是**热路径不出进程**（[SYSTEM-DESIGN.md](SYSTEM-DESIGN.md) §2 的 P1），不是"服务越多越像平台"。
 
 ---
 
