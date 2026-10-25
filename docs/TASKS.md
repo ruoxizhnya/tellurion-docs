@@ -7,7 +7,9 @@ verified-by: DOC-06 结案（2026-10-25）：口径三问全部拍定（均取 �
 # TASKS — tellurion-docs
 
 > **本仓台账只放"知识库维护"**：导航、坏链、过时声明、索引补齐。
-> **跨仓施工任务不在这里**——它们在 [`tellurion:docs/TASKS.md`](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md)。建单前先问：这件事是不是"改文档结构"？不是就别在本仓建。
+> **跨仓施工任务不在这里**——它们在 [`tellurion:docs/TASKS.md`](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md)。建单前先问：这件事是不是"改文档结构"？不是就别在本仓建单。
+
+> **第三轮裁决指针（2026-10-25）**：⑧ DOC-10 = **§7 整块订正**（阶梯表 S-1~S3 / X1~X6、三条「已知过渡态」、一行状态表）+ `docs/README.md:40` 的 QT-60 行；**§8 以后与阶梯表的设计理由不动**；W0 的 01/02/04 三腿先核再改。正文见 `tellurion:docs/design/qt-decoupling/cross-repo-decision-record-2026-10-25.md` §五。
 
 ## 一、状态图例
 
