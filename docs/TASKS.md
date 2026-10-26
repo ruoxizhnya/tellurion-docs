@@ -51,7 +51,7 @@ verified-by: DOC-10 + DOC-11 + DOC-12 结案（2026-10-26：按第四轮审计�
 
 | 事项 | 去哪 |
 |---|---|
-| 仓自治不变量 R1~R6 的机械检查 | core `tools/check_repo_autonomy.py`（QT-08 ①，未写） |
+| 仓自治不变量 R1~R6 的机械检查 | core `tools/check_repo_autonomy.py`（QT-08 ①，**已交付**：2026-10-21 第六批落盘，已接进 core CI 的 `Repo autonomy self-check` 步——先 `--self-test` 再全量扫描，实测 `core/.github/workflows/ci.yml:322-323`。「未写」是 2026-10-21 之前的旧账） |
 | 契约层落代码 / 打 tag | core `docs/TASKS.md` 的 QT-05 / QT-07 |
 | 各仓功能边界正文 | 各仓 `docs/db-schema.md` / `api-schema.md` / `dataflow.md` |
 | 施工顺序 | core `docs/TASKS.md` |
