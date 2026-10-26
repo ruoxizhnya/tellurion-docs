@@ -2,7 +2,7 @@
 status: evergreen
 type: how-to
 last-verified: 2026-10-26
-verified-by: 2026-10-26 复测订正 ①：六仓已有各自 `deploy/compose.yaml`（此前记「六仓本身无 `deploy/`」已失效）；② `Dockerfile.service` 的 `go build ./cmd/strategy` 行与 `strategy-service` COPY 行已删除（现只 build `./cmd/data` / `./cmd/analysis`）；③ core `deploy/k8s/` 的 risk / analytics 清单端口仍为 8086 / 8087，与各仓现值（risk 8089 / analytics 8087）不一致，以各仓 `deploy/compose.yaml` 为准；④ agent 已自持 `config/ai-service.yaml` + `deploy/wait-for-deps.sh`，Dockerfile 无 `--from=core`、单仓可构建（J 组 `SVC-AGENT-G0`）；但 core `docker-compose.yml` 仍写 `additional_contexts: core=.` 与 `entrypoint: /app/wait-for-deps.sh`，后者已失效，待 core 侧同步。此前：DOC-08 改 12 仓口径，逐项回实仓取证 —— ① 部署资产逐文件定归属（core
+verified-by: 2026-10-26 复测订正 ①：六仓已有各自 `deploy/compose.yaml`（此前记「六仓本身无 `deploy/`」已失效）；② `Dockerfile.service` 的 `go build ./cmd/strategy` 行与 `strategy-service` COPY 行已删除（现只 build `./cmd/data` / `./cmd/analysis`）；③ core `deploy/k8s/` 的 risk / analytics 两份清单**已删**（裁决 #5），k8s 现 8 份，六服务以各仓 `deploy/compose.yaml` 为准；④ agent 已自持 `config/ai-service.yaml` + `deploy/wait-for-deps.sh`，Dockerfile 无 `--from=core`；core `docker-compose.yml` 也已同步（删 `additional_contexts`、entrypoint 改 `/app/deploy/wait-for-deps.sh`，`docker compose build ai-service` 实测成功）。此前：DOC-08 改 12 仓口径，逐项回实仓取证 —— ① 部署资产逐文件定归属（core
   `docker-compose*.yml` / `Dockerfile.service` / `cmd/*/Dockerfile` / `config/*.yaml` /
   `deploy/k8s/*` / `deploy/wait-for-deps.sh`；ui `Dockerfile` + `deploy/nginx-spa.conf`；
   agent `Dockerfile` 曾依赖命名上下文 `core`）；② `deploy/k8s/` 无 ai-service 清单
@@ -43,18 +43,17 @@ verified-by: 2026-10-26 复测订正 ①：六仓已有各自 `deploy/compose.ya
 | `Dockerfile`（nginx + SPA） | `tellurion-ui` | 前端镜像的**构建真相**，端口 8080 |
 | `deploy/nginx-spa.conf` | `tellurion-ui` | `/api` 反代 + SSE 关缓冲 + history 回退 |
 | `Dockerfile`（ai-service） · `config/` · `deploy/` | `tellurion-agent` | 2026-10-26 起单仓自持：无 `--from=core`，`COPY config/ai-service.yaml` + `COPY deploy/wait-for-deps.sh` |
-| 六个服务仓的部署资产 | 各服务仓 | 六仓已有各自 `deploy/compose.yaml`（2026-10-26 入库：`context: ..` + 各仓 `Dockerfile`，端口 data 8081 / risk 8089 / strategy 8090 / analytics 8087 / orchestration 8088 / broker 8091）。core `deploy/k8s/` 的 `risk-deployment.yaml` / `analytics-deployment.yaml` / `data-deployment.yaml` 仍在，但 risk 写 `:8086` 与现值 8089 不一致；**以各仓 `deploy/compose.yaml` 为准**。⚠️ 两条进程升格**缺 ADR**（ADR-034 S4 / M5；ADR-036 已承认服务化，仍未逐仓补 ADR），见第四轮审计 P0-1 |
+| 六个服务仓的部署资产 | 各服务仓 | 六仓已有各自 `deploy/compose.yaml`（2026-10-26 入库：`context: ..` + 各仓 `Dockerfile`，端口 data 8081 / risk 8089 / strategy 8090 / analytics 8087 / orchestration 8088 / broker 8091）。core `deploy/k8s/` 的 `risk-` / `analytics-deployment.yaml` **已删**（裁决 #5，端口 8086 过期且无升格 ADR）；`data-deployment.yaml` 保留（`:8081` 一致）；k8s 现 **8 份**。**以各仓 `deploy/compose.yaml` 为准** |
 
 ### 1.1 三处跨仓耦合（改之前先知道）
 
-1. **ai-service 镜像已可单仓构建，core compose 尚未同步**：`tellurion-agent` 的
+1. **ai-service 单仓可构建，core compose 已同步**：`tellurion-agent` 的
    `Dockerfile` 已无 `--from=core`（2026-10-26，J 组 `SVC-AGENT-G0`），
-   `docker build -t ai-service .` 不再需要 core 命名上下文；
-   但 core `docker-compose.yml` 仍写 `build.context: ../tellurion-agent` +
-   `additional_contexts: [core=.]`，且 `entrypoint: /app/wait-for-deps.sh`
-   指向**已不存在**的路径（现为 `/app/deploy/wait-for-deps.sh`）——
-   ⇒ 今天用 core compose 起 ai-service 会直接退出，待 core 侧同步（跨仓腿）。
-   本仓自带的 `tellurion-agent:deploy/compose.yaml` 可直接起。
+   `docker build -t ai-service .` 不再需要 core 命名上下文；core `docker-compose.yml`
+   也已删 `additional_contexts: [core=.]`，`entrypoint` 改为镜像内实存的
+   `/app/deploy/wait-for-deps.sh`（2026-10-26 实跑 `docker compose build ai-service`
+   成功，容器内两文件 `ls` 在位）。
+   本仓自带的 `tellurion-agent:deploy/compose.yaml` 亦可直接起。
 2. **ai 配置有两份逐值一致的副本**：`config/ai-service.yaml` 与 `analysis-service.yaml`
    **逐值一致**（同一个实验不得在两个进程跑出不同结果）；2026-10-26 起 agent 仓
    自持一份副本，core 侧同名文件保留 —— **改一处必须同步另一处**，不再由

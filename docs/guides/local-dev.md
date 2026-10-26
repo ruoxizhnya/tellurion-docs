@@ -51,9 +51,8 @@ Workspace/
 └── tellurion-docs/         ← 本仓
 ```
 
-> ⚠️ **同级约束今天只剩一条**：core `docker-compose.yml` 的
-> `ai-service.build.context: ../tellurion-agent`（agent 侧 Dockerfile 已不消费
-> `additional_contexts: core=.`，该行待 core 同步删除）。
+> ✅ **同级约束已全部解除（2026-10-26）**：core `docker-compose.yml` 已删
+> `additional_contexts: core=.`，ai-service 只以 `../tellurion-agent` 为构建上下文；
 > `tellurion-agent:go.mod` 的 `replace tellurion => ../tellurion` **已随 S3 删除**（QT-07 ⑥），
 > 源码编译与镜像构建都不再要求 core 同级。
 
@@ -198,9 +197,9 @@ CONFIG_PATH=config/ai-service.yaml go run ./cmd/ai
 > 容器形态由同仓 `deploy/compose.yaml` 挂 `CONFIG_PATH=/app/config/ai-service.yaml`；
 > Dockerfile 已无 `COPY --from=core`，单仓 `docker build .` 即可。
 >
-> ⚠️ core `docker-compose.yml` 的 ai-service `entrypoint` 仍指向旧路径
-> `/app/wait-for-deps.sh`（现为 `/app/deploy/wait-for-deps.sh`），core 侧同步前
-> 不能用 core compose 起 ai-service（跨仓腿）。
+> ✅ core `docker-compose.yml` 的 ai-service `entrypoint` 已同步为
+> `/app/deploy/wait-for-deps.sh`（2026-10-26；`docker compose build ai-service` 实测成功）。
+> ~~core 侧同步前不能用 core compose 起 ai-service（跨仓腿）~~ 已解除。
 >
 > ~~agent 的 `cmd/ai` 仍 `import` core 的 `pkg/*`（`replace` 过渡态）~~ → **已于 2026-10-25 S3 消除**（零 import core、无 `replace`）。
 
