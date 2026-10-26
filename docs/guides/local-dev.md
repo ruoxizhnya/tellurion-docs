@@ -1,15 +1,12 @@
 ---
 status: evergreen
 type: how-to
-last-verified: 2026-10-22
-verified-by: DOC-08 改 12 仓口径，逐项回实仓取证 —— ① checkout 集与同级约束（`tellurion-agent:go.mod`
-  的 `replace tellurion => ../tellurion`、core `docker-compose.yml` 的 `context: ../tellurion-agent`）；
+last-verified: 2026-10-26
+verified-by: 2026-10-26 复测订正 ①：agent 已删 `replace tellurion => ../tellurion`（S3，QT-07 ⑥）；② core 已 `require` contracts `v0.6.0` / kit `v0.1.1`（走 tag，无 `replace`）；③ `Dockerfile.service` 的 `go build ./cmd/strategy` 行已删除（现只 build `./cmd/data` / `./cmd/analysis`）；④ agent 的本地/CI 构建不再需要 core 同级或 `go mod edit -replace`。此前 DOC-08 改 12 仓口径，逐项回实仓取证 —— ① checkout 集与同级约束（core `docker-compose.yml` 的 `context: ../tellurion-agent`）；
   ② `go.work` 在 12 仓 `.gitignore` 里各有一条（本机 `Get-ChildItem -Recurse -Filter go.work` 实测 0 个）；
-  ③ core 今天**不 require** 两个库仓（`tellurion:go.mod` 无 `github.com/ruoxizhnya/*` 行），
-  故单仓 `go build ./...` 就够；④ 各仓测试文件数实测（core 438 / agent 89 / contracts 23 / kit 29 /
-  ui 38 vitest + 23 e2e spec）；⑤ **实测到一处真阻断**：core 的 `Dockerfile.service` 仍在
-  `go build ./cmd/strategy`，而该目录 REV-16 已删 —— `docker run golang:1.25-alpine … go build
-  ./cmd/strategy` 实测 `directory not found`；⑥ agent 的 `cmd/ai` 读 `config/ai-service.yaml`
+  ③ 当时 core **不 require** 两个库仓；④ 各仓测试文件数实测（core 438 / agent 89 / contracts 23 / kit 29 /
+  ui 38 vitest + 23 e2e spec）；⑤ 当时实测到一处真阻断：`Dockerfile.service` 在
+  `go build ./cmd/strategy`（该目录 REV-16 已删）；⑥ agent 的 `cmd/ai` 读 `config/ai-service.yaml`
   且 `LoadConfig` 缺文件即 Fatal，而 agent 仓没有 `config/` 目录 —— 必须给 `CONFIG_PATH`；
   ⑦ Go 侧无 dotenv 加载器（`grep godotenv` 零命中），`.env` 只由 compose 读，而
   `pkg/storage.BuildDSN` 在密码为空时返回 `ErrEmptyDBPassword` ⇒ 原生跑法必须 `export
@@ -39,7 +36,7 @@ verified-by: DOC-08 改 12 仓口径，逐项回实仓取证 —— ① checkout
 | 加前端页面 / 跑 e2e | + `tellurion-ui` | `web/` 与 `e2e/` 只在 ui 仓，core 里没有 |
 | 动 AI 实验员 / 工具注册表 | + `tellurion-agent` | 且**必须与 core 同级目录**（见下） |
 | 改跨边界类型 / 横切工具 | + `tellurion-contracts` / + `tellurion-kit` | 契约与工具库各自单仓可构建 |
-| 用数据 / 策略 / 风控 / 分析 / 编排 / 交易网关六服务 | **不需要** | 六仓今天只有 `go.mod` + `doc.go`（占位），没有实现、不起进程 |
+| 用数据 / 策略 / 风控 / 分析 / 编排 / 交易网关六服务 | **不需要**（除非你要改那个仓） | 六仓**均已实装**（各自 `cmd/*service`；broker 无 `cmd`）；但 core 只真接了 data（读）与 risk（开关默认关），strategy / analytics / orchestration / broker 无 core 调用方。生产 `:8081` 仍由 core `cmd/data` 提供，不是 `tellurion-data` |
 | 改本仓文档 | 只本仓 | 门禁是链接检查 + 跨仓引用检查（见 §6） |
 
 推荐的工作区形态：
@@ -54,11 +51,11 @@ Workspace/
 └── tellurion-docs/         ← 本仓
 ```
 
-> ⚠️ **同级不是习惯，是硬约束**，两个机制按相对路径解析：
-> ① `tellurion-agent:go.mod` 的 `replace tellurion => ../tellurion`（拆仓过渡态，
-> S3 删除，见 `tellurion-agent:docs/adr/0001-编译期依赖-core-是过渡态.md`）；
-> ② core `docker-compose.yml` 的 `ai-service.build.context: ../tellurion-agent`
-> （镜像内还需要 `additional_contexts: core=.`）。把 agent 放到别处，两处同时断。
+> ⚠️ **同级约束今天只剩一条**：core `docker-compose.yml` 的
+> `ai-service.build.context: ../tellurion-agent`（agent 侧 Dockerfile 已不消费
+> `additional_contexts: core=.`，该行待 core 同步删除）。
+> `tellurion-agent:go.mod` 的 `replace tellurion => ../tellurion` **已随 S3 删除**（QT-07 ⑥），
+> 源码编译与镜像构建都不再要求 core 同级。
 
 ---
 
@@ -66,13 +63,12 @@ Workspace/
 
 **今天它是可选的**（这一点和很多「多仓联调」直觉相反，所以写清楚）：
 
-- core 的 `go.mod` 里没有任何 `github.com/ruoxizhnya/tellurion-contracts` / `-kit` 的
-  `require` —— S1 的**两个库仓侧**已落码（429 导出符号、13 包），但**core 侧的下游腿
-  还没执行**。所以 core 单仓 `go build ./...` / `go vet ./...` 就能过，不需要 `go.work`。
-- agent 靠 `replace` 指向本地 core，也不需要 `go.work`。
+- core 已 `require` `github.com/ruoxizhnya/tellurion-contracts v0.6.0` / `tellurion-kit v0.1.1`
+  （走 tag，无 `replace`），单仓 `go build ./...` / `go vet ./...` 就能过 —— **不需要**
+  `go.work`，只有要同时改库仓源码时才用。
+- agent **不再**靠 `replace` 指向本地 core（S3 已删，零 import core），同样不需要 `go.work`。
 
-**什么时候它会变成必需**：core / agent 一旦把两个库仓从伪版本/tag 切进 `require`，
-本地要同时改三个仓就得用 workspace：
+**什么时候它会变成必需**：要**同时改** core / agent 与 contracts / kit 的源码（而非只用已发 tag）时：
 
 ```bash
 cd tellurion
@@ -84,7 +80,7 @@ go env GOWORK          # 非空 = 已启用；空 = 没用 workspace
 
 1. **`go.work` / `go.work.sum` 不入库** —— 十二仓的 `.gitignore` 各有一条。
 2. **CI 与 Docker 没有它** —— 它们按 `go.sum` 拉真实版本，这正是「别人机器上构建行为一致」的来源。
-3. **`replace` 指向仓外路径 = CI 红**（唯一过渡例外是上面 agent 那条）。要复用的形状进
+3. **`replace` 指向仓外路径 = CI 红**（白名单今天为空；agent 那条过渡 `replace` 已随 S3 删除）。要复用的形状进
    `tellurion-contracts`，不要新造 core client。
 
 ---
@@ -193,18 +189,20 @@ go 内核的结果。
 ```bash
 cd tellurion-agent
 export DATABASE_PASSWORD=postgres     # 同 §5.1：agent 也走 BuildDSN，不读 .env
-CONFIG_PATH=../tellurion/config/ai-service.yaml go run ./cmd/ai
+CONFIG_PATH=config/ai-service.yaml go run ./cmd/ai
 ```
 
-> ⚠️ **`CONFIG_PATH` 不是可选的**：`cmd/ai` 的默认路径是 `config/ai-service.yaml`，
-> 而 **agent 仓没有 `config/` 目录**（配置的真相留在 core，理由是它与
-> `analysis-service.yaml` 逐值一致 —— 同一个实验不得在两个进程跑出不同结果）。
-> `bootstrap.LoadConfig` 读不到文件直接 `Fatal`。容器形态由
-> `tellurion-agent:Dockerfile` 用 `COPY --from=core config/ai-service.yaml` 解决，
-> 原生跑法就得自己给 `CONFIG_PATH`。
+> **`CONFIG_PATH` 已可用本仓副本**：2026-10-26（J 组 `SVC-AGENT-G0`）起 agent 仓
+> 自持 `config/ai-service.yaml`（内容取自 core、逐值一致）；`cmd/ai` 的默认路径
+> 正是 `config/ai-service.yaml`，所以在仓根直跑可以不显式给 `CONFIG_PATH`。
+> 容器形态由同仓 `deploy/compose.yaml` 挂 `CONFIG_PATH=/app/config/ai-service.yaml`；
+> Dockerfile 已无 `COPY --from=core`，单仓 `docker build .` 即可。
 >
-> 另外 agent 的 `cmd/ai` 今天仍 `import` core 的 `pkg/*`（`replace` 过渡态），
-> 所以 core 必须在其同级目录；S3 删掉 `replace` 之后这一条才会解除。
+> ⚠️ core `docker-compose.yml` 的 ai-service `entrypoint` 仍指向旧路径
+> `/app/wait-for-deps.sh`（现为 `/app/deploy/wait-for-deps.sh`），core 侧同步前
+> 不能用 core compose 起 ai-service（跨仓腿）。
+>
+> ~~agent 的 `cmd/ai` 仍 `import` core 的 `pkg/*`（`replace` 过渡态）~~ → **已于 2026-10-25 S3 消除**（零 import core、无 `replace`）。
 
 ### 5.3 ui（前端，:5173 dev）
 
@@ -287,7 +285,7 @@ docker-compose -f docker-compose.yml -f docker-compose.e2e.yml \
 | 仓 | 本地同款命令 |
 |---|---|
 | `tellurion` | `go build ./...` · `go vet ./...` · `GOOS=windows go vet ./...` · `gofmt -l .` · `go test ./... -count=1 -race -coverprofile=coverage.out` + `go run ./tools/coveragegate …` · `python tools/check_doc_links.py` · `python tools/check_deploy_consistency.py` · `python tools/check_repo_autonomy.py --self-test && python tools/check_repo_autonomy.py`；另两条 job：`cd nt-sidecar && python -B -m unittest discover -s tests -t .`、`go run ./cmd/dualrun -strategy bh -gate`（后者要侧车 + 已灌库） |
-| `tellurion-agent` | `go build ./...` · `go vet ./...` · `go test ./... -count=1`（要 core 同级；CI 里是 checkout core 后 `go mod edit -replace`） |
+| `tellurion-agent` | `go build ./...` · `go vet ./...` · `go test ./... -count=1`（**不再需要 core 同级**；S3 已删 `replace`，CI 也不 checkout core） |
 | `tellurion-contracts` | `gofmt -l .` · `go build ./...` · `go vet ./...` · `go run ./tools/check_api_surface` · `go run ./tools/check_release_matrix` · `go test ./... -count=1` |
 | `tellurion-kit` | 同 contracts，但 `check_api_surface` 换成 `go run ./tools/check_scope`；`check_release_matrix` **两条都在** |
 | `tellurion-ui` | `cd web && npm ci && npm run lint && npm run typecheck && npm test`（e2e job 在 CI 里是手动触发） |

@@ -1,8 +1,8 @@
 ---
 status: evergreen
-last-verified: 2026-10-22
-verified-by: DOC-08 改 12 仓口径 —— ① 仓归属逐项回实仓核对：取数/归一化/同步今天仍在
-  `tellurion:cmd/data` + `tellurion:pkg/data`，`tellurion-data` 仍只有 `go.mod` + `doc.go`（占位）；
+last-verified: 2026-10-26
+verified-by: DOC-11（2026-10-26）订正 ①：`tellurion-data` 已实装 `cmd/dataservice` + 23 张 `market.*`/`ingest.*` schema，但生产 `:8081` 仍由 core `cmd/data` 提供。此前 DOC-08 改 12 仓口径 —— ① 仓归属逐项回实仓核对：取数/归一化/同步今天仍在
+  `tellurion:cmd/data` + `tellurion:pkg/data`（生产 `:8081` 仍由 core 提供），`tellurion-data` **已实装**
   ② adapter 注册表实测 **12 个**（`tellurion:cmd/data/registry_init.go` 的 `reg.Register` 逐条数）；
   ③ **AI 三项凭据的读取点已迁**：`tellurion` 全仓已无 `pkg/ai`，`grep AI_API_KEY` 只命中
   `.env.example` 注释与 compose 本身；真读取点在 `tellurion-agent:pkg/ai/client.go`；
@@ -24,15 +24,16 @@ verified-by: DOC-08 改 12 仓口径 —— ① 仓归属逐项回实仓核对�
 
 | 数据面能力 | 今天在 | 目标（触发后） | 依据 |
 |---|---|---|---|
-| connector / 归一化 / 同步 / aggregator | `tellurion:cmd/data` + `tellurion:pkg/data` + `tellurion:pkg/marketdata` | `tellurion-data`（X1，**今天占位**） | ADR-034、`repo-inventory.md` |
-| `market` / `ingest` 两个 schema 的 DDL owner | core 的 `pkg/storage/postgres.go`（`migrationStatements()`） | `tellurion-data` | 同上；**今天 owner 仍是 core** |
+| connector / 归一化 / 同步 / aggregator | `tellurion:cmd/data` + `tellurion:pkg/data` + `tellurion:pkg/marketdata` | `tellurion-data`（X1，**已实装 `cmd/dataservice` + `POST /ingest/points`，未切生产写**） | ADR-034、`repo-inventory.md` |
+| `market` / `ingest` 两个 schema 的 DDL owner | core 的 `pkg/storage/postgres.go`（`migrationStatements()`）**仍写裸名 `public.*`**；`tellurion-data:internal/schema` 另有 23 张 `market.*`/`ingest.*` DDL | `tellurion-data` | 同上；**今天双 owner，只有 `market.index_daily` 被裁决**（第四轮审计 P0-2） |
 | 因子**定义** / `SeriesSpec` | core（`pkg/domain/factor_def*`、`pkg/data/factor_registry.go`） | `tellurion-strategy`（定义）/ `tellurion-data`（值） | core `repo-inventory.md` §1.2 的 **R3** 行：定义归 strategy、值归 data、求值在消费点（ADR-035 §三 是那轮对账的升格摘要，**细则仍在 core 源文**） |
 | AI 供应商凭据的**读取点** | `tellurion-agent:pkg/ai/client.go` | 同左 | 2026-10-09 AI 拆仓 |
 | `quant.*`（结果 / 订单 / 持仓） | core | core（订单归属是待裁项 U2，**先立 ADR 才能拆**） | `repo-inventory.md` §3.1 |
 
-> ⚠️ **六个服务仓今天都不起进程**（只有 `go.mod` + `doc.go`）。所以本清单里所有
-> 「今天」的路径都指向 core；等 X1 触发、`tellurion-data` 落码时，这份表要整列搬家 ——
-> 那才是改这张表的时点，不要提前按目标态写 `tellurion-data:cmd/...`（那个路径今天不存在）。
+> ⚠️ **六个服务仓均已实装（2026-10-26 复测）**：各有 `cmd/*service` 与自有 schema，
+> 不再是「只有 `go.mod` + `doc.go`」的占位仓。但**生产写者仍在 core** —— 本清单里所有
+> 「今天」的路径只在 data 的取值/同步与 AI 凭据两处已迁，其余仍指 core；等各仓 G3
+> 切读/停写完成后再整列搬家，不要提前按目标态写 `tellurion-data:cmd/...` 之外的路径。
 
 ---
 

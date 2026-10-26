@@ -37,12 +37,12 @@ verified-by: DOC-06 成文同批改导航（2026-10-25）：PRODUCT / VISION 两
 | 了解系统怎么搭 | [SYSTEM-DESIGN.md](SYSTEM-DESIGN.md) → 细节查 [ARCHITECTURE.md](ARCHITECTURE.md) | **SYSTEM-DESIGN 现行**；ARCHITECTURE 是**拆仓前历史 Reference**（端口/表数已失效） |
 | 后端架构设计蓝图（模块化内核） | `tellurion:docs/design/kernel/`（kernel-pluggable-nt-ready.md → 已升格 [ADR-031](adr/adr-031-kernel-pluggable-nt-ready.md)） | Draft（D1–D5 已拍板；ADR-031 已 Accepted） |
 | 解耦与模块化重构设计集（ADR-D1~D30） | `tellurion:docs/design/qt-decoupling/`（先读其 [README 索引](https://github.com/ruoxizhnya/tellurion/blob/main/docs/design/qt-decoupling/README.md)） | **部分已裁决**：D24/D25/D26/D28 已由用户拍板，**D29（分仓拓扑）与 D30（仓清单与命名）已裁决**，其余仍为草案。**引用任何 ADR-D 编号前先查索引**；正式升格走本仓 ADR-NNN（先例：kernel 蓝图 → ADR-031） |
-| **仓清单与命名（ADR-D30，施工前必读）** | `tellurion:docs/design/qt-decoupling/repo-inventory.md` | **已裁决**——项目定名 **tellurion**、owner 保持 `ruoxizhnya` 不变、**应用/服务用单段短名 / 库用全名**、12 仓表 + 旧→新映射；**建新仓 / 改 `go.mod` 前先读**（工单 QT-60，未启动） |
+| **仓清单与命名（ADR-D30，施工前必读）** | `tellurion:docs/design/qt-decoupling/repo-inventory.md` | **已裁决**——项目定名 **tellurion**、owner 保持 `ruoxizhnya` 不变、**应用/服务用单段短名 / 库用全名**、12 仓表 + 旧→新映射；**建新仓 / 改 `go.mod` 前先读**（QT-60 ✅ 2026-10-20） |
 | **分仓拓扑与命名（施工前必读）** | `tellurion:docs/design/qt-decoupling/repo-topology-and-naming.md` | **已裁决**——仓=模块/服务、跨仓只认 tag、`domain` 并入 contracts 仓、S0~S3 迁移阶梯；**动 `go.mod`/建新仓前先读** |
 | **各仓功能边界（判断功能放哪）** | 本仓 [SERVICE-INDEX.md](SERVICE-INDEX.md) → 逐仓 `db-schema` / `api-schema` / `dataflow` | 现行（10 仓已建三份契约） |
 | **P0 修复基线（实施前必读）** | `tellurion:docs/design/qt-decoupling/p0-remediation-design.md`（第一轮 20 项）+ `p0-round2-review.md`（第二轮：闭环核对 + N1~N9） | **现行基线**——两份合起来才完整；依赖顺序以 round2 §4 为准（wave-0 契约冻结在最前） |
 | 查 API / 数据模型 / 契约 | [SPEC.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md) | 现行（Reference 类，可长） |
-| 查某个架构决策的来龙去脉 | [ADR.md](ADR.md) → [adr/](adr/) | 现行（18 条） |
+| 查某个架构决策的来龙去脉 | [ADR.md](ADR.md) → [adr/](adr/) | 现行（31 条；编号至 ADR-036，009/010/012/021/022 已归档） |
 | 了解测试策略 | [TEST.md](TEST.md) | 现行 |
 | 看阶段规划 | [ROADMAP.md](ROADMAP.md) | 现行 |
 | 本地起步（环境 / 命令 / 已知坑） | [guides/local-dev.md](guides/local-dev.md) | 现行 |
@@ -52,7 +52,7 @@ verified-by: DOC-06 成文同批改导航（2026-10-25）：PRODUCT / VISION 两
 | **当前在做什么** | [TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md) | 现行（只放未完成项） |
 | 找历史记录 / 旧决策 / 取证报告 | [archive/](archive/) | **只读，不维护** |
 
-**新来的人读这份顺序**：PRODUCT → ARCHITECTURE → SPEC。三份读完就能上手。
+**新来的人读这份顺序**：PRODUCT → SYSTEM-DESIGN → SPEC。三份读完就能上手（ARCHITECTURE 是拆仓前历史 Reference，只用于追溯）。
 
 ---
 

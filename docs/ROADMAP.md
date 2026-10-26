@@ -1,7 +1,7 @@
 ---
 status: evergreen
-last-verified: 2026-09-16
-verified-by: 产品重构讨论（2026-09-16）
+last-verified: 2026-10-26
+verified-by: DOC-11（2026-10-26）：修正「当前阶段」与阶段表的自相矛盾（S0 已完成、S1 进行中），补工程解耦线与产品线的分工；产品阶段判据未改。此前：产品重构讨论（2026-09-16）
 supersedes: archive/ROADMAP-history.md（Phase 1-4 / Sprint 1-8）
 ---
 
@@ -13,9 +13,11 @@ supersedes: archive/ROADMAP-history.md（Phase 1-4 / Sprint 1-8）
 
 ## 当前阶段
 
-**S0 止血**。
+**产品主线：S1 通回路（进行中）。S0 已于 2026-09-17 完成。**
 
-理由只有一条：**在前视偏差修好之前，系统产出的任何回测数字都不可信**——后续所有工作都是沙上建塔。
+S0 的出口判据（回测数字可信）已达成，所以当前不是 S0。S1 的出口是「无人干预连续跑完 100 次实验」——**今天尚未达成**：core `docs/TASKS.md` 的 QT-32（AI 策略生成闭环）仍 ⬜，agent 的 QT-32-B 仍待裁。
+
+**另有一条工程解耦线在并行推进**（不属于本表的 S0~S4 产品阶段）：S-1 改名建仓 / S0 自治 / W0 契约冻结 / S1 契约落码 / S2 打 tag / S3 agent 去 replace 均已收口；X1~X6 六服务仓已实装但只有 data 一条读链真接线。工程线的状态以 core `docs/TASKS.md` 与第四轮审计（`tellurion:docs/design/qt-decoupling/purpose-alignment-audit-2026-10-26.md`）为准，**不要用工程线的「已落仓」替代本表的 S1 出口**。
 
 ---
 
