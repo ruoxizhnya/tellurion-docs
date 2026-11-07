@@ -1,7 +1,7 @@
 ---
 status: evergreen
-last-verified: 2026-10-20
-verified-by: 10 仓功能边界契约（db / api / dataflow）落地后建立索引；每行与对应仓实际文件核对
+last-verified: 2026-11-07
+verified-by: 10 仓功能边界契约（db / api / dataflow）落地后建立索引；每行与对应仓实际文件核对。2026-11-07 DOC-13：新增「六服务 × ADR-036 就绪门 → 工单对照」，30 格逐格 grep 实仓 `###` 标题取证
 ---
 
 # 服务仓功能边界索引（SERVICE INDEX）
@@ -55,3 +55,34 @@ verified-by: 10 仓功能边界契约（db / api / dataflow）落地后建立索
 2. **它对外承诺什么** → `api-schema.md` §1 与 §5（"不提供什么"）。§5 往往比 §1 更有用：被明确排除的，就是别处该收的。
 3. **它要不要在热路径上** → `dataflow.md` 的 fail-closed 点。凡是逐 bar / 逐笔 / 裁决，回 core。
 4. **四处都对不上** → 要么是**新边界**（先立 ADR，再改这三份文件，再写代码），要么是**该留在 core**。不要先写代码再补文档。
+
+---
+
+## 六服务 × ADR-036 就绪门 → 工单对照（DOC-13）
+
+> **只索引不复制**：格子里是该仓台账真实存在的 `###` 标题 ID 与行号，正文一律回原仓读。状态符号与标题一致，**🔶/⛔ 不表示已完成**。
+> 行号取证日 **2026-11-07**；行号会随台账编辑漂移，判据是 ID 能在 `grep -n '^### <ID>'` 命中，不是行号恒等。
+
+| 仓 | X 阶梯（`SYSTEM-DESIGN.md:123`） | G0 | G1 | G2 | G3 | G4 |
+|---|---|---|---|---|---|---|
+| `tellurion-data` | X1 · `QT-40`（52） | `SVC-DATA-G0`（29）✅ | `SVC-DATA-G1`（282）✅ | `SVC-DATA-G2`（347）✅ | `SVC-DATA-G3`（43）⬜ | `SVC-DATA-G4`（373）✅ |
+| `tellurion-strategy` | X2 · `QT-41`（53） | `SVC-STRAT-G0`（22）✅ | `SVC-STRAT-G1`（308）✅ | `SVC-STRAT-G2`（370）✅ | `SVC-STRAT-G3`（38）⛔ | `SVC-STRAT-G4`（410）🔶 |
+| `tellurion-risk` | X3 · `QT-42`（82） | `SVC-RISK-G0`（24）✅ | `SVC-RISK-G1`（664）🔶 | `SVC-RISK-G2`（685）✅ | `SVC-RISK-G3`（73）⬜ | `SVC-RISK-G4`（734）🔶 |
+| `tellurion-analytics` | X4 · `QT-43`（55） | `SVC-AN-G0`（22）✅ | `SVC-AN-G1`（374）✅ | `SVC-AN-G2`（396）✅ | `SVC-AN-G3`（40）⛔ | `SVC-AN-G4`（418）✅ |
+| `tellurion-orchestration` | X5 · `QT-44`（65） | `SVC-ORCH-G0`（24）✅ | `SVC-ORCH-G1`（39）⛔ | `SVC-ORCH-G2`（215）✅ | `SVC-ORCH-G3`（52）⛔ | `SVC-ORCH-G4`（236）✅ |
+| `tellurion-broker` | X6 · `QT-45`（80） | `SVC-BROKER-G0`（22）✅ | `SVC-BROKER-G1`（37）✅ | `SVC-BROKER-G2`（159）✅ | `SVC-BROKER-G3`（65）⛔ | `SVC-BROKER-G4`（200）✅ |
+
+**取证（2026-11-07，逐格实跑，不是抄 ADR 正文）**：`6 仓 × 5 门 = 30` 格**全部**命中各仓台账里真实存在的 `###` 标题，**无缺口格**（DOC-13 立单时“G2 / G4 共 0 条目”的前提已被 2026-10-26 那批立单与后续施工推翻）。实跑命令（PowerShell，等价 `grep -n '^### SVC-' <repo>/docs/TASKS.md`）：
+
+```powershell
+$env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')
+foreach ($r in @('tellurion-data','tellurion-strategy','tellurion-risk','tellurion-analytics','tellurion-orchestration','tellurion-broker')) {
+  Select-String -Path "c:\Users\ruoxi\Workspace\$r\docs\TASKS.md" -Pattern '^### SVC-'
+}
+```
+
+命中行号已逐格写进上表；每仓 5 个 ID（G0~G4）齐全，状态的 ✅/⬜/🔶/⛔ 与标题逐字一致（例如 `SVC-RISK-G1` 标题写「代码与文档已落；真实 PG 已补跑，compose 腿未跑」⇒ 记 🔶，不记 ✅）。
+
+**脚注 1 · 同号不同义：「派发块 G4」≠「就绪门 G4」**。表内 G4 列只指 ADR-036 的**可运维就绪门**（失败语义 / 超时重试 / runbook）。六仓台账里另有一套「**派发块 G4**」编号（wave-2 派工块，ADR-0006「服务间角色 `service` 落策略表」），现行出处实测为 `tellurion-risk:docs/TASKS.md:274` 与 `:433`。DOC-13 立单时引的 `tellurion-data:docs/TASKS.md:56-58` 与 `tellurion-strategy:docs/TASKS.md:53` 今天已无「派发块」字样（2026-11-07 在六个服务仓全量检索该词：仅 risk 两处命中），以本脚注两处为现行出处；**施工记录里的「派发块 G4」不得当成就绪验收引用**。
+
+**脚注 2 · `X1~X6` 与 REPO-MAP 状态列的反查**。`SYSTEM-DESIGN.md:123` 的 `X1~X6` 阶梯逐仓对应本表「X 阶梯」列：X1=data / X2=strategy / X3=risk / X4=analytics / X5=orchestration / X6=broker（实测标题 `### QT-40`…`### QT-45` 分别写 X1…X6）。`REPO-MAP.md` §1 六服务行「状态」列里的「G0 已补 / 已实装」等表述，按仓名反查本表该行的 G0~G4 列即可判到门级，**不需要再读服务仓正文**；两边若不一致，以服务仓台账标题为准并回改 REPO-MAP。
