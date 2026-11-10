@@ -1,8 +1,8 @@
 ---
 status: evergreen
 type: how-to
-last-verified: 2026-10-26
-verified-by: 2026-10-26 复测订正 ①：agent 已删 `replace tellurion => ../tellurion`（S3，QT-07 ⑥）；② core 已 `require` contracts `v0.6.0` / kit `v0.1.1`（走 tag，无 `replace`）；③ `Dockerfile.service` 的 `go build ./cmd/strategy` 行已删除（现只 build `./cmd/data` / `./cmd/analysis`）；④ agent 的本地/CI 构建不再需要 core 同级或 `go mod edit -replace`。此前 DOC-08 改 12 仓口径，逐项回实仓取证 —— ① checkout 集与同级约束（core `docker-compose.yml` 的 `context: ../tellurion-agent`）；
+last-verified: 2026-11-11
+verified-by: 2026-11-11 代码-文档对齐审计订正：① core 已 `require` contracts `v0.9.0` / kit `v0.3.0`（§1「core 不 require 两个库仓」、§2 的 `v0.6.0`/`v0.1.1` 已废）；② 生产 `:8081` 由 `tellurion-data:cmd/dataservice` 提供（core `cmd/data` 于 2026-11-08 删除，§5.1 的 `go run ./cmd/data` 已删）；③ §5.4 端口表补六服务 8087–8091；④ `make build` 今天会失败 —— core `Makefile` 仍保留 `build-data: cmd/data/Dockerfile`，该目录已删（core 侧待修项，本文只如实描述）。此前 2026-10-26 复测订正 ①：agent 已删 `replace tellurion => ../tellurion`（S3，QT-07 ⑥）；② core 已 `require` contracts `v0.6.0` / kit `v0.1.1`（走 tag，无 `replace`）；③ `Dockerfile.service` 的 `go build ./cmd/strategy` 行已删除（现只 build `./cmd/data` / `./cmd/analysis`）；④ agent 的本地/CI 构建不再需要 core 同级或 `go mod edit -replace`。此前 DOC-08 改 12 仓口径，逐项回实仓取证 —— ① checkout 集与同级约束（core `docker-compose.yml` 的 `context: ../tellurion-agent`）；
   ② `go.work` 在 12 仓 `.gitignore` 里各有一条（本机 `Get-ChildItem -Recurse -Filter go.work` 实测 0 个）；
   ③ 当时 core **不 require** 两个库仓；④ 各仓测试文件数实测（core 438 / agent 89 / contracts 23 / kit 29 /
   ui 38 vitest + 23 e2e spec）；⑤ 当时实测到一处真阻断：`Dockerfile.service` 在
@@ -32,11 +32,11 @@ verified-by: 2026-10-26 复测订正 ①：agent 已删 `replace tellurion => ..
 
 | 你要做的事 | 必须 checkout | 为什么 |
 |---|---|---|
-| 改回测引擎 / 后端 API / 存储 | `tellurion`（core） | 自足：core 今天**不 require** 两个库仓，`go build ./...` 单仓就能过 |
+| 改回测引擎 / 后端 API / 存储 | `tellurion`（core） | 自足：core 已 `require` contracts `v0.9.0` / kit `v0.3.0`（走 tag、无 `replace`），`go build ./...` 单仓就能过 |
 | 加前端页面 / 跑 e2e | + `tellurion-ui` | `web/` 与 `e2e/` 只在 ui 仓，core 里没有 |
-| 动 AI 实验员 / 工具注册表 | + `tellurion-agent` | 且**必须与 core 同级目录**（见下） |
+| 动 AI 实验员 / 工具注册表 | + `tellurion-agent` | 同级目录**可选**：S3 后已无 `replace`，`go build` 不要求 core 同级 |
 | 改跨边界类型 / 横切工具 | + `tellurion-contracts` / + `tellurion-kit` | 契约与工具库各自单仓可构建 |
-| 用数据 / 策略 / 风控 / 分析 / 编排 / 交易网关六服务 | **不需要**（除非你要改那个仓） | 六仓**均已实装**（各自 `cmd/*service`；broker 无 `cmd`）；但 core 只真接了 data（读）与 risk（开关默认关），strategy / analytics / orchestration / broker 无 core 调用方。生产 `:8081` 仍由 core `cmd/data` 提供，不是 `tellurion-data` |
+| 用数据 / 策略 / 风控 / 分析 / 编排 / 交易网关六服务 | 要起哪个就 checkout 哪个 | 六仓**均已实装**（各自 `cmd/*service`）；core 侧已接 data（只读面）、strategy（`resolve`，空 `strategy_ref` 不触发）、risk（`resolve` 快照，出厂开）、orchestration（新 run 排队）、broker（通道，默认 Mock）；analytics **有意不接**（ADR-0005）。生产 `:8081` 由 `tellurion-data` 提供，不是 core |
 | 改本仓文档 | 只本仓 | 门禁是链接检查 + 跨仓引用检查（见 §6） |
 
 推荐的工作区形态：
@@ -62,7 +62,7 @@ Workspace/
 
 **今天它是可选的**（这一点和很多「多仓联调」直觉相反，所以写清楚）：
 
-- core 已 `require` `github.com/ruoxizhnya/tellurion-contracts v0.6.0` / `tellurion-kit v0.1.1`
+- core 已 `require` `github.com/ruoxizhnya/tellurion-contracts v0.9.0` / `tellurion-kit v0.3.0`
   （走 tag，无 `replace`），单仓 `go build ./...` / `go vet ./...` 就能过 —— **不需要**
   `go.work`，只有要同时改库仓源码时才用。
 - agent **不再**靠 `replace` 指向本地 core（S3 已删，零 import core），同样不需要 `go.work`。
@@ -169,7 +169,9 @@ export DATABASE_PASSWORD=postgres
 #   原生跑法必须覆盖成回环，否则拒绝启动）
 AUTH_INSECURE=true SERVER_HOST=127.0.0.1 go run ./cmd/analysis   # :8085
 
-go run ./cmd/data        # :8081（TUSHARE_TOKEN 空 → 适配器降级，服务照常起）
+# 数据面不在 core：8081 由 tellurion-data 提供（core 已无 `cmd/data`）
+# cd ../tellurion-data && DATABASE_URL=... TUSHARE_TOKEN=... go run ./cmd/dataservice   # :8081
+
 go run ./cmd/dualrun -strategy bh   # 双跑对账；需侧车 + 真库，见 nt-sidecar-operations.md §1.2
 ```
 
@@ -216,9 +218,14 @@ npm run dev                  # :5173，Vite 只代理 /api → http://localhost:
 | 端口 | 谁 | 说明 |
 |---|---|---|
 | 8080 | `tellurion-ui` 的 nginx | SPA + `/api` 反代（`tellurion-ui:deploy/nginx-spa.conf`） |
-| 8081 | core `cmd/data` | 数据服务 |
+| 8081 | `tellurion-data` 的 `cmd/dataservice` | 数据服务（core 已无 `cmd/data`） |
 | 8085 | core `cmd/analysis` | 主 API 网关（含风控与执行裁决，进程内） |
 | 8086 | agent `cmd/ai` | copilot / pipeline / explore / tools 四族 |
+| 8087 | `tellurion-analytics` 的 `cmd/analyticsservice` | 只读分析（core 不调用） |
+| 8088 | `tellurion-orchestration` 的 `cmd/orchestrationservice` | job / batch / walkforward |
+| 8089 | `tellurion-risk` 的 `cmd/riskservice` | 规则真相源 + 监控 |
+| 8090 | `tellurion-strategy` 的 `cmd/assetservice` | 策略资产 |
+| 8091 | `tellurion-broker` 的 `cmd/brokergateway` | 交易通道（Mock） |
 | 5173 | Vite dev server | 仅开发 |
 | 9100 | core `nt-sidecar` | Nautilus 侧车，运维见 [nt-sidecar-operations.md](nt-sidecar-operations.md) |
 | 5432 / 6379 | 原生 PG / Redis | 无 TimescaleDB（只是 Warn）、Redis 无 `requirepass` |
@@ -318,16 +325,16 @@ cd tellurion && go test ./... -count=1
 
 | 坑 | 现象 | 处置 |
 |---|---|---|
-| **容器构建必红** | `docker-compose up` 在 `go build ./cmd/strategy` 处失败 | 见 §4「已知阻断」；用原生 `go run` |
-| **在 agent 仓直接 `go run ./cmd/ai`** | `Failed to read config file` 后 Fatal | 给 `CONFIG_PATH=../tellurion/config/ai-service.yaml` |
+| **容器构建必红（历史）** | `docker-compose up` 在 `go build ./cmd/strategy` 处失败 | 该目录 REV-16 已删、`Dockerfile.service` 同步行也已删；现在的真阻断是 `make build` 的 `build-data`（见本表「本机没有 `make`」行） |
+| **在 agent 仓直接 `go run ./cmd/ai`** | `Failed to read config file` 后 Fatal | agent 已自持 `config/ai-service.yaml`，仓根直跑即可；若自定义路径才给 `CONFIG_PATH` |
 | **原生跑法报 `database password is empty`** | 拷了 `.env` 却没用 —— Go 侧不加载 dotenv | `export DATABASE_PASSWORD=postgres`（`.env` 只服务 compose） |
-| **agent 被放到别处** | 编译期 `replace tellurion => ../tellurion` 解析失败 | 必须与 core 同级 |
+| ~~**agent 被放到别处**~~ | ~~编译期 `replace tellurion => ../tellurion` 解析失败~~ | 已解除（S3 删 `replace`，agent 零 import core） |
 | **`web/` 在 core 里找不到** | `cd web` 报目录不存在 | 前端在 `tellurion-ui:web/`，2026-10-09 已拆出 |
 | **`pkg/ai` 在 core 里找不到** | 同上 | AI 层在 `tellurion-agent:pkg/ai/` |
 | **存储测试"通过"但其实没跑** | 连不上库时 `testStore()` 会 `t.Skip` | 起 Postgres 再跑；`go test -v` 看 SKIP 数 |
 | **新库是空的** | 少数依赖预置数据的测试在空库下 `t.Skip` | 起 PG 并跑一次数据同步；多数存储层测试已「自灌自证」 |
 | **Windows 特有的测试失败** | 写死 POSIX 路径（`/tmp`）在 Windows 下语义不同 | 新增测试用 `t.TempDir()` |
-| **本机没有 `make`** | `make build` 报 `command not found`（Windows + Git Bash 未装 make） | 用 `go build ./...`；跨仓护栏用 `sh tools/ci/agent_compat.sh`。**注意 `Makefile` 本身是好的** —— 它只 build `cmd/analysis` 与 `cmd/data`，两个目录都在（`build-execution` / `build-risk` / `build-strategy` 早已删除，别再照旧文档以为 `make build` 必炸） |
+| **本机没有 `make`** | `make build` 报 `command not found`（Windows + Git Bash 未装 make） | 用 `go build ./...`；跨仓护栏用 `sh tools/ci/agent_compat.sh`。⚠️ **即使装了 `make`，`make build` 今天也会失败** —— core `Makefile` 的 `build-data` 仍指向 `cmd/data/Dockerfile`，而该目录已于 2026-11-08 删除（core 侧待修）。`make build-analysis` 可用 |
 | **容器里连不上数据库/缓存** | 应用日志 `connection refused` 指向 `localhost:5432` | 容器内必须用 `host.docker.internal`；漏注入时 `check_deploy_consistency.py` 检查 3 会报 |
 | **服务起不来：`Failed to connect to PostgreSQL`** | 连不上库是 `logger.Fatal()`、**没有重试** | 先 `tools/local-infra.sh status`；容器启动由 `deploy/wait-for-deps.sh` 有界等待 |
 | **服务起不来：`auth: JWT secret missing`** | 没密钥就拒绝启动 | 见 §5.5（① 带鉴权 或 ② 本地无鉴权） |

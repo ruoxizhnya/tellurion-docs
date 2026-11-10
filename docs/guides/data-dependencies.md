@@ -1,12 +1,14 @@
 ---
 status: evergreen
-last-verified: 2026-10-26
-verified-by: DOC-11（2026-10-26）订正 ①：`tellurion-data` 已实装 `cmd/dataservice` + 23 张 `market.*`/`ingest.*` schema，但生产 `:8081` 仍由 core `cmd/data` 提供。此前 DOC-08 改 12 仓口径 —— ① 仓归属逐项回实仓核对：取数/归一化/同步今天仍在
-  `tellurion:cmd/data` + `tellurion:pkg/data`（生产 `:8081` 仍由 core 提供），`tellurion-data` **已实装**
-  ② adapter 注册表实测 **12 个**（`tellurion:cmd/data/registry_init.go` 的 `reg.Register` 逐条数）；
-  ③ **AI 三项凭据的读取点已迁**：`tellurion` 全仓已无 `pkg/ai`，`grep AI_API_KEY` 只命中
-  `.env.example` 注释与 compose 本身；真读取点在 `tellurion-agent:pkg/ai/client.go`；
-  ④ `hkex` 仍在 `tellurion:internal/repoguard/package_wiring_test.go` 的 `unwiredPackages` 白名单里。
+last-verified: 2026-11-11
+verified-by: 代码-文档对齐审计（2026-11-11）全量订正 —— ① 仓归属按实仓重判：取数/归一化/同步/ingest 已整体在
+  `tellurion-data`（`cmd/dataservice` + `internal/{ingest,normalize,sync,schema,transport}`），core 已无
+  `cmd/data` / `pkg/data`，只保留 `pkg/marketdata`（只读客户端）与一条 `market.index_daily` DDL；
+  ② adapter 注册点改为 `tellurion-data:internal/ingest/connectors.go` 的 `Connectors()` / `RegisterConnectors`，
+  12 个 connector 逐条复核；③ `DATA_DISABLE_<NAME>` kill switch 随 core `registry_init.go` 一起删除，
+  现行开关是「transport 为 nil ⇒ disabled」+ 两个凭据 env（`TUSHARE_TOKEN` / `ALPHA_VANTAGE_KEY`）；
+  ④ `hkex` 在 12 仓中已无 Go 实现（仅存于历史仓 `quant-trading`），不再是「代码完整、零调用方」；
+  ⑤ 凭据读取点迁至 `tellurion-data:cmd/dataservice/main.go`；core 的 `config/data-service.yaml` 已无 Go 读取点。
   下文 §7 的 Tushare 实测数字沿用 2026-09-23 / 09-24 / 10-12 三次真库取证的读数（未重跑）。
 ---
 
@@ -24,16 +26,18 @@ verified-by: DOC-11（2026-10-26）订正 ①：`tellurion-data` 已实装 `cmd/
 
 | 数据面能力 | 今天在 | 目标（触发后） | 依据 |
 |---|---|---|---|
-| connector / 归一化 / 同步 / aggregator | `tellurion:cmd/data` + `tellurion:pkg/data` + `tellurion:pkg/marketdata` | `tellurion-data`（X1，**已实装 `cmd/dataservice` + `POST /ingest/points`，未切生产写**） | ADR-034、`repo-inventory.md` |
-| `market` / `ingest` 两个 schema 的 DDL owner | core 的 `pkg/storage/postgres.go`（`migrationStatements()`）**仍写裸名 `public.*`**；`tellurion-data:internal/schema` 另有 23 张 `market.*`/`ingest.*` DDL | `tellurion-data` | 同上；**今天双 owner，只有 `market.index_daily` 被裁决**（第四轮审计 P0-2） |
-| 因子**定义** / `SeriesSpec` | core（`pkg/domain/factor_def*`、`pkg/data/factor_registry.go`） | `tellurion-strategy`（定义）/ `tellurion-data`（值） | core `repo-inventory.md` §1.2 的 **R3** 行：定义归 strategy、值归 data、求值在消费点（ADR-035 §三 是那轮对账的升格摘要，**细则仍在 core 源文**） |
+| connector / 归一化 / 同步 / aggregator | `tellurion-data`：`cmd/dataservice` + `internal/{ingest,normalize,sync,transport}`（生产 `:8081` 的唯一提供者） | 已达成（2026-11-08 core `cmd/data` 删除） | ADR-034、core `repo-inventory.md` |
+| `market` / `ingest` 两个 schema 的 DDL owner | `tellurion-data:internal/schema`（23 张 `market.*` / `ingest.*`）；core 只剩一条 `market.index_daily`（`tellurion:pkg/storage/postgres.go` 的 Migration 057，供只读面自建） | `tellurion-data` | 双 owner 只剩 `market.index_daily`（第四轮审计 P0-2 的裁决对象） |
+| 因子**定义** / `SeriesSpec` | core（`pkg/domain/factor_def*`、`pkg/mining/registry.go` —— 原 `pkg/data/factor_registry.go` 已随 `SVC-CORE-DATA-RETIRE` 迁走） | `tellurion-strategy`（定义）/ `tellurion-data`（值） | core `repo-inventory.md` §1.2 的 **R3** 行：定义归 strategy、值归 data、求值在消费点（ADR-035 §三 是那轮对账的升格摘要，**细则仍在 core 源文**） |
 | AI 供应商凭据的**读取点** | `tellurion-agent:pkg/ai/client.go` | 同左 | 2026-10-09 AI 拆仓 |
 | `quant.*`（结果 / 订单 / 持仓） | core | core（订单归属是待裁项 U2，**先立 ADR 才能拆**） | `repo-inventory.md` §3.1 |
 
-> ⚠️ **六个服务仓均已实装（2026-10-26 复测）**：各有 `cmd/*service` 与自有 schema，
-> 不再是「只有 `go.mod` + `doc.go`」的占位仓。但**生产写者仍在 core** —— 本清单里所有
-> 「今天」的路径只在 data 的取值/同步与 AI 凭据两处已迁，其余仍指 core；等各仓 G3
-> 切读/停写完成后再整列搬家，不要提前按目标态写 `tellurion-data:cmd/...` 之外的路径。
+> ⚠️ **数据面已整体迁到 `tellurion-data`（2026-11-11 复核）**：生产 `:8081` 由
+> `tellurion-data:cmd/dataservice` 提供，core 的 `cmd/data` / `pkg/data` 已删除；core 只剩
+> `pkg/marketdata` 的只读客户端与 `market.index_daily` 一条 DDL。本清单凡写 `tellurion-data`
+> 的路径都已按实仓核对；其余仓的「今天」仍指其自身仓（策略运行时在 core、`quant.*` 在 core）。
+> 六个服务仓各有 `cmd/*service` 与自有 schema，但**不要把「已实装」读成「G3 已全量切读」** ——
+> 各仓闸门状态见 [`../SERVICE-INDEX.md`](../SERVICE-INDEX.md)。
 
 ---
 
@@ -50,9 +54,10 @@ xueqiu / juchao）、要么缺的是**代码依赖而不是 key**（mootdx 缺 G
 
 ## 2. registry 里已接线 12 个 adapter
 
-注册点在 `tellurion:cmd/data/registry_init.go`，全部在启动期注册；缺依赖的注册为
-**disabled**（降级运行而不是启动失败），所以「没配 key」不会让服务起不来，只会让
-Fetch 时那条链走空。
+注册点在 `tellurion-data:internal/ingest/connectors.go` 的 `Connectors(Transports)`，由
+`RegisterConnectors` 在启动期一次性装配 12 个 connector；**禁用 = 对应 transport 为 nil**
+（`Transports` 结构体零值），不读任何 `DATA_DISABLE_*` —— 所以「没配 key」不会让服务起不来，
+只会让 Fetch 时那条链走空。
 
 | adapter | 数据类型 | 凭据 | 现状 |
 |---|---|---|---|
@@ -69,40 +74,44 @@ Fetch 时那条链走空。
 | `tushare_daily_basic` | `market_activity`（D5） | 复用 `TUSHARE_TOKEN` | 已接线；token 空 → disabled |
 | `tushare_moneyflow` | `capital_flow`（DBT-09） | 复用 `TUSHARE_TOKEN` | 已接线；token 空 → disabled |
 
-后三个是 2026-10 新增的，**复用同一个 token、0 个新 key**，各自带独立 kill switch。
+后三个是 2026-10 新增的，**复用同一个 token、0 个新 key**；它们与其余源一样，禁用条件是
+transport 为 nil，没有按源的环境变量开关。
 
-**未接线**：`tellurion:pkg/data/source/hkex`（港股源）—— 代码完整、零调用方，登记在
-`tellurion:internal/repoguard/package_wiring_test.go` 的 `unwiredPackages` 白名单里
-（理由原文：「港股数据源，待数据同步接线」）。要港股行情先接它，**不用新 key**。
+**未接线**：`hkex`（港股源）在 12 仓中**已无 Go 实现** —— 它随历史仓 `quant-trading` 退役，
+`tellurion` / `tellurion-data` 全仓 grep `hkex` 零命中（只剩 `tellurion-data:docs/dataflow.md`
+的历史叙述）。原先的登记依据（`unwiredPackages` 白名单）已随 `pkg/data` 删除，
+`tellurion:internal/repoguard/package_wiring_test.go` 的 `unwiredPackages` 里已没有 `hkex`。
+要港股行情属于**新建 adapter**，不是「先接现成代码」，且不需要新 key。
 
-每个 adapter 都有独立 kill switch（`DATA_DISABLE_<NAME>`，见 `registry_init.go` 的
-`envDisabled`），不需要改代码就能单独关掉一个源。
+**没有按源的环境变量 kill switch**：`tellurion-data` 全仓 grep `DATA_DISABLE` / `envDisabled`
+零命中。现行开关是装配期传入的 transport：**为 nil 即 disabled**（启动不失败、Fetch 跳过）。
+要单独关一个源，得改装配代码或撤掉对应凭据（`TUSHARE_TOKEN` / `ALPHA_VANTAGE_KEY`）。
 
 > **链 ≠ 已生效**：除 `capital_flow` 外，其余链今天仍没有生产路径走 `Fetch`
-> （日线同步直连 `TushareClient`）。链配置的存在是为了让
-> `/api/datasource/registry/*` 展示真实意图，不是宣称降级能力已生效 ——
-> 机制由 `tellurion:internal/repoguard/registry_etl_wiring_test.go` 钉住。
+> （日线同步直连 `TushareClient`）。`tellurion-data` **没有** `/api/datasource/registry/*` 端点
+> （23 条路由里不存在 datasource registry），所以链配置不再承担「展示意图」的职能；
+> 12 个 connector 的声明面由 `tellurion-data:internal/ingest/declaration_test.go` 钉住。
 
 ---
 
-## 3. 凭据清单（写进 core 的 `.env`；模板 `tellurion:.env.example`）
+## 3. 凭据清单（各进程的环境变量；模板 `tellurion:.env.example`）
 
 | 变量 | 必需性 | 用途 | **谁读它（哪个仓）** | 现状 |
 |---|---|---|---|---|
-| **`TUSHARE_TOKEN`** | **阻塞项** | A 股行情 / 财务 / 复权因子 / 宏观 / 资金流 | `tellurion`（`tushare.token`，只能从 env 注入） | **空** |
-| `JWT_SECRET` | 必填，否则拒绝启动 | 鉴权 | `tellurion`（`auth.jwt_secret`）；agent 同构 | 需 `openssl rand -hex 32` |
-| `DATABASE_PASSWORD` | 必填 | 数据库（**唯一**一个密码变量） | `tellurion` / `tellurion-agent` | 默认 `postgres` |
+| **`TUSHARE_TOKEN`** | **阻塞项** | A 股行情 / 财务 / 复权因子 / 宏观 / 资金流 | `tellurion-data:cmd/dataservice/main.go`（`os.Getenv`，直接注入 Tushare transport） | 按部署注入；空 ⇒ tushare 系 4 个 connector 全部 disabled |
+| `JWT_SECRET` | 必填，否则拒绝启动 | 鉴权 | `tellurion`（`auth.jwt_secret`）、`tellurion-data`（`envFirst("JWT_SECRET","AUTH_JWT_SECRET")`）、agent 同构 | 需 `openssl rand -hex 32` |
+| `DATABASE_PASSWORD` / `DATABASE_URL` | 必填 | 数据库 | `tellurion` / `tellurion-agent` 用 `DATABASE_PASSWORD`；`tellurion-data` 用完整 `DATABASE_URL`（空 ⇒ fail-closed 503） | 默认 `postgres` |
 | `AI_API_KEY` + `AI_API_URL` + `AI_MODEL` | 可选 | 因果维 / AI 实验员 / Copilot / 探索观察台 | **`tellurion-agent:pkg/ai/client.go`**（直读 env） | key 已配（MiniMax CN）；URL/模型见 §4 |
-| `ALPHA_VANTAGE_KEY` | 可选 | 跨境行情 fallback | `tellurion`（`alpha_vantage.api_key`） | 空 |
+| `ALPHA_VANTAGE_KEY` | 可选 | 跨境行情 fallback | `tellurion-data:cmd/dataservice/main.go`（`os.Getenv`） | 空 |
 
 两个读取路径的坑（都已修，别踩回去）：
 
-- `tushare.token` **只能**从 env 注入。`tellurion:config/data-service.yaml` 里留空串是**有意**的：
-  早先写字面量 `${TUSHARE_TOKEN}`，而这个仓库没有展开器，于是「未配置」伪装成「配了一个内容为
-  `${TUSHARE_TOKEN}` 的 token」→ 40101 静默失败。这条不变量由
-  `tellurion:tools/check_deploy_consistency.py` 的检查 7 守（`config/*.yaml` 不得出现 `${`）。
-- `ALPHA_VANTAGE_KEY` 同时存在 env 与 viper 两个入口，**viper（配置文件）优先**，两者都设且不同时
-  会打 warn（见 `registry_init.go` 的 CR-54 注释）。
+- `TUSHARE_TOKEN` **只从 env 读**（`os.Getenv("TUSHARE_TOKEN")`），没有配置文件入口。core 的
+  `config/data-service.yaml` 仍留在仓里，但**已无 Go 读取点**（core 2026-11-11 审计 G-02 登记为死配置），
+  不要再把 token 往里写。`tellurion:tools/check_deploy_consistency.py` 的检查 7 仍在守
+  「`config/*.yaml` 不得出现 `${`」—— 那是历史不变量，不是当前数据面的配置入口。
+- `ALPHA_VANTAGE_KEY` 同样只从 env 读；空 ⇒ `alpha_vantage` connector 的 transport 为 nil（disabled）。
+  旧的「env 与 viper 双入口、viper 优先 + CR-54 warn」随 core `registry_init.go` 删除，已不存在。
 
 ---
 
@@ -146,8 +155,8 @@ Fetch 时那条链走空。
 
 ## 7. 历史取证（结论仍成立；数字是各次实测读数）
 
-> 这一节的正文属于 core 的 P2 台账取证，随 `pkg/data` 搬去 `tellurion-data` 时一起搬。
-> 保留在原地的理由：这些是「为什么这么选」的证据链，删了下次会重新踩。
+> 这一节的正文属于 core 的 P2 台账取证；代码已随 `pkg/data` 迁入 `tellurion-data`，
+> 取证结论与读数保持原样（未重跑）。
 
 ### 7.1 跨境已完成、宏观已落地（P2-1）
 
@@ -156,8 +165,9 @@ Fetch 时那条链走空。
 - **宏观（汇率 / 利率 / 物价 / 货币）**：**已落地**（2026-10-12）。
   `quant.macro_series` 的 DDL 在 `tellurion:pkg/storage/postgres.go`
   （`Migration 050`，文档副本 `tellurion:docs/migrations/050_add_macro_series_table.sql`，
-  **不执行**，只作历史证据）；`pkg/data/source` 新增 `DataTypeMacro` + `TushareMacroAdapter`；
-  只读 API `GET /api/macro/series`。跨境之外的另一半（大宗 / 境外宏观）**仍未接**。
+  **不执行**，只作历史证据）；`tellurion-data:internal/transport/tushare/macro.go`（原
+  `pkg/data/source` 的 `DataTypeMacro` + `TushareMacroAdapter`）；
+  只读 API 仍在 core 的 `GET /api/macro/series`。跨境之外的另一半（大宗 / 境外宏观）**仍未接**。
 
 候选源与代价（选型依据）：
 
@@ -217,7 +227,7 @@ Fetch 时那条链走空。
 | `stock_basic` | ✅ |
 | `stk_factor` / `stk_factor_pro` | ❌ **40203 无权限** |
 
-**现改为 `daily` + `adj_factor` 自己算复权**（`tellurion:pkg/data/tushare.go`），口径取自
+**现改为 `daily` + `adj_factor` 自己算复权**（`tellurion-data:internal/transport/tushare/stocks.go`），口径取自
 Tushare 官方 `adj_factor` 文档示例 4：
 
 ```
@@ -229,7 +239,7 @@ Tushare 官方 `adj_factor` 文档示例 4：
 数据不更新」，而 `adj_factor` 是每日更新的因子（盘前 8:30-9:30 入库），自己算可以避开快照问题。
 代价是每次取数要两次请求。
 
-**hfq 落库仍被推迟，判据如下**（`tellurion:pkg/data/tushare_adjustment_integration_test.go`
+**hfq 落库仍被推迟，判据如下**（`tellurion-data:internal/transport/tushare/stocks_test.go`
 真库 + 真 Tushare + 真引擎实测）：
 
 - 把每只票的价格乘一个正数常数（收益率序列逐点不变），同一策略、同一批票、同一引擎，

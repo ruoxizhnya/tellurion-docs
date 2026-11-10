@@ -1,7 +1,7 @@
 ---
 status: evergreen
-last-verified: 2026-10-26
-verified-by: DOC-10 + DOC-11 + DOC-12（2026-10-26）：按第四轮目的对齐审计与 ADR-036 订正 §3 依赖边、§5「今天实际」、§7 阶梯/过渡态（六仓=服务、G0 并行、risk 控制面+进程内裁决、broker 服务）；实测依据 = 12 仓 `go.mod` / `git log` / 各仓 `cmd/*service` 默认监听 / core `deploy/k8s/` / core 配置开关。此前：分仓后的总体设计重写（12 仓已建、ADR-D29/D30/D31 已裁决）；逐条对照 core 的 repo-topology / repo-inventory 与六份服务设计文档
+last-verified: 2026-11-11
+verified-by: 代码-文档对齐审计（2026-11-11）：订正 §3 依赖边（`contracts` 与 `kit` 实测互不 require）、§4「今天」四条链路、§5「今天实际」六行、§7 阶梯与过渡态；删去「生产写入仍由 core `cmd/data` 主写」「core 侧零调用方（strategy/risk）」「core `backtest_jobs` 双 owner」「core 仍留 `experiments`/`factor_hypothesis`」四处过期陈述。依据 = 各仓 `AGENTS.md` / `docs/TASKS.md` + core `internal/repoguard/*_retired_test.go` + 12 仓 `go.mod`。此前：DOC-10 + DOC-11 + DOC-12（2026-10-26）按第四轮目的对齐审计与 ADR-036 订正 §3 依赖边、§5「今天实际」、§7 阶梯/过渡态。
 ---
 
 # 总体设计（SYSTEM DESIGN）
@@ -59,10 +59,12 @@ verified-by: DOC-10 + DOC-11 + DOC-12（2026-10-26）：按第四轮目的对齐
 
 | 从 | 到 | 方式 |
 |---|---|---|
-| `contracts` | `kit` | 编译期（只用 decimal / errors 这类纯工具） |
 | `core` / `agent` / 六个服务 | `contracts`（+ `kit`） | `require` **版本号**，禁 `replace`、禁 `go.work` 入库 |
 | `agent` / `ui` | `core` | **HTTP**（agent 已于 2026-10-25 S3 删 `replace`、零 import core；ui 无 Go 依赖） |
 | 六个服务 | 互相 | **不 import**：要靠 contracts 的形状 + HTTP；服务之间不该有编译期耦合 |
+
+> **`contracts` 与 `kit` 互不依赖**（2026-11-11 实测：两者 `go.mod` 都没有对方）。原表里的
+> 「`contracts` → `kit` 编译期」是拆仓初期的猜测，已被实测推翻。
 
 > **core 的 module path 是单段短名 `tellurion`**，Go 会拒绝任何仓 `require` 它 —— 这是"agent 不许编译期依赖 core"的机械保证，不靠纪律（依据：ADR-D30 §0.1 的 Go 1.25 实测）。
 
@@ -70,12 +72,12 @@ verified-by: DOC-10 + DOC-11 + DOC-12（2026-10-26）：按第四轮目的对齐
 
 ## 4. 四条主链路（今天在哪跑 / 目标在哪跑）
 
-| 链路 | 今天（2026-10-20） | 目标态 | 关键约束 |
+| 链路 | 今天（2026-11-11） | 目标态 | 关键约束 |
 |---|---|---|---|
-| **回测** | ui → core `cmd/analysis` 的 HTTP → `pkg/backtest` 引擎（进程内）→ 读行情（同进程直连 PG）→ 结果落库 | 引擎仍在 core；**取数走 `tellurion-data` 的 aggregator（run 前 1 次）** | 同一 `dataset_snapshot_hash` 的两次拉取必须逐位一致；前视由 `visible_at` 拦两道 |
-| **AI 实验** | agent（`cmd/ai`）→ 生成策略 → 调 core 回测 → 实验日志落 core 的 `quant` / `research` | agent 自持 `ai.*`；与 core 只走 HTTP 粗粒度 | 实验必须能回答"用哪份策略 / 数据 / 规则"（三 hash） |
-| **实盘** | core 进程内 `RiskPolicy.CheckOrder` → `pkg/live` 的 `MockTrader`（仅 paper） | 裁决仍进程内；通道走 `tellurion-broker`（对账 + 幂等 + 熔断之后） | **同步裁决永不出仓**；无对账/幂等/熔断不接真钱 |
-| **批量 / 分析** | core 内 `pkg/backtest/batch` + `walkforward` + `cmd/analysis` 的指标/归因 | 排队与 worker 归 `tellurion-orchestration`；指标与归因归 `tellurion-analytics` | 编排**只派活不裁决**；分析**纯函数**（不读时钟、不读随机，蒙特卡洛必须带 `seed`） |
+| **回测** | ui → core `cmd/analysis` 的 HTTP → `pkg/backtest` 引擎（进程内）→ 读行情（`pkg/marketdata`：HTTP 客户端 / 本地 PG 两条实现）→ 结果落库 | 引擎仍在 core；**取数走 `tellurion-data` 的 aggregator（run 前 1 次）** | 同一 `dataset_snapshot_hash` 的两次拉取必须逐位一致；前视由 `visible_at` 拦两道 |
+| **AI 实验** | agent（`cmd/ai`）→ 生成策略 → 调 core 回测 → 实验日志落 agent 自持的 `ai.*` | agent 自持 `ai.*`；与 core 只走 HTTP 粗粒度 | 实验必须能回答"用哪份策略 / 数据 / 规则"（三 hash） |
+| **实盘** | core 进程内 `RiskPolicy.CheckOrder`（限额来自 risk 快照）→ `pkg/brokerhttp` 调 `tellurion-broker`（Mock 网关） | 裁决仍进程内；通道走 `tellurion-broker`（对账 + 幂等 + 熔断之后） | **同步裁决永不出仓**；无对账/幂等/熔断不接真钱 |
+| **批量 / 分析** | core 的 `pkg/backtest/batch` + `walkforward` 仍可跑；新的排队 / worker 走 `tellurion-orchestration`；指标/归因仍在 core `cmd/analysis` | 排队与 worker 归 `tellurion-orchestration`；指标与归因归 `tellurion-analytics` | 编排**只派活不裁决**；分析**纯函数**（不读时钟、不读随机，蒙特卡洛必须带 `seed`） |
 
 ---
 
@@ -83,12 +85,12 @@ verified-by: DOC-10 + DOC-11 + DOC-12（2026-10-26）：按第四轮目的对齐
 
 | schema | owner | 消费方怎么读 | 今天实际 |
 |---|---|---|---|
-| `market` / `ingest` | `tellurion-data` | 只读 API（`/datasets/*`） | 表在 core 库；data 仓已有 23 张 `market.*`/`ingest.*` DDL 与 `POST /ingest/points`；**生产写入仍以 core `cmd/data` 为主**（X1 未完） |
-| `strategy` | `tellurion-strategy` | 写侧 HTTP / 读侧 resolve | 定义仍住 core 的 `quant.strategies` + 本地注册表；strategy 仓已有 5 张 `strategy.*` 表与 12 端点，**core 侧零调用方**（X2 未切读） |
-| `risk` | `tellurion-risk` | run 前拉快照（内容寻址）；事件异步回传 | 规则快照已住 `risk.*`（core 提交时 resolve 取 `risk_rules_hash`）；**`bundle→RiskPolicy` 未接**，进程内限额仍来自 core 配置；事件回传开关默认关（X3 部分） |
-| `analysis` | `tellurion-analytics` | 只读上游结果，写自己的报告 | core `cmd/analysis` 仍直接算；analytics 仓已有 8 端点与 `analysis.*` 5 表，**core 侧零调用方**（X4 未切读） |
-| `run` | `tellurion-orchestration` | 任务状态 / artifact 指针 / **`strategy_state` 检查点**（**不含**订单、成交、持仓——那是 `quant`） | orchestration 已有 `run.*` 6 表与 worker 面；core 仍以裸表 `backtest_jobs` 为状态/结果权威，**两表并存**（X5 部分） |
-| `ai` | `tellurion-agent` | 自持自读 | agent 已自持 `ai.*`（QT-17，`experiments` 已停写）；core 仍留 `experiments` / `factor_hypothesis` 裸表与写方法（后者生产零调用方） |
+| `market` / `ingest` | `tellurion-data` | 只读 API（`/datasets/*`） | 生产写入由 `tellurion-data` 独占（core `cmd/data` 于 2026-11-08 删除）；core 只剩 `market.index_daily` 一条 DDL 与 `pkg/marketdata` 只读客户端 |
+| `strategy` | `tellurion-strategy` | 写侧 HTTP / 读侧 resolve | 内置策略仍在 core 本地 registry（不联网）；非空 `strategy_ref` 走本仓 `resolve`（`strategy_asset.resolve_url`，出厂启用）；core 的旧 DB 注册表已删（SVC-STRAT-G3，2026-11-10） |
+| `risk` | `tellurion-risk` | run 前拉快照（内容寻址）；事件异步回传 | core `LoadRiskPolicy` 走 `POST /api/risk/resolve` 的内联 `snapshot` → `risk.PolicyFromSnapshot`（`resolve_enabled` 出厂 **true**，`SVC-CORE-RISK-RETIRE` 2026-11-09）；事件回传 `events_enabled` 仍出厂 **false** |
+| `analysis` | `tellurion-analytics` | 只读上游结果，写自己的报告 | core `cmd/analysis` 仍直接算（ADR-0005：metrics/reporting 保留冻结、不迁移）；analytics 是独立只读服务，**core 零调用是有意为之**（`SVC-AN-G3` 关闭、K7 挂起） |
+| `run` | `tellurion-orchestration` | 任务状态 / artifact 指针（**不含**订单、成交、持仓——那是 `quant`；`strategy_state` 留 core） | `run.*` 是唯一状态权威；core 裸表 `backtest_jobs` / `walk_forward_reports` 已于 Migration 065 删除；worker 进程仍在 core（`cmd/worker`） |
+| `ai` | `tellurion-agent` | 自持自读 | agent 是唯一写者；core 的 `experiments` / `factor_hypothesis` 裸表与写方法已于 2026-11-10 退役（`SVC-CORE-AI-RETIRE`） |
 | `quant` | `tellurion`（core） | 只有 core 写 | 运行态真相：订单/成交/持仓/组合快照/对账/`risk_events`（`strategy_state` 已裁**留 core**，U3 作废） |
 | `audit` | `tellurion`（core，`pkg/eventstore` + `pkg/msgbus`） | 只追加；用于消息重放 | 与 `risk.audit_logs`（人操作审计）**不是一回事** |
 | 无表 | `contracts` / `kit` / `broker` / `ui` | — | 见各仓 `db-schema.md` 的"为什么没有表" |
@@ -118,19 +120,19 @@ verified-by: DOC-10 + DOC-11 + DOC-12（2026-10-26）：按第四轮目的对齐
 | **S-1** | 12 仓改名 + 建仓 + 推送 | ✅ 完成（QT-60，2026-10-20） |
 | **W0** | 契约形状冻结（abi v2 / 四契约 / 错误三分 / 重放） | ✅ 完成（2026-10-25；QT-01~04） |
 | **S1** | 契约与工具**直接落两个新仓**，core / agent 用 `require` 伪版本（**无 replace**） | ✅ 完成（ADR-D31 形态；contracts / kit 代码已落） |
-| **S2** | 两仓打 `v0.1.0`，下游换 tag；两仓自治补齐 | ✅ 完成（结案时 contracts `v0.6.0` / kit `v0.1.3`；kit 现最新 `v0.1.4`，见 §7 下「服务间凭证」；下游按 tag pin） |
+| **S2** | 两仓打 `v0.1.0`，下游换 tag；两仓自治补齐 | ✅ 完成（结案时 contracts `v0.6.0` / kit `v0.1.3`；截至 2026-11-11 最新 contracts `v0.9.0`、kit `v0.3.0`，下游按 tag pin） |
 | **S3** | agent 删 `replace ../tellurion`，只依赖 tag + HTTP | ✅ 完成（2026-10-25；agent 零 import core） |
-| **X1~X6** | 六个能力服务按 ADR-036 服务化 | 🔶 **G0/G1/G2 并行、G3 切读串行**：ADR-036 已裁「六仓 = 六服务」；G0（Dockerfile + deploy + config + 唯一端口 + 健康检查）已在各仓补齐；data 读链已真接线，risk 有客户端但开关默认关，其余四条待 G3。**不再要求「升格 ADR」——ADR-036 是总纲；单服务切读/停写用本仓任务单记录** |
+| **X1~X6** | 六个能力服务按 ADR-036 服务化 | ✅ 收口（2026-11-11）：六仓 G0–G4 全绿 —— data G3 2026-11-10、strategy G3/G4 2026-11-10、risk G1/G3/G4 2026-11-10、orchestration G1/G3 2026-11-09、broker G1/G2/G4 已落；analytics 的 `SVC-AN-G3` 由 ADR-0005 关闭、`K7` 挂起，broker `X6c` ⏸。逐仓证据见 [`SERVICE-INDEX.md`](SERVICE-INDEX.md) 与各仓台账归档 |
 
 **已知过渡态（写在这里，避免被当成设计）**：
 - ~~`agent` 仍 `replace ../tellurion`~~ → **已于 2026-10-25 S3 消除**；今天 agent 只走 HTTP。
-- 六个服务仓**已实装**（各自 `cmd/*service`；broker 按 ADR-036 追加服务入口），`api-schema.md` 描述的是**已实现的契约**，但只有 data 一条读链在生产路径上。
+- 六个服务仓**已实装并在 core 装配**：data / strategy / risk 三条读链在 core 生产路径上，orchestration 承接新 run 排队，broker 承接通道；analytics **不接**（ADR-0005 有意为之）。
 - **ADR-036（2026-10-26）已把六仓定性为服务**：G0/G1/G2 并行补部署、接口与数据；G3 切读/停写按依赖串行；risk 保留「控制面服务 + core 进程内裁决」；broker 先落 Mock 服务，真实 XTP 仍受 X6c 阻塞。
-- 行情 / 任务 / 策略定义 / 风控事件仍由 core 主写；服务仓的 `db-schema.md` 是**双写/迁入中**的归属，不是唯一写者。**4 个簇 DDL 双 owner**（market / run / strategy / ai）+ **risk 裁决权双真相**（core `RiskPolicy` vs risk `bundle`），只有 `market.index_daily` 被单独裁决过。
+- **DDL 双 owner 已收窄到一处**：`market.index_daily`（core `pkg/storage/postgres.go` Migration 057）。`run` / `strategy` / `ai` 三簇的 core 侧表已退役（Migration 065 / SVC-STRAT-G3 / SVC-CORE-AI-RETIRE）。
 - **部署路径**：core 的 `Dockerfile.service` 已于 2026-10-26 删除 `cmd/strategy` 的 build/COPY 行；六个服务仓按 ADR-036 各自持有 `Dockerfile + deploy/compose.yaml`，本地联调走 `docker-compose.services.yml`。**部署真相 = compose**；K8s 清单若与仓内 Dockerfile/镜像名不一致即视为 experimental。
-- **服务间凭证已可用**（2026-10-25/26）：kit `v0.1.4` 已发版；data / risk / analytics 已 pin `v0.1.4`，`service` token 的 401 已关闭。剩余矩阵分叉：core 仍 `v0.1.1`、agent 仍 `v0.1.0`（非阻塞，登记即可）。
+- **服务间凭证**：kit 最新 `v0.3.0`；core 已升 `v0.3.0`，agent/data/strategy/risk/analytics/orchestration 为 `v0.2.0`，broker 未引入。`v0.1.4` 起 `role=service` 的非数字 subject 不再 401，服务间调用可用。
 
-> 以上四条与 §5 的「今天实际」由 [核心仓第四轮目的对齐审计](https://github.com/ruoxizhnya/tellurion/blob/main/docs/design/qt-decoupling/purpose-alignment-audit-2026-10-26.md) 取证；本文不复制其正文。
+> 上文过渡态由 2026-11-11 代码-文档对齐审计复核（依据各仓 `AGENTS.md` / `docs/TASKS.md`、core `internal/repoguard/*_retired_test.go`、12 仓 `go.mod`）；更早的取证见 [核心仓第四轮目的对齐审计](https://github.com/ruoxizhnya/tellurion/blob/main/docs/design/qt-decoupling/purpose-alignment-audit-2026-10-26.md)。本文不复制其正文。
 
 ---
 

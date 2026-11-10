@@ -201,7 +201,7 @@ cd nt-sidecar
    `trade_date AS date`。改 SELECT 而不改映射表是因为 `date` 是跨语言契约定下的
    json tag（"加一种数据类 = 映射加一行"的机制不动）。
 2. **成交量单位（已统一）**：
-   - 同步侧 `pkg/data` 按 `sharesPerLot`（一手 = 100 股）换算 + `math.Round`。
+   - 同步侧 `tellurion-data` 的 ingest（原 `pkg/data`）按 `sharesPerLot`（一手 = 100 股）换算 + `math.Round`。
      取整是必须的：真库 392.6 万行里 **37 万行**的 `volume×100` 在 float64 下
      不是精确整数（最大误差 4.77e-07），不取整会被 `as_quantity` 的
      `is_integer()` 判成「不是整数」→ 整批数据被判损坏。
@@ -231,7 +231,7 @@ cd nt-sidecar
 因对拍的两内核同源同变，对齐仍在 K15 阈值内。
 
 **尚未覆盖（登记在案）**：日线 fallback 链还有 mootdx / eastmoney
-（`cmd/data/registry_init.go` 的 `DataTypeOHLCDaily` 链 = tushare → mootdx →
+（`tellurion-data:internal/ingest/connectors.go` 的 `DataTypeOHLCDaily` 链 = tushare → mootdx →
 eastmoney）。mootdx 的 `vol` 单位在项目内**无实测依据**（TDX 惯例是「手」），
 本单**未改**——启用该 fallback 前须实测并用同一 ×100 对齐。当前
 `ohlcv_daily_qfq` 的 392.6 万行全部来自 tushare，故该缺口不影响现网。
@@ -241,7 +241,7 @@ eastmoney）。mootdx 的 `vol` 单位在项目内**无实测依据**（TDX 惯�
 2026-10-16，跟 DATA-04 的既有统一，不是再统一）。三行核对结论：
 
 1. **国内线口径**：成交量权威单位 = **股**（`SPEC.md` 规范层 Schema 声明 +
-   `pkg/data` 同步边界 `×sharesPerLot` 换算 + migration 052 存量对齐）。
+   `tellurion-data` 同步边界（原 `pkg/data`）`×sharesPerLot` 换算 + migration 052 存量对齐）。
 2. **证据**：归档台账 DATA-04 完成记录（2026-10-14）——392.6 万行全表换算、
    非整数行 0、与备份 0 mismatch、幂等重跑 no-op；旧 catalog `1158366`（手）
    → 新 `115836645`（股）。

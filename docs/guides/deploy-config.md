@@ -1,8 +1,8 @@
 ---
 status: evergreen
 type: how-to
-last-verified: 2026-10-26
-verified-by: 2026-10-26 复测订正 ①：六仓已有各自 `deploy/compose.yaml`（此前记「六仓本身无 `deploy/`」已失效）；② `Dockerfile.service` 的 `go build ./cmd/strategy` 行与 `strategy-service` COPY 行已删除（现只 build `./cmd/data` / `./cmd/analysis`）；③ core `deploy/k8s/` 的 risk / analytics 两份清单**已删**（裁决 #5），k8s 现 8 份，六服务以各仓 `deploy/compose.yaml` 为准；④ agent 已自持 `config/ai-service.yaml` + `deploy/wait-for-deps.sh`，Dockerfile 无 `--from=core`；core `docker-compose.yml` 也已同步（删 `additional_contexts`、entrypoint 改 `/app/deploy/wait-for-deps.sh`，`docker compose build ai-service` 实测成功）。此前：DOC-08 改 12 仓口径，逐项回实仓取证 —— ① 部署资产逐文件定归属（core
+last-verified: 2026-11-11
+verified-by: 2026-11-11 代码-文档对齐审计订正：① core `docker-compose.yml` 的 `data-service` 已改为 `context: ../tellurion-data`（不再是 core 镜像），应用服务为 data/analysis/ai/worker/dualrun；② `cmd/data/Dockerfile` 已随目录删除，`Makefile` 的 `build-data` 是死目标（core 待修）；③ `config/data-service.yaml` 已无 Go 读取点（core 审计 G-02）；④ k8s 的 `data-deployment.yaml` 仍写 `tellurion/data:latest`，该镜像已无构建目标。此前 2026-10-26 复测订正 ①：六仓已有各自 `deploy/compose.yaml`（此前记「六仓本身无 `deploy/`」已失效）；② `Dockerfile.service` 的 `go build ./cmd/strategy` 行与 `strategy-service` COPY 行已删除；③ core `deploy/k8s/` 的 risk / analytics 两份清单**已删**（裁决 #5），k8s 现 8 份；④ agent 已自持 `config/ai-service.yaml` + `deploy/wait-for-deps.sh`；core `docker-compose.yml` 也已同步。此前：DOC-08 改 12 仓口径，逐项回实仓取证 —— ① 部署资产逐文件定归属（core
   `docker-compose*.yml` / `Dockerfile.service` / `cmd/*/Dockerfile` / `config/*.yaml` /
   `deploy/k8s/*` / `deploy/wait-for-deps.sh`；ui `Dockerfile` + `deploy/nginx-spa.conf`；
   agent `Dockerfile` 曾依赖命名上下文 `core`）；② `deploy/k8s/` 无 ai-service 清单
@@ -32,18 +32,18 @@ verified-by: 2026-10-26 复测订正 ①：六仓已有各自 `deploy/compose.ya
 
 | 资产 | 在哪个仓 | 说明 |
 |---|---|---|
-| `docker-compose.yml` / `docker-compose.e2e.yml` | `tellurion` | 三个服务：data / analysis / ai（**没有** web，也**没有** strategy）。e2e 那份只覆盖限流额度，不定义服务 |
+| `docker-compose.yml` / `docker-compose.e2e.yml` | `tellurion` | core compose 的应用服务：`data-service`（**`context: ../tellurion-data`**）、`analysis-service`、`ai-service`、`worker`、`dualrun`（+ postgres/redis）。e2e 那份只覆盖限流额度，不定义服务 |
 | `docker-compose.nt.yaml` | `tellurion` | NT 侧车的容器形态；**Windows 下不可用**（`network_mode: host` 进的是 Linux VM 命名空间，见 [nt-sidecar-operations.md](nt-sidecar-operations.md) §3） |
-| `Dockerfile.service` | `tellurion` | compose 的 data / analysis 共用这一个（多阶段） |
-| `cmd/analysis/Dockerfile` · `cmd/data/Dockerfile` | `tellurion` | `Makefile` 的镜像目标用这两个 |
-| `config/{analysis,data}-service.yaml` | `tellurion` | analysis / data 两份在 core；`ai-service.yaml` core 与 `tellurion-agent` **各一份**（agent 自持副本，2026-10-26 起，见 §1.1-2） |
-| `deploy/k8s/*.yaml`（含 `web-deployment.yaml` / `ingress.yaml`） | `tellurion` | 编排清单全在 core，**包括 web 的** |
+| `Dockerfile.service` | `tellurion` | `analysis-service` / `worker` / `dualrun` 共用这一个（多阶段） |
+| `cmd/analysis/Dockerfile` | `tellurion` | 今天**只剩这一个** `cmd/*/Dockerfile`；`cmd/data/Dockerfile` 已随目录删除，`Makefile` 的 `build-data` 目标因此是死的（core 待修） |
+| `config/{analysis,data}-service.yaml` | `tellurion` | `analysis-service.yaml` 有真实读取点；`data-service.yaml` **已无 Go 读取点**（core 2026-11-11 审计 G-02 登记为死配置）。`ai-service.yaml` core 与 `tellurion-agent` 各一份（逐值一致） |
+| `deploy/k8s/*.yaml`（含 `web-deployment.yaml` / `ingress.yaml`） | `tellurion` | 编排清单全在 core，**包括 web 的**；8 份。⚠️ `data-deployment.yaml` 仍写 `image: tellurion/data:latest`，而该镜像已无构建目标（core 待修），实际数据面跑在 compose 的 `../tellurion-data` |
 | `deploy/wait-for-deps.sh` | `tellurion` | 容器启动的有界等待（替换被移除的 `depends_on`） |
 | `tools/{local-stack,local-infra}.sh` · `tools/check_deploy_consistency.py` | `tellurion` | 起栈入口与静态护栏 |
 | `Dockerfile`（nginx + SPA） | `tellurion-ui` | 前端镜像的**构建真相**，端口 8080 |
 | `deploy/nginx-spa.conf` | `tellurion-ui` | `/api` 反代 + SSE 关缓冲 + history 回退 |
 | `Dockerfile`（ai-service） · `config/` · `deploy/` | `tellurion-agent` | 2026-10-26 起单仓自持：无 `--from=core`，`COPY config/ai-service.yaml` + `COPY deploy/wait-for-deps.sh` |
-| 六个服务仓的部署资产 | 各服务仓 | 六仓已有各自 `deploy/compose.yaml`（2026-10-26 入库：`context: ..` + 各仓 `Dockerfile`，端口 data 8081 / risk 8089 / strategy 8090 / analytics 8087 / orchestration 8088 / broker 8091）。core `deploy/k8s/` 的 `risk-` / `analytics-deployment.yaml` **已删**（裁决 #5，端口 8086 过期且无升格 ADR）；`data-deployment.yaml` 保留（`:8081` 一致）；k8s 现 **8 份**。**以各仓 `deploy/compose.yaml` 为准** |
+| 六个服务仓的部署资产 | 各服务仓 | 六仓已有各自 `deploy/compose.yaml`（`context: ..` + 各仓 `Dockerfile`，端口 data 8081 / risk 8089 / strategy 8090 / analytics 8087 / orchestration 8088 / broker 8091）。core `deploy/k8s/` 的 `risk-` / `analytics-deployment.yaml` **已删**（裁决 #5，端口 8086 过期且无升格 ADR）；`data-deployment.yaml` 保留，但镜像 `tellurion/data:latest` 已无构建目标（core 待修，见 §1 表注）；k8s 现 **8 份**。**以各仓 `deploy/compose.yaml` 为准** |
 
 ### 1.1 三处跨仓耦合（改之前先知道）
 
