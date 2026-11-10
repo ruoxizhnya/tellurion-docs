@@ -120,7 +120,7 @@ verified-by: 代码-文档对齐审计（2026-11-11）：订正 §3 依赖边（
 | **S-1** | 12 仓改名 + 建仓 + 推送 | ✅ 完成（QT-60，2026-10-20） |
 | **W0** | 契约形状冻结（abi v2 / 四契约 / 错误三分 / 重放） | ✅ 完成（2026-10-25；QT-01~04） |
 | **S1** | 契约与工具**直接落两个新仓**，core / agent 用 `require` 伪版本（**无 replace**） | ✅ 完成（ADR-D31 形态；contracts / kit 代码已落） |
-| **S2** | 两仓打 `v0.1.0`，下游换 tag；两仓自治补齐 | ✅ 完成（结案时 contracts `v0.6.0` / kit `v0.1.3`；截至 2026-11-11 最新 contracts `v0.9.0`、kit `v0.3.0`，下游按 tag pin） |
+| **S2** | 两仓打 `v0.1.0`，下游换 tag；两仓自治补齐 | ✅ 完成（结案时 contracts `v0.6.0` / kit `v0.1.3`；截至 2026-11-11 最新 contracts `v0.9.0`、kit `v0.3.0`，下游按 tag pin）。**pin 升级的推进顺序与前置只写在 [`REPO-MAP.md`](REPO-MAP.md) §「版本 pin 的推进顺序与前置」，此处不重复** |
 | **S3** | agent 删 `replace ../tellurion`，只依赖 tag + HTTP | ✅ 完成（2026-10-25；agent 零 import core） |
 | **X1~X6** | 六个能力服务按 ADR-036 服务化 | ✅ 收口（2026-11-11）：六仓 G0–G4 全绿 —— data G3 2026-11-10、strategy G3/G4 2026-11-10、risk G1/G3/G4 2026-11-10、orchestration G1/G3 2026-11-09、broker G1/G2/G4 已落；analytics 的 `SVC-AN-G3` 由 ADR-0005 关闭、`K7` 挂起，broker `X6c` ⏸。逐仓证据见 [`SERVICE-INDEX.md`](SERVICE-INDEX.md) 与各仓台账归档 |
 

@@ -39,6 +39,23 @@ ui ──(HTTP)──► core ◄──(HTTP)── agent
 
 > **`contracts` 与 `kit` 互不依赖**（2026-11-11 实测：两者 `go.mod` 都没有对方）。库是两个正交的：契约放业务形状，kit 放工具。
 
+### 版本 pin 的推进顺序与前置（2026-11-11）
+
+> 本节是这条规则的**唯一处**；`SYSTEM-DESIGN.md` §2 只放指针，避免两处漂移。
+
+**现状（实测）**：contracts 最新 `v0.9.0` —— core / agent / orchestration / broker 已 pin，data `v0.6.0`、strategy `v0.5.0`、risk / analytics 未引入。kit 最新 `v0.3.0` —— core 已 pin，agent / data / strategy / risk / analytics / orchestration 仍 `v0.2.0`，broker 未引入。
+
+**推进顺序（谁先升、为什么）**
+
+1. **库先发版，消费仓后升**。contracts / kit 是叶子库且互不依赖，可并行发版；消费仓不得先把 pin 指向未 push 的 tag（无法 `go get`，等于没发版）。
+2. **contracts 先于 kit**。contracts 的破坏面是跨仓形状（改签名 / 删符号会同时弄红多个仓），kit 的破坏面通常只在编译期工具 API。同一批升级先收缩契约形状、再升工具库，才能把「形状不兼容」与「工具 API 不兼容」两类红分开定位。
+3. **消费仓按「消费面从窄到宽」升**：data / strategy（单点消费）→ 六个能力服务各自的窄面 → agent（AI 侧多处）→ **core 最后**（AST 复核量最大：contracts 别名类 nontest 262 / test 533）。core 最后还有一个结构性原因：它是六服务的 HTTP 上游，先升会把所有服务的联调窗口压在同一时刻。
+4. **同一 PR 内做完三件事**：改 `go.mod` pin → `go build ./...` + `go vet ./...` → 更新本仓 `AGENTS.md` / `README.md` 里「已切 vX.Y.Z」的标注。只做前两件 = 下轮审计必红。
+5. **不跨仓强推**（2026-11-11 裁决）：本仓只记录现状与顺序，不代其他仓改 `go.mod`、不批量提 PR。某仓长期停在旧 pin 时，登记在该仓台账的「待升」项，不在此处标成「已切」。
+6. **回滚**：消费仓升级后构建红 ⇒ 该仓把自己的 `go.mod` 回退到上一个已发版本；库**不回退已发布 tag**（只前进发新版本，0.x 阶段也只加不减）。
+
+**前置（升之前必须满足）**：① 目标版本已 push annotated tag；② 该版本的 `CHANGELOG.md` 节与兼容矩阵行已更新（库仓 `check_release_matrix` 绿）；③ 若涉及删符号，先满足对应下游迁移单（如 contracts 的 `CT-06-ALIAS-EXIT` 要求三仓迁移完成）。
+
 > **箭头图例**：`A ──► B` = A 调用 / 依赖 B，箭头指向**被调方**（与下表「从 → 到」同向）。
 > 六服务的 HTTP 边一律是 **core → 各服务的「对外面」**（run 前取数 / 异步派活），
 > 六服务在此是**被调方** —— 与上表「对外面」列、各仓 `docs/ARCHITECTURE.md` §5
