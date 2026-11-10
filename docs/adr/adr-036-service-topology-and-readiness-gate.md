@@ -135,6 +135,8 @@ core / agent / ui / 六个服务
 
 > 既有任务已覆盖的部分（data `X1d` / orchestration `X5b` / broker `R4`）保留原单号，只补「删除代码」的验收；未覆盖的（AI / strategy / risk / analytics / data 代码退役）新增单。
 
+> **`public.data_migrations` 的过渡保留（2026-11-10 终扫）**：`SVC-CORE-DATA-RETIRE` 删掉了 052/054 两条消费它的 DML 迁移，但 core 仍保留建表语句。它是 core **自有**的一次性 DML 迁移记录器，与数据仓 `ingest.data_migrations`（回填哨兵）**不同 schema、不同用途、互不读取**，今天零写零读。按「可接受过渡」保留，理由 = 删它属迁移机制改造（需同批改 `pkg/storage/postgres.go`、repoguard 允许集与升级脚本），且不构成第二写者、不影响数据仓的回填口径。**退出条件**：core 下一次 DML 迁移不再复用本表（改用 `docs/migrations/` 的版本化迁移）时，同一笔删除建表语句与 `migrationStatements()` 条目、同步 repoguard 允许集，并由运维在部署 runbook 里执行 `DROP TABLE IF EXISTS public.data_migrations`。在此之前不新增写入者。
+
 ---
 
 ## 7. 后果
