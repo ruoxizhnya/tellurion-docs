@@ -39,9 +39,9 @@
 | `tellurion-contracts` | **lib：数据/契约** | 跨进程 DTO、领域值对象、端口接口、错误码、纯规范化函数；**禁止** DB/config/HTTP/工作流 |
 | `tellurion-kit` | **lib：工具** | 日志/错误/Decimal/DB/HTTP/鉴权/Clock/ID/可观测性；**禁止**业务概念与表结构 |
 | `tellurion-data` | **服务：数据面** | 数据摄取、归一化、PIT、`market.*`/`ingest.*` schema 的唯一 owner |
-| `tellurion-strategy` | **服务：策略资产 + 编译** | 资产注册/版本/构建/解析/promote；编译器独立进程 |
+| `tellurion-strategy` | **服务：策略资产 + 编译** | 资产注册/版本/构建/解析/promote；编译器独立进程。**core 消费边界（2026-11-10，`tellurion-strategy:ADR-0004`）**：内置策略走 core 本地 registry（不联网）；仅非空 `strategy_ref` 走本仓 resolve + 审批闸门；promote 由 agent/操作者直连本仓，core 只读校验、无 `/promote` 路由 |
 | `tellurion-risk` | **服务：风控控制面 + core 进程内裁决** | 服务拥有规则/快照/审计/监控；`RiskPolicy` 的同步裁决**仍在 core 进程内** |
-| `tellurion-analytics` | **服务：读侧计算** | 指标/归因/报告/敏感性；只读上游结果，写自己的报告 |
+| `tellurion-analytics` | **服务：读侧计算 / 参考实现** | 指标/归因/报告/敏感性；只读上游结果，写自己的报告。**2026-11-10 裁决（`tellurion-analytics:ADR-0005`）**：定位为**独立只读分析服务 / 参考实现**，core `metrics` / `reporting` **不迁移**（保留并冻结）；本仓不追求「core 有消费者」 |
 | `tellurion-orchestration` | **服务：运行编排控制面** | 任务队列/租约/worker 注册/artifact 指针；结果面留 core |
 | `tellurion-broker` | **服务：交易网关**（MVP = Mock；真钱 = X6c 阻塞） | 订单/撤单/查单/持仓/对账/紧急清仓；HTTP 面待 G1；真实 XTP 仍受 SDK 阻塞 |
 | `tellurion-docs` | 文档 | 非代码 |
@@ -65,6 +65,16 @@
 **G0 的边界**：`Dockerfile + compose 片段 + 仓内 config` 即满足「自有 deploy」；**不要求 K8s**。K8s 清单只在明确需要时添加，且必须能由该仓自己的 Dockerfile 构建出镜像。
 
 **G2 的边界**：同一个 PG 实例、按 schema 隔离、禁止跨 schema 写，即满足「自有数据」；**不要求每个服务一个物理库**。
+
+**G3 的边界（2026-11-10 按仓解释，不改门本身）**：「有消费者」是**按服务定位判定**的，不是一律要求 core 全量切读。
+
+| 仓 | G3 的适用解释 | 结论依据 |
+|---|---|---|
+| `tellurion-strategy` | 消费者存在但边界窄：内置策略走 core 本地 registry（不联网），只有非空 `strategy_ref` 真调本仓 resolve + 审批闸门；promote 直连本仓，core 只读校验。**不要求** core 全量解析/注册/promote 代理，**不要求** core 有 `/promote` 路由 | `tellurion-strategy:ADR-0004`、`SVC-STRAT-G3`（2026-11-10 收口） |
+| `tellurion-analytics` | **不要求有消费者**：定位为独立只读分析服务 / 参考实现，core 指标实现不迁移。G3 在本仓**撤销**，不再作为 open 项 | `tellurion-analytics:ADR-0005`、`SVC-AN-G3`（2026-11-10 关闭） |
+| `tellurion-broker` | 仍按原义等待消费者；真钱通道形态未定，**QT-45 / X6c 处置不在本轮** | `tellurion-broker:docs/TASKS.md` QT-45 |
+
+> 「旧实现删除或停写」一条仍对 strategy / broker 生效：strategy 的 core 本地 `strategies` 表与 DB 注册腿已删（运行时 `pkg/strategy` 保留）；analytics 的 core 实现按裁决**保留并冻结**，属「停写不删」的有意例外，冻结快照由 repoguard 护栏守住。
 
 ---
 
@@ -117,9 +127,9 @@ core / agent / ui / 六个服务
 |---|---|---|
 | core `pkg/data` + `cmd/data` 的行情/同步写路径 | `tellurion-data` | `SVC-CORE-DATA-RETIRE`（G3） |
 | core `pkg/backtest/job` / `batch` 的任务创建 | `tellurion-orchestration` | `SVC-CORE-RUN-RETIRE` |
-| core `strategies` 表 + 本地注册表 | `tellurion-strategy` | `SVC-CORE-STRAT-RETIRE`（运行时 `pkg/strategy` 保留） |
+| core `strategies` 表 + 本地注册表 | `tellurion-strategy` | `SVC-CORE-STRAT-RETIRE`（运行时 `pkg/strategy` 保留）· **2026-11-10 落账：表与 DB 资产注册腿已删，运行时/内置 registry 保留；`SVC-STRAT-G3` 按 ADR-0004 边界收口** |
 | core `pkg/risk` 本地规则配置 | `tellurion-risk` 控制面 + core `RiskPolicy` | `SVC-CORE-RISK-RETIRE`（只退役规则源，不退役裁决） |
-| core `pkg/backtest/metrics` / `reporting` | `tellurion-analytics` | `SVC-CORE-AN-RETIRE` |
+| core `pkg/backtest/metrics` / `reporting` | `tellurion-analytics` | `SVC-CORE-AN-RETIRE` · **2026-11-10 裁决：不迁移**，core 两包保留并冻结（3 条生产 import 快照由 repoguard 守住）；`SVC-AN-G3` 关闭，见 `tellurion-analytics:ADR-0005` |
 | core `pkg/live` / `pkg/live/broker` | `tellurion-broker` | `SVC-CORE-BROKER-RETIRE`（R4） |
 | core `experiments` / `factor_hypothesis` 遗留写方法 | `tellurion-agent` `ai.*` | `SVC-CORE-AI-RETIRE` |
 
@@ -168,6 +178,7 @@ core / agent / ui / 六个服务
 ## 9. 变更记录
 
 - 2026-10-26：新建。依据主任 2026-10-26 的四条指令与第四轮目的对齐审计；取代/修订 §1 所列条款。
+- 2026-11-10：**G3 按仓解释落账**（不改门本身）。§2 strategy / analytics 两行补 core 消费边界；§3 新增「G3 的边界」表；§6 strategy / analytics 两行补落账结论。依据：主任 2026-11-10 裁决 A —— strategy 按已落边界重写 `SVC-STRAT-G3` 验收（`tellurion-strategy:ADR-0004`），analytics 关闭 `SVC-AN-G3`、core 不迁移（`tellurion-analytics:ADR-0005`）。⑫「promote 走 core 网关」按**部署入口**（集群 ingress / 端口隔离）解释，core 无 `/promote` 路由；将来要求代码级网关需另立单。
 
 ---
 
