@@ -1,7 +1,7 @@
 ---
 status: evergreen
-last-verified: 2026-09-25
-verified-by: AUD-44 路径引用复核 + AUD-47 §5–§7 内容复核（2026-09-22）+ AUD-56 新增 §2.0「本机运行前置」（2026-09-24）—— ① 路径：`pkg/tracker` 已迁至 `pkg/backtest/tracker`、`docs/phase-gate-reviews.md` 已归档至 `docs/archive/research-2026-Q2/`、§4 的 CLI 示例标注为非真实接口；② 内容：§5 沙箱限制改为实测值（30s CPU + 1 GiB，ODR-020）、§6 覆盖率目标标注为「目标不是门禁」（CI 不设阈值）、§7.1 `format.test.ts` 8→28 例、§7.2 e2e 改为实测 17 spec / 160 例、`--project=chrome`→`chromium`；③ §2.0：记下本机跑全仓测试的两个环境前置（`PATH` 里要有 `go`、`GOPROXY=off`），两者都会造成「红了但不指向代码」的假信号 —— 取证见 TASKS.md 的 AUD-56；④ §7.2 补「实测读数与已知红」（2026-09-26）—— 干净环境整套 playwright 实测 **127 passed / 34 failed / 2 skipped**，34 条逐条归因（全部为既有用例漂移、与本轮改动零交集）并登记 **AUD-61**，另补 UI 用例的「前端宿主」前置（`BASE_URL` 默认 `:5173`）
+last-verified: 2026-11-12
+verified-by: DOC-FRONTMATTER-HYGIENE（2026-11-12）：frontmatter 校时 + 活跃层链接检查通过，正文未改（实质内容基线仍为下面这次复核）。此前：AUD-44 路径引用复核 + AUD-47 §5–§7 内容复核（2026-09-22）+ AUD-56 新增 §2.0「本机运行前置」（2026-09-24）—— ① 路径：`pkg/tracker` 已迁至 `pkg/backtest/tracker`、`docs/phase-gate-reviews.md` 已归档至 `docs/archive/research-2026-Q2/`、§4 的 CLI 示例标注为非真实接口；② 内容：§5 沙箱限制改为实测值（30s CPU + 1 GiB，ODR-020）、§6 覆盖率目标标注为「目标不是门禁」（CI 不设阈值）、§7.1 `format.test.ts` 8→28 例、§7.2 e2e 改为实测 17 spec / 160 例、`--project=chrome`→`chromium`；③ §2.0：记下本机跑全仓测试的两个环境前置（`PATH` 里要有 `go`、`GOPROXY=off`），两者都会造成「红了但不指向代码」的假信号 —— 取证见 TASKS.md 的 AUD-56；④ §7.2 补「实测读数与已知红」（2026-09-26）—— 干净环境整套 playwright 实测 **127 passed / 34 failed / 2 skipped**，34 条逐条归因（全部为既有用例漂移、与本轮改动零交集）并登记 **AUD-61**，另补 UI 用例的「前端宿主」前置（`BASE_URL` 默认 `:5173`）
 ---
 
 # Test Plan & Quality Assurance (TEST.md)

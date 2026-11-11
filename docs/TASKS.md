@@ -1,7 +1,7 @@
 ---
 status: active
-last-verified: 2026-11-11
-verified-by: 2026-11-11 全面审查 W7 台账立单（A5 授权）——新立 4 条知识库维护单（`DOC-PRODUCT-DRIFT-FIX` P1 / `DOC-P3-MATRIX-TABLE-GRAIN` P2 / `DOC-ADR-REQUESTID-CORRECTION` P2 / `DOC-FRONTMATTER-HYGIENE` P3），证据坐标引 ODR-068/069/072（本仓 `docs/archive/odr/`）；本轮只立单不修复。**立单复核三处订正**：① W1-F3 的 REPO-MAP 漂移已被主任 `ad80a3d` 修复 ⇒ DOC-PRODUCT-DRIFT-FIX 收窄到 PRODUCT/ROADMAP；② W2-F11 的 DATA-FUNDAMENTALS-READ-PUBLIC 已被主任归属裁决（data `a454726` 删读面 + core `c85abff`）取代 ⇒ 该 data 单标 ✅ 作废；③ W2-F10 矩阵残留收窄到 REPO-MAP `run.*` 粒度 + core 矩阵 `:43` 行（SYSTEM-DESIGN §5 已对齐）。此前：DOC-10 + DOC-11 + DOC-12 结案（2026-10-26：按第四轮审计订正现状 + ADR-036 服务化定位落档）。此前：DOC-06 结案（2026-10-25）：口径三问全部拍定（均取 §四 建议 A），PRODUCT 新增「系统构成」一节、VISION 只加指针不动八条原则与优先级序，docs/README 两行导航换成「现行」；同日新立 DOC-10（`SYSTEM-DESIGN.md` §7 的"六服务只有占位 doc.go"与实仓冲突）
+last-verified: 2026-11-12
+verified-by: 2026-11-12 W7 文档维护批次：`DOC-FRONTMATTER-HYGIENE` 结案（补 5 份活跃层 frontmatter、4 份校时、ARCHITECTURE 转 archived、ADR-001/024 索引标注）；其余三条（`DOC-PRODUCT-DRIFT-FIX` / `DOC-P3-MATRIX-TABLE-GRAIN` / `DOC-ADR-REQUESTID-CORRECTION`）按序施工中。此前：2026-11-11 全面审查 W7 台账立单（A5 授权）——新立 4 条知识库维护单（`DOC-PRODUCT-DRIFT-FIX` P1 / `DOC-P3-MATRIX-TABLE-GRAIN` P2 / `DOC-ADR-REQUESTID-CORRECTION` P2 / `DOC-FRONTMATTER-HYGIENE` P3），证据坐标引 ODR-068/069/072（本仓 `docs/archive/odr/`）；本轮只立单不修复。**立单复核三处订正**：① W1-F3 的 REPO-MAP 漂移已被主任 `ad80a3d` 修复 ⇒ DOC-PRODUCT-DRIFT-FIX 收窄到 PRODUCT/ROADMAP；② W2-F11 的 DATA-FUNDAMENTALS-READ-PUBLIC 已被主任归属裁决（data `a454726` 删读面 + core `c85abff`）取代 ⇒ 该 data 单标 ✅ 作废；③ W2-F10 矩阵残留收窄到 REPO-MAP `run.*` 粒度 + core 矩阵 `:43` 行（SYSTEM-DESIGN §5 已对齐）。此前：DOC-10 + DOC-11 + DOC-12 结案（2026-10-26：按第四轮审计订正现状 + ADR-036 服务化定位落档）。此前：DOC-06 结案（2026-10-25）：口径三问全部拍定（均取 §四 建议 A），PRODUCT 新增「系统构成」一节、VISION 只加指针不动八条原则与优先级序，docs/README 两行导航换成「现行」；同日新立 DOC-10（`SYSTEM-DESIGN.md` §7 的"六服务只有占位 doc.go"与实仓冲突）
 ---
 
 # TASKS — tellurion-docs 未完成项
@@ -63,17 +63,7 @@ verified-by: 2026-11-11 全面审查 W7 台账立单（A5 授权）——新立 
 - **⑥ 边界**：本仓 adr-027/029/017 注记；接线施工归 `tellurion-kit:KIT-REQUESTID-STDLIB` + 六仓安装（ODR-072）。
 - **owner**：待定
 
-### DOC-FRONTMATTER-HYGIENE · frontmatter 过期 / ARCHITECTURE 状态错位 / ADR 索引取代标注 [P3] ⬜
-
-- **① 目标**：补齐/校准本仓文档 frontmatter 卫生，让「没有 `last-verified` 的文档视为已腐烂」这条判据可执行。
-- **② 上下文**：全面审查 W1-F5（[ODR-068](archive/odr/odr-068-audit-wave1-product-governance.md)）。实测过期：`TEST.md` `last-verified` 2026-09-25、`PRODUCT.md` 2026-10-25、`VISION.md` 2026-10-25、`ROADMAP.md` 2026-10-26（均 >2 周）；`ARCHITECTURE.md` `status: evergreen` 但本仓 AGENTS §2 目录职责已定它为「拆仓前历史 Reference（不再更新）」⇒ `status` 应 `archived`。**立单复核订正**：原列「等 5 份过期」中 `SYSTEM-DESIGN.md` / `REPO-MAP.md` 已被主任 2026-11-11 刷新（不再过期）；「3 份缺 frontmatter」根层实测仅 `AGENTS_TEMPLATE.md`（模板，可豁免——施工时全仓扫描确认其余）；「ADR.md:43 adr-024 未标部分取代」须施工时以 ADR 正文核验取代关系（ADR-024 对 AI 生成代码部分取代 ADR-001 的 `plugin.Open`，索引是否需补标注以正文为准，不预设结论）。
-- **③ 要求**：① TEST/PRODUCT/VISION/ROADMAP 复核内容后更新 `last-verified`（实质漂移随 DOC-PRODUCT-DRIFT-FIX 同批改，本单只校 frontmatter 与状态）；② `ARCHITECTURE.md` `status` evergreen→archived（`type: reference` 保留），确认文件头「历史 Reference」横幅；③ 全仓扫描缺 frontmatter 的活跃层 `.md`，补齐或登记豁免（`AGENTS_TEMPLATE.md` 模板豁免）；④ 核验 `ADR.md` 索引 ADR-001/024 取代关系标注，缺则补（以 ADR 正文为准）。
-- **④ 约束与非目标**：不改 ADR 正文（只改 `ADR.md` 索引标注）；不动 SYSTEM-DESIGN/REPO-MAP（已刷新）；不为了过检查器给 `archive/` 加豁免；不改文档实质内容（实质漂移归 DOC-PRODUCT-DRIFT-FIX）。
-- **⑤ 验收**：活跃层 `.md` 无缺 frontmatter（豁免除外）；`ARCHITECTURE.md` `status: archived`；TEST/PRODUCT/VISION/ROADMAP `last-verified`≥施工日；`python tools/check_doc_links.py` 绿。
-- **⑥ 边界**：本仓 frontmatter 与 `ADR.md` 索引标注；实质内容漂移归 DOC-PRODUCT-DRIFT-FIX。
-- **owner**：待定
-
-> 除上文外，本仓无其它未做 / 挂起 / 外部依赖项（截至 2026-11-11 全面审查 W7 立单：新增 4 条知识库维护单 `DOC-PRODUCT-DRIFT-FIX` / `DOC-P3-MATRIX-TABLE-GRAIN` / `DOC-ADR-REQUESTID-CORRECTION` / `DOC-FRONTMATTER-HYGIENE`，证据坐标引 ODR-068/069/072；本轮只立单不修复）。跨仓施工任务不在本仓——见 §三指针。
+> 除上文外，本仓无其它未做 / 挂起 / 外部依赖项（截至 2026-11-12：W7 立单 4 条中 `DOC-FRONTMATTER-HYGIENE` 已结案并归档，其余三条见上）。跨仓施工任务不在本仓——见 §三指针。
 
 ## 三、跨仓指针（不在本仓，勿双写）
 

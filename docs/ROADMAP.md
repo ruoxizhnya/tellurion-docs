@@ -1,7 +1,7 @@
 ---
 status: evergreen
-last-verified: 2026-10-26
-verified-by: DOC-11（2026-10-26）：修正「当前阶段」与阶段表的自相矛盾（S0 已完成、S1 进行中），补工程解耦线与产品线的分工；产品阶段判据未改。此前：产品重构讨论（2026-09-16）
+last-verified: 2026-11-12
+verified-by: DOC-FRONTMATTER-HYGIENE（2026-11-12）：frontmatter 校时；实质阶段陈述漂移已在同批 DOC-PRODUCT-DRIFT-FIX 订正。此前：DOC-11（2026-10-26）：修正「当前阶段」与阶段表的自相矛盾（S0 已完成、S1 进行中），补工程解耦线与产品线的分工；产品阶段判据未改。此前：产品重构讨论（2026-09-16）
 supersedes: archive/ROADMAP-history.md（Phase 1-4 / Sprint 1-8）
 ---
 

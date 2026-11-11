@@ -1,3 +1,10 @@
+---
+status: archived
+type: reference
+last-verified: 2026-11-12
+verified-by: DOC-FRONTMATTER-HYGIENE（2026-11-12）：补 frontmatter；EquityDeep 已按 ADR-023 降为数据底座，本文为历史规格，正文未改
+---
+
 # EquityDeep 产品规格说明书
 
 **版本**: v1.1（可实现版，按 ADR-022 修订）

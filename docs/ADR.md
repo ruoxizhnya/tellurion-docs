@@ -17,7 +17,7 @@ verified-by: REV-15 六条 ADR 状态批量校准（2026-10-17）—— 002→Su
 
 | ADR | Title | Status | Date |
 |-----|-------|--------|------|
-| [ADR-001](adr/adr-001-plugin-loading.md) | Dynamic Plugin Loading vs. Compiled Strategies | Accepted | 2026-03-24 |
+| [ADR-001](adr/adr-001-plugin-loading.md) | Dynamic Plugin Loading vs. Compiled Strategies | Accepted（人工编写的策略插件机制保留；AI 生成代码不加载不执行，见 ADR-024 §4） | 2026-03-24 |
 | [ADR-002](adr/adr-002-timescaledb.md) | TimescaleDB vs. Vanilla PostgreSQL for OHLCV Storage | Superseded（原生 PG，见裁决记录） | 2026-03-24 |
 | [ADR-003](adr/adr-003-background-worker.md) | In-Process Backtest vs. Background Worker | Accepted | 2026-03-24 |
 | [ADR-004](adr/adr-004-scoring-method.md) | Rank-Based Composite Scoring vs. Portfolio Optimization | Accepted | 2026-03-24 |
@@ -40,7 +40,7 @@ verified-by: REV-15 六条 ADR 状态批量校准（2026-10-17）—— 002→Su
 | [ADR-021](archive/superseded-adr/adr-021-equitydeep-research-layer.md) | EquityDeep 纵向基本面研究层 — 双时间尺度层定位 + 契约式整合 (B1 深财务→因子 / B2 档案→MCP / B3 质量门禁共享) | **Superseded by ADR-023** | 2026-09-15 |
 | [ADR-022](archive/superseded-adr/adr-022-unified-research-platform.md) | 统一研究平台 — 单一数据面 + 双对等工作面 + 内容坐标证据 + 飞轮闭环 | **Superseded by ADR-023**（Proposed 期间即被取代，从未实施） | 2026-09-15 |
 | [ADR-023](adr/adr-023-ai-experimenter-lab.md) | **AI 实验员 + 人类监督者实验室** — 三层模型（AI 编排 / 能力 / 数据）+ EquityDeep 降为数据底座 + 挖掘/红队双 agent + 校准优于准确率 | **Accepted** | 2026-09-16 |
-| [ADR-024](adr/adr-024-expression-as-execution-target.md) | **策略执行载体是表达式，LLM 生成的代码只是 artifact** — 意图类型 → 确定性默认表达式映射；不做 `plugin.Open`（Windows 不支持 / 依赖版本须一致 / 违背 ADR-023）；value·quality 缺基本面数据时明确失败而非给假数字 | **Accepted** | 2026-09-17 |
+| [ADR-024](adr/adr-024-expression-as-execution-target.md) | **策略执行载体是表达式，LLM 生成的代码只是 artifact** — 意图类型 → 确定性默认表达式映射；不做 `plugin.Open`（Windows 不支持 / 依赖版本须一致 / 违背 ADR-023）；value·quality 缺基本面数据时明确失败而非给假数字 | **Accepted**（2026-10-06 部分被 ADR-029 取代：表达式唯一载体→双轨；「不做 `plugin.Open`」与三条理由保留） | 2026-09-17 |
 | [ADR-025](adr/adr-025-auth-exposure-publish-layer.md) | **P0-4 鉴权豁免的判据从「绑定地址」换成「发布层」** — 容器必须绑 `0.0.0.0` 才能被发布端口转发，于是新增逐字匹配的显式声明 `AUTH_INSECURE_EXPOSURE=loopback-published`；**基础不变量未放松**（改由静态检查 3c + 运行时 netstat 断言守）；本地默认 open-access，对外发布必须配 `JWT_SECRET` | **Accepted** | 2026-09-25 |
 | [ADR-026](adr/adr-026-first-admin-bootstrap-and-spa-auth.md) | **首个管理员自助引导 + SPA 鉴权** — 公开的 `POST /api/auth/bootstrap`（空表即门，事务级咨询锁，窗口一次性永久关闭）+ 公开的 `GET /api/auth/status`（SPA 无凭据时定分支）；前端补 token 注入 / 三态 401 刷新 / 路由守卫 / 登录页，**open-access 形态逐字节不变**；白名单与路由表由 AST 护栏机器对齐 | **Accepted** | 2026-09-25 |
 | [ADR-027](adr/adr-027-modular-decomposition-to-independent-services.md) | 模块化拆解为独立服务 — 簇①回测核心判定不拆 / 簇②AI 链路拆 ai-service / 簇③只读薄壳归位；数据 A/B 二分；8 步落地顺序；服务数 5→7 | **Proposed** | 2026-10-06 |

@@ -1,3 +1,9 @@
+---
+status: evergreen
+last-verified: 2026-11-12
+verified-by: DOC-FRONTMATTER-HYGIENE（2026-11-12）：补 frontmatter；正文未改
+---
+
 # AGENTS.md — tellurion-docs
 
 > **本仓是总体设计知识库，不是代码仓。** 任何 agent 进来先读这三行：

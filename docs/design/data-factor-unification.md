@@ -1,3 +1,10 @@
+---
+status: archived
+type: reference
+last-verified: 2026-11-12
+verified-by: DOC-FRONTMATTER-HYGIENE（2026-11-12）：补 frontmatter；本文为已收口蓝图（ADR-031 附件），正文未改
+---
+
 # 统一数据 Schema + 因子热插拔 + 双核热转换（蓝图，ADR-031 附件）
 
 > **状态**：已收口（2026-10-14）——挂为 [ADR-031](../adr/adr-031-kernel-pluggable-nt-ready.md)「决议变更记录」附件，§9 未决七条全部拍板。

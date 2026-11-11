@@ -1,7 +1,7 @@
 ---
 status: evergreen
-last-verified: 2026-10-25
-verified-by: DOC-06 成文（2026-10-25 口径②拍定：分仓工程纪律**不升入原则清单**，只留指针）——八条原则与优先级序一字未改；新增的是**两处指针**（文件头一句 + 边界表最后一行各一条，指向 SYSTEM-DESIGN §2/§8），并把"怎么搭"的链接从 ARCHITECTURE.md 换到 SYSTEM-DESIGN.md
+last-verified: 2026-11-12
+verified-by: DOC-FRONTMATTER-HYGIENE（2026-11-12）：frontmatter 校时，正文未改；八条原则与优先级序未动。此前：DOC-06 成文（2026-10-25 口径②拍定：分仓工程纪律**不升入原则清单**，只留指针）——八条原则与优先级序一字未改；新增的是**两处指针**（文件头一句 + 边界表最后一行各一条，指向 SYSTEM-DESIGN §2/§8），并把"怎么搭"的链接从 ARCHITECTURE.md 换到 SYSTEM-DESIGN.md
 supersedes: archive/VISION-full.md（74KB 原文）
 ---
 

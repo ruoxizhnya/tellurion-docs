@@ -1,3 +1,9 @@
+---
+status: evergreen
+last-verified: 2026-11-12
+verified-by: DOC-FRONTMATTER-HYGIENE（2026-11-12）：补 frontmatter；正文未改
+---
+
 # tellurion-docs — 总体设计知识库
 
 > 5 分钟了解本仓：[SERVICE.md](SERVICE.md)

@@ -1,7 +1,7 @@
 ---
 status: evergreen
-last-verified: 2026-10-25
-verified-by: DOC-06 成文（2026-10-25 口径三问拍定：扩展舱按"可选项"叙事 / 工程纪律不升入 VISION / 系统构能用功能粒度）——哲学层未动，只补「系统构成」一节并把架构指针从 ARCHITECTURE.md 换到 SYSTEM-DESIGN.md
+last-verified: 2026-11-12
+verified-by: DOC-FRONTMATTER-HYGIENE（2026-11-12）：frontmatter 校时；实质接线现状漂移已在同批 DOC-PRODUCT-DRIFT-FIX 订正。此前：DOC-06 成文（2026-10-25 口径三问拍定：扩展舱按"可选项"叙事 / 工程纪律不升入 VISION / 系统构能用功能粒度）——哲学层未动，只补「系统构成」一节并把架构指针从 ARCHITECTURE.md 换到 SYSTEM-DESIGN.md
 supersedes: 2026-09-15 版（"双对等工作面 + 飞轮闭环"）
 ---
 

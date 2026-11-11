@@ -1,8 +1,8 @@
 ---
-status: evergreen
+status: archived
 type: reference
 last-verified: 2026-10-17
-verified-by: 拆仓后状态横幅 + 跨仓链接显式化（REV-14，2026-10-17）—— 实现章节已失效，定位收缩为「目标架构愿景 + 历史 Reference」，拓扑/端口/表数以 core 仓为唯一事实源；4 条跨仓死链改为显式相对路径。此前：模块化内核融入 + 文档治理（2026-10-08）—— 新增「目标架构：模块化内核」节（D1–D5 已拍板，蓝图 design/kernel/）；删 :8086 死图（cmd/ai 已删）/ ADR-022 废弃正文 / 前端 AI 组件 DEPRECATED 清单；策略接口与 ExpressionStrategy 双写归 SPEC（单一事实源）。（前次：代码审查 2026-09-16 + AUD-14 校准 2026-09-21）
+verified-by: 拆仓后状态横幅 + 跨仓链接显式化（REV-14，2026-10-17）—— 实现章节已失效，定位收缩为「目标架构愿景 + 历史 Reference」，拓扑/端口/表数以 core 仓为唯一事实源；4 条跨仓死链改为显式相对路径。此前：模块化内核融入 + 文档治理（2026-10-08）—— 新增「目标架构：模块化内核」节（D1–D5 已拍板，蓝图 design/kernel/）；删 :8086 死图（cmd/ai 已删）/ ADR-022 废弃正文 / 前端 AI 组件 DEPRECATED 清单；策略接口与 ExpressionStrategy 双写归 SPEC（单一事实源）。（前次：代码审查 2026-09-16 + AUD-14 校准 2026-09-21）。2026-11-12 DOC-FRONTMATTER-HYGIENE：`status` evergreen→archived（对齐 `AGENTS.md` §2「拆仓前历史 Reference，不再更新」），正文未改
 ---
 
 > ⚠️ **现行总体设计见 [SYSTEM-DESIGN.md](SYSTEM-DESIGN.md)**；本文是**拆仓前的历史 Reference**（端口 / 表数 / 包归属均以 core 为准），只用于查历史判断。

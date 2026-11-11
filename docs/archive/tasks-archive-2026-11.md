@@ -23,6 +23,7 @@
 | DOC-13 | ADR-036 就绪门 ↔ 工单 对照索引（防「门有人写、单没人立」） | 2026-11-07 | —（原文未记） | 见本节原文 |
 | DOC-15 | `REPO-MAP` 依赖图补「core → agent 是 HTTP 反代、不是领域依赖」（DDD 审查 C7） | 2026-11-11 | `98a5909` | [原文](#DOC-CORE-AGENT-PROXY-NOTE) |
 | DOC-16 | `REPO-MAP` contracts / kit 版本列按各仓 `go.mod` 实测订正（DDD 审查 C11） | 2026-11-11 | `98a5909` | [原文](#DOC-REPO-MAP-VERSION-CORRECTION) |
+| DOC-FRONTMATTER-HYGIENE | frontmatter 过期 / ARCHITECTURE 状态错位 / ADR 索引取代标注 | 2026-11-12 | 本次 commit | [原文](#DOC-FRONTMATTER-HYGIENE) |
 
 ---
 
@@ -160,3 +161,22 @@ PRODUCT.md 的导航行现在指 [`ARCHITECTURE.md`](ARCHITECTURE.md)（已被 D
 - **⑤ 验收**：`REPO-MAP.md` 的版本列逐仓与 `go.mod` 一致；`python tools/check_doc_links.py` 活跃层 0 断（EXIT 0）。
 - **⑥ 边界**：本仓 `docs/REPO-MAP.md`；各仓 pin 的推进归各自台账。
 - **收口（2026-11-11）**：commit `98a5909`；同批 `SYSTEM-DESIGN.md` §4 目标态改「core 指标权威、analytics 不迁移」、§5 新增 `public` 行（ADR-039 落点）。
+
+---
+
+## 2026-11-12 收口（W7 文档维护）
+
+> 本节收 2026-11-11 全面审查 W7 立单的四条知识库维护单。任务原文按 `docs/TASKS.md` 立单版逐字保留，收口记录追加在每单末尾。
+
+<a id="DOC-FRONTMATTER-HYGIENE"></a>
+### DOC-FRONTMATTER-HYGIENE · frontmatter 过期 / ARCHITECTURE 状态错位 / ADR 索引取代标注 [P3] ✅（2026-11-12）
+
+- **① 目标**：补齐/校准本仓文档 frontmatter 卫生，让「没有 `last-verified` 的文档视为已腐烂」这条判据可执行。
+- **② 上下文**：全面审查 W1-F5（[ODR-068](odr/odr-068-audit-wave1-product-governance.md)）。实测过期：`TEST.md` `last-verified` 2026-09-25、`PRODUCT.md` 2026-10-25、`VISION.md` 2026-10-25、`ROADMAP.md` 2026-10-26（均 >2 周）；`ARCHITECTURE.md` `status: evergreen` 但本仓 AGENTS §2 目录职责已定它为「拆仓前历史 Reference（不再更新）」⇒ `status` 应 `archived`。**立单复核订正**：原列「等 5 份过期」中 `SYSTEM-DESIGN.md` / `REPO-MAP.md` 已被主任 2026-11-11 刷新（不再过期）；「3 份缺 frontmatter」根层实测仅 `AGENTS_TEMPLATE.md`（模板，可豁免——施工时全仓扫描确认其余）；「ADR.md:43 adr-024 未标部分取代」须施工时以 ADR 正文核验取代关系（ADR-024 对 AI 生成代码部分取代 ADR-001 的 `plugin.Open`，索引是否需补标注以正文为准，不预设结论）。
+- **③ 要求**：① TEST/PRODUCT/VISION/ROADMAP 复核内容后更新 `last-verified`（实质漂移随 DOC-PRODUCT-DRIFT-FIX 同批改，本单只校 frontmatter 与状态）；② `ARCHITECTURE.md` `status` evergreen→archived（`type: reference` 保留），确认文件头「历史 Reference」横幅；③ 全仓扫描缺 frontmatter 的活跃层 `.md`，补齐或登记豁免（`AGENTS_TEMPLATE.md` 模板豁免）；④ 核验 `ADR.md` 索引 ADR-001/024 取代关系标注，缺则补（以 ADR 正文为准）。
+- **④ 约束与非目标**：不改 ADR 正文（只改 `ADR.md` 索引标注）；不动 SYSTEM-DESIGN/REPO-MAP（已刷新）；不为了过检查器给 `archive/` 加豁免；不改文档实质内容（实质漂移归 DOC-PRODUCT-DRIFT-FIX）。
+- **⑤ 验收**：活跃层 `.md` 无缺 frontmatter（豁免除外）；`ARCHITECTURE.md` `status: archived`；TEST/PRODUCT/VISION/ROADMAP `last-verified`≥施工日；`python tools/check_doc_links.py` 绿。
+- **⑥ 边界**：本仓 frontmatter 与 `ADR.md` 索引标注；实质内容漂移归 DOC-PRODUCT-DRIFT-FIX。
+- **owner**：待定
+- **收口（2026-11-12）**：① TEST / PRODUCT / VISION / ROADMAP 四份 `last-verified` 校到 2026-11-12；② `ARCHITECTURE.md` `status: evergreen`→`archived`，`type: reference` 与文首「拆仓前历史 Reference」横幅保留；③ 全仓扫描活跃层（排除 `docs/adr` / `docs/archive`）实测缺 frontmatter 的 5 份已补齐——`AGENTS.md`、`README.md`（`status: evergreen`）与 `docs/design/data-factor-unification.md`、`docs/design/equitydeep/EquityDeep_{Product,Technical}_Specification.md`（`status: archived` + `type: reference`），仅剩 `docs/AGENTS_TEMPLATE.md` 按模板豁免；④ `ADR.md` 索引按正文补两处标注：ADR-001 标「人工编写的策略插件机制保留；AI 生成代码不加载不执行，见 ADR-024 §4」，ADR-024 标「2026-10-06 部分被 ADR-029 取代：表达式唯一载体→双轨；『不做 plugin.Open』与三条理由保留」。验收：`python tools/check_doc_links.py` 活跃层 248 条 / 0 断（EXIT 0）；破坏验证＝向 `docs/README.md` 追加一条指向不存在文件的链接 → 活跃层 1 断、EXIT 1 → 逐字节还原 → 0 断、EXIT 0。
+
