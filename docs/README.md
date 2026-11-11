@@ -1,7 +1,7 @@
 ---
 status: evergreen
-last-verified: 2026-10-25
-verified-by: DOC-06 成文同批改导航（2026-10-25）：PRODUCT / VISION 两行从「待重写」换成「现行」，并写明各自**改了什么、没动什么**；此前 2026-10-20 的拆仓导航重构不变
+last-verified: 2026-11-11
+verified-by: 2026-11-11 增加服务卡导航行（guides/service-card.md 规范 + 模板 + 示例），此前 2026-10-25 DOC-06 的 PRODUCT / VISION 导航口径不变
 ---
 
 # Quant Lab 文档入口
@@ -47,6 +47,7 @@ verified-by: DOC-06 成文同批改导航（2026-10-25）：PRODUCT / VISION 两
 | 看阶段规划 | [ROADMAP.md](ROADMAP.md) | 现行 |
 | 本地起步（环境 / 命令 / 已知坑） | [guides/local-dev.md](guides/local-dev.md) | 现行 |
 | NT 侧车运维（版本升级 / 故障回退） | [guides/nt-sidecar-operations.md](guides/nt-sidecar-operations.md) | 现行 |
+| 5 分钟了解某个仓**是什么、和谁连、坏了找谁** | [guides/service-card.md](guides/service-card.md)（规范 + [模板](guides/service-card-template.md) + 示例） | 现行（2026-11-11 规范设计；12 仓未落地） |
 | 加数据源 / 加因子 / 跑一轮实验 | — | 待补（S1 / S3 开工前再写） |
 | 实盘接口（核心抽象实盘-ready，仅 paper 实现） | [live-trading.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/live-trading.md) | 已标注 |
 | **当前在做什么** | [TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md) | 现行（只放未完成项） |
