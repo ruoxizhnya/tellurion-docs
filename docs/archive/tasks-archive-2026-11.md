@@ -21,6 +21,8 @@
 | DOC-11 | 长效文档现状对齐（REPO-MAP 状态列 / ROADMAP 当前阶段 / guides 三处 / README 条数） | 2026-10-26 | —（原文未记） | 见本节原文 |
 | DOC-12 | ADR-036 服务化目标拓扑落档 + 12 仓定位同步 | 2026-10-26 | —（原文未记） | 见本节原文 |
 | DOC-13 | ADR-036 就绪门 ↔ 工单 对照索引（防「门有人写、单没人立」） | 2026-11-07 | —（原文未记） | 见本节原文 |
+| DOC-15 | `REPO-MAP` 依赖图补「core → agent 是 HTTP 反代、不是领域依赖」（DDD 审查 C7） | 2026-11-11 | `98a5909` | [原文](#DOC-CORE-AGENT-PROXY-NOTE) |
+| DOC-16 | `REPO-MAP` contracts / kit 版本列按各仓 `go.mod` 实测订正（DDD 审查 C11） | 2026-11-11 | `98a5909` | [原文](#DOC-REPO-MAP-VERSION-CORRECTION) |
 
 ---
 
@@ -130,3 +132,31 @@
 PRODUCT.md 的导航行现在指 [`ARCHITECTURE.md`](ARCHITECTURE.md)（已被 DOC-03 降级为拆仓前历史 Reference）。重写时该改指 [SYSTEM-DESIGN.md](SYSTEM-DESIGN.md)——这是**改链接**，不需口径，DOC-06 成文时一并收掉即可。
 
 > F1~F7 是 2026-10-25 的读数。口径只冻结**判据**，不冻结数字：成文当日若与实仓不符，以当日实测为准，并回来订正本节。
+
+---
+
+## 2026-11-11 收口（DDD 边界审查 C7 / C11）
+
+> 本节收 2026-11-10 之后收口、未进入上面「原文归档」的单；上面那份是 2026-11-10 及以前原文件的逐字快照，不改写。来源：`tellurion-docs:docs/design/ddd-boundary-review-2026-11-11.md` §4；裁决批 ADR-038~041（`tellurion:docs/TASKS.md` §三 有 13 条落点表）。
+
+<a id="DOC-CORE-AGENT-PROXY-NOTE"></a>
+### DOC-15 · `REPO-MAP` 依赖图补「core → agent 是 HTTP 反代、不是领域依赖」[P2] ✅（2026-11-11）
+
+- **① 目标**：让 `REPO-MAP.md` 的依赖图脚注能回答「core ↔ agent 是不是双向领域调用」，避免读者把前端反代当成上下游客商边。
+- **② 上下文**：DDD 边界审查 C7（2026-11-11）实测——`agent → core` 是业务调用（提交回测 / 读结果 / 表达式校验）；`core → agent` 只有 `cmd/analysis` 的 proxy 处理器，是**前端请求的 HTTP 反代**，无领域语义、无落库、无回调。原依赖图只画边、不区分这两类。
+- **③ 要求**：① `REPO-MAP.md` 依赖图后补一条脚注，写明两条边的性质差异；② 写明「图上只画 `agent ──► core`」；③ 写明将来若出现「core 主动调 agent 做业务决策」必须先立 ADR。
+- **④ 约束与非目标**：只补脚注与一句判据；不改 `SYSTEM-DESIGN.md` §2 的依赖边正文（避免两处漂移），不改任何仓的代码与路由。
+- **⑤ 验收**：`REPO-MAP.md` 能一句话区分「反代」与「领域依赖」；`python tools/check_doc_links.py` 活跃层 0 断（EXIT 0）。
+- **⑥ 边界**：本仓 `docs/REPO-MAP.md`；反代实现与是否保留归 `tellurion`（core 的 C8 退役单）。
+- **收口（2026-11-11）**：commit `98a5909`（`docs/REPO-MAP.md` 依赖图脚注）；同批 ADR-038~041 与 `docs/design/ddd-boundary-review-2026-11-11.md` 落地。
+
+<a id="DOC-REPO-MAP-VERSION-CORRECTION"></a>
+### DOC-16 · `REPO-MAP` contracts / kit 版本列与推进顺序段按实测订正 [P2] ✅（2026-11-11）
+
+- **① 目标**：把 `REPO-MAP.md` 里 12 仓的 contracts / kit pin 版本与「谁已 pin、谁待升」的读数改成 2026-11-11 各仓 `go.mod` 实测值。
+- **② 上下文**：DDD 边界审查 C11（2026-11-11）实测——contracts 已发 `v0.10.0`，core / agent / broker / orchestration / strategy / data 均 pin `v0.10.0`，risk / analytics 未引入；原文版本列仍写 `v0.9.0`、data `v0.6.0`、strategy `v0.5.0`，与 `go.mod` 不一致。
+- **③ 要求**：① 版本列表格与「现状（实测）」段按 `go.mod` 订正；② 推进顺序段与依赖偏差段同步（含把 `RISK-CONTRACTS-SNAPSHOT-MIGRATION` 与 ADR-040 写成迁移单指针）；③ 明确本单只订正文档读数。
+- **④ 约束与非目标**：不动任何仓的 `go.mod`；不替代各仓的升版单；不改 kit 的真实读数（kit 最新 `v0.3.0` 一条本就正确，原样保留）。
+- **⑤ 验收**：`REPO-MAP.md` 的版本列逐仓与 `go.mod` 一致；`python tools/check_doc_links.py` 活跃层 0 断（EXIT 0）。
+- **⑥ 边界**：本仓 `docs/REPO-MAP.md`；各仓 pin 的推进归各自台账。
+- **收口（2026-11-11）**：commit `98a5909`；同批 `SYSTEM-DESIGN.md` §4 目标态改「core 指标权威、analytics 不迁移」、§5 新增 `public` 行（ADR-039 落点）。
