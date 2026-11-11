@@ -1,7 +1,7 @@
 ---
 status: evergreen
 last-verified: 2026-11-12
-verified-by: DOC-FRONTMATTER-HYGIENE（2026-11-12）：frontmatter 校时；实质接线现状漂移已在同批 DOC-PRODUCT-DRIFT-FIX 订正。此前：DOC-06 成文（2026-10-25 口径三问拍定：扩展舱按"可选项"叙事 / 工程纪律不升入 VISION / 系统构能用功能粒度）——哲学层未动，只补「系统构成」一节并把架构指针从 ARCHITECTURE.md 换到 SYSTEM-DESIGN.md
+verified-by: DOC-PRODUCT-DRIFT-FIX（2026-11-12）：按 SYSTEM-DESIGN §4/§5 基准订正「系统构成」接线现状段（data 取数 + strategy resolve + risk resolve + broker HTTP + orchestration 队列，analytics 有意为 0），删除「其余四条无调用方」类过期断言。此前：DOC-FRONTMATTER-HYGIENE（2026-11-12）：frontmatter 校时。此前：DOC-06 成文（2026-10-25 口径三问拍定：扩展舱按"可选项"叙事 / 工程纪律不升入 VISION / 系统构能用功能粒度）——哲学层未动，只补「系统构成」一节并把架构指针从 ARCHITECTURE.md 换到 SYSTEM-DESIGN.md
 supersedes: 2026-09-15 版（"双对等工作面 + 飞轮闭环"）
 ---
 
@@ -58,7 +58,7 @@ supersedes: 2026-09-15 版（"双对等工作面 + 飞轮闭环"）
 | **扩展舱** | 数据面 / 策略资产 / 风控规则 / 分析 / 编排 / 交易通道——按需触发、可独立部署的能力单元 | `tellurion-data` · `-strategy` · `-risk` · `-analytics` · `-orchestration` · `-broker` |
 | **契约底座** | 跨边界只交换**形状**与**纯技术能力**，不交换实现 | `tellurion-contracts`（port / DTO / 值对象 / 哨兵错误）+ `tellurion-kit`（日志 / 十进制 / 统计 / DB 连接…） |
 
-**扩展舱不是"已经如此"的名单。** 今天真的被 core 消费的远程调用只有一条（回测取数走 `tellurion-data`）；`tellurion-risk` 的客户端已在 core 装配好、带开关带测试，但本部署那两个开关默认关；其余四条（策略资产 / 分析 / 编排 / 交易通道）**今天连调用方都没有**。逐条接线现实登记在 [本仓台账 §四](TASKS.md)——那个数会随施工漂移，所以刻意**不写进上面这张角色表**。
+**扩展舱不是"已经如此"的名单。** 截至 2026-11-11，core 真正消费的远程能力是：`tellurion-data` 的回测取数；`tellurion-strategy` 的非空 `strategy_ref` resolve（出厂启用）；`tellurion-risk` 的限额快照 `resolve`（出厂 true，事件回传仍出厂 false）；`tellurion-broker` 的唯一下单通道（core 进程内 `MockTrader` 已退役）；`tellurion-orchestration` 的任务队列（worker 进程仍在 core）。`tellurion-analytics` 的 core 调用方为 0 是**有意为之**（ADR-0005，只读参考实现）。逐条接线现实以 [SYSTEM-DESIGN.md](SYSTEM-DESIGN.md) §4/§5 为基准、随施工漂移，所以刻意**不写进上面这张角色表**。
 
 **为什么产品叙事不数进程**：承重句是「AI 操作底座、人拍板」。底座拆成几个可独立部署的单元，不改变这句话；拆与不拆的判据是**热路径不出进程**（[SYSTEM-DESIGN.md](SYSTEM-DESIGN.md) §2 的 P1），不是"服务越多越像平台"。
 

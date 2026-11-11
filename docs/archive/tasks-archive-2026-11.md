@@ -24,7 +24,8 @@
 | DOC-15 | `REPO-MAP` 依赖图补「core → agent 是 HTTP 反代、不是领域依赖」（DDD 审查 C7） | 2026-11-11 | `98a5909` | [原文](#DOC-CORE-AGENT-PROXY-NOTE) |
 | DOC-16 | `REPO-MAP` contracts / kit 版本列按各仓 `go.mod` 实测订正（DDD 审查 C11） | 2026-11-11 | `98a5909` | [原文](#DOC-REPO-MAP-VERSION-CORRECTION) |
 | DOC-FRONTMATTER-HYGIENE | frontmatter 过期 / ARCHITECTURE 状态错位 / ADR 索引取代标注 | 2026-11-12 | `f228c93` | [原文](#DOC-FRONTMATTER-HYGIENE) |
-| DOC-ADR-REQUESTID-CORRECTION | adr-027/029/017「request-id 已跨服务传播」断言更正注记 | 2026-11-12 | 本次 commit | [原文](#DOC-ADR-REQUESTID-CORRECTION) |
+| DOC-ADR-REQUESTID-CORRECTION | adr-027/029/017「request-id 已跨服务传播」断言更正注记 | 2026-11-12 | `5b18e17` | [原文](#DOC-ADR-REQUESTID-CORRECTION) |
+| DOC-PRODUCT-DRIFT-FIX | PRODUCT/ROADMAP 接线现状与阶段断言对齐 SYSTEM-DESIGN §4/§5 | 2026-11-12 | 本次 commit | [原文](#DOC-PRODUCT-DRIFT-FIX) |
 
 ---
 
@@ -192,4 +193,16 @@ PRODUCT.md 的导航行现在指 [`ARCHITECTURE.md`](ARCHITECTURE.md)（已被 D
 - **⑥ 边界**：本仓 adr-027/029/017 注记；接线施工归 `tellurion-kit:KIT-REQUESTID-STDLIB` + 六仓安装（ODR-072）。
 - **owner**：待定
 - **收口（2026-11-12）**：三份 ADR 各追加「更正注记（2026-11-12，DOC-ADR-REQUESTID-CORRECTION / ODR-072 W5-F3）」节，写明更正对象（adr-017 `:151-152`、adr-027 `:1315`、adr-029 `:126-127` + `:448`）、实测事实（kit 仅 gin 版、stdlib `net/http` 版未落地；core `grep -rn "RequestIDMiddleware("` 仅命中 `pkg/observability/middleware.go` 定义处，各服务入站零安装；出站发头与 metrics 读 context 已存在）与结论「机制已定、安装未完成」，并指向 ODR-072 W5-F3 与 `KIT-REQUESTID-STDLIB`。原断言正文逐字保留：`git diff --numstat` 三文件均为纯新增（+12/0、+10/0、+10/0）；`grep -c "更正注记"` 三文件各 1、`grep -c "W5-F3"` 各 ≥1；adr-017 的 OTel/span 触发条件未动。`python tools/check_doc_links.py` 活跃层 246 条 / 0 断（EXIT 0）；破坏验证＝向 `docs/TASKS.md` 追加一条失败链接 → 1 断 / EXIT 1 → 逐字节还原 → 0 断 / EXIT 0。
+
+<a id="DOC-PRODUCT-DRIFT-FIX"></a>
+### DOC-PRODUCT-DRIFT-FIX · 产品入口文档接线现状停在退役波前（PRODUCT/ROADMAP）[P1] ✅（2026-11-12）
+
+- **① 目标**：把 `PRODUCT.md` / `ROADMAP.md` 的接线现状对齐到 `SYSTEM-DESIGN.md` 基准（2026-11-11 已对齐），消除退役波后「core 侧零调用方」类过期断言。
+- **② 上下文**：全面审查 W1-F3（[ODR-068](odr/odr-068-audit-wave1-product-governance.md)）。**立单复核订正**：原列 `REPO-MAP.md:16,22,25,71` 漂移**已被主任 commit `ad80a3d`（代码-文档对齐审计 2026-11-11）修复**，`SYSTEM-DESIGN.md` §5 亦已对齐 ⇒ 本单不再含 REPO-MAP/SYSTEM-DESIGN。**残留实测**：① `PRODUCT.md:61`「其余四条（策略资产/分析/编排/交易通道）今天连调用方都没有」——strategy（core resolve 出厂启用）/ broker（`SVC-CORE-BROKER-RETIRE` 2026-11-10）/ orchestration（QT-44 真 run）均已接线，analytics 是「有意为 0」（ADR-0005），故该句过期；② `ROADMAP.md:20`「X1~X6 六服务仓已实装但只有 data 一条读链真接线」同过期；③ `ROADMAP.md:18`「QT-32…仍 ⬜」——core QT-32 已收口（2026-11-10 晚）；④ `ROADMAP.md:99`「MockTrader 足够；XTP 是桩（见 `live-trading.md` 标注）」——进程内 MockTrader 已删（`SVC-CORE-BROKER-RETIRE`），且 `live-trading.md` 不存在（死链，实测 `ls` 零命中）。基准 = `SYSTEM-DESIGN.md` §4/§5（2026-11-11）。
+- **③ 要求**：① `PRODUCT.md:61` 改为「今天真接线 = data 读链 + strategy resolve + risk resolve（出厂 true）+ broker HTTP（唯一通道）+ orchestration worker；analytics 有意为 0（ADR-0005）」，逐条指 SYSTEM-DESIGN §4/§5、不复制接线数字进角色表；② `ROADMAP.md:20` 删「只有 data 一条读链真接线」，改指 SYSTEM-DESIGN §4 现状；③ `ROADMAP.md:18` QT-32 状态对齐 core 台账（已收口）；④ `ROADMAP.md:99` 删 `live-trading.md` 死链 + MockTrader 表述对齐 broker 退役（XTP 挂起见 `tellurion-broker:docs/adr/0003`）；⑤ 两文件 `last-verified` 更新到施工日。
+- **④ 约束与非目标**：不改 REPO-MAP/SYSTEM-DESIGN（已对齐）；不重新裁决产品边界（PRODUCT 哲学层与八条原则不动）；不复制接线数字进角色表（`PRODUCT.md:51` 刻意不复制）；不改代码。
+- **⑤ 验收**：`grep -n "连调用方都没有\|只有 data 一条读链" docs/PRODUCT.md docs/ROADMAP.md` 零命中；`grep -n "live-trading.md" docs/ROADMAP.md` 零命中；`python tools/check_doc_links.py` 活跃层 0 断链；PRODUCT/ROADMAP `last-verified`=施工日。
+- **⑥ 边界**：本仓 `PRODUCT.md` / `ROADMAP.md`；REPO-MAP/SYSTEM-DESIGN 已对齐不动；接线事实以 SYSTEM-DESIGN §4/§5 + 各仓台账为准。
+- **owner**：待定
+- **收口（2026-11-12）**：① `PRODUCT.md:61` 重写为「截至 2026-11-11 core 真正消费的远程能力」清单（data 取数 / strategy `strategy_ref` resolve / risk 限额 `resolve`（events 仍出厂 false）/ broker 唯一下单通道 / orchestration 任务队列；analytics 有意为 0 per ADR-0005），并改指 `SYSTEM-DESIGN.md` §4/§5；② `ROADMAP.md:20` 删「仅 data 接线」断言，改列五条接线现状并指 §4/§5；③ `ROADMAP.md:18` 订正为 QT-32 ✅（2026-11-10 core 台账归档）与 `QT-32-A` 已完成，S1 出口仍以「连续 100 次无人干预」整链验收为准（core/agent 台账均未见该记录）；④ `ROADMAP.md:99` 删 `live-trading.md` 死链，改指 `tellurion-broker:docs/adr/0003`，并写明进程内 `MockTrader` 已随 `SVC-CORE-BROKER-RETIRE` 退役；⑤ 两文件 `last-verified`=2026-11-12。验收：三条过期断言与死链 grep 零命中（正文与 frontmatter 均无残留）；`python tools/check_doc_links.py` 活跃层 0 断（EXIT 0）；破坏验证＝向 `docs/PRODUCT.md` 追加失败链接 → 1 断 / EXIT 1 → 逐字节还原 → 0 断 / EXIT 0。
 

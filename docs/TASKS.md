@@ -1,7 +1,7 @@
 ---
 status: active
 last-verified: 2026-11-12
-verified-by: 2026-11-12 W7 文档维护批次：`DOC-FRONTMATTER-HYGIENE`、`DOC-ADR-REQUESTID-CORRECTION` 已结案（活跃层 frontmatter 校准 + ARCHITECTURE 转 archived + ADR-001/024 索引标注；adr-017/027/029 各追加「机制已定、安装未完成」更正注记）；其余两条（`DOC-PRODUCT-DRIFT-FIX` / `DOC-P3-MATRIX-TABLE-GRAIN`）按序施工中。此前：2026-11-11 全面审查 W7 台账立单（A5 授权）——新立 4 条知识库维护单（`DOC-PRODUCT-DRIFT-FIX` P1 / `DOC-P3-MATRIX-TABLE-GRAIN` P2 / `DOC-ADR-REQUESTID-CORRECTION` P2 / `DOC-FRONTMATTER-HYGIENE` P3），证据坐标引 ODR-068/069/072（本仓 `docs/archive/odr/`）；本轮只立单不修复。**立单复核三处订正**：① W1-F3 的 REPO-MAP 漂移已被主任 `ad80a3d` 修复 ⇒ DOC-PRODUCT-DRIFT-FIX 收窄到 PRODUCT/ROADMAP；② W2-F11 的 DATA-FUNDAMENTALS-READ-PUBLIC 已被主任归属裁决（data `a454726` 删读面 + core `c85abff`）取代 ⇒ 该 data 单标 ✅ 作废；③ W2-F10 矩阵残留收窄到 REPO-MAP `run.*` 粒度 + core 矩阵 `:43` 行（SYSTEM-DESIGN §5 已对齐）。此前：DOC-10 + DOC-11 + DOC-12 结案（2026-10-26：按第四轮审计订正现状 + ADR-036 服务化定位落档）。此前：DOC-06 结案（2026-10-25）：口径三问全部拍定（均取 §四 建议 A），PRODUCT 新增「系统构成」一节、VISION 只加指针不动八条原则与优先级序，docs/README 两行导航换成「现行」；同日新立 DOC-10（`SYSTEM-DESIGN.md` §7 的"六服务只有占位 doc.go"与实仓冲突）
+verified-by: 2026-11-12 W7 文档维护批次：`DOC-FRONTMATTER-HYGIENE`、`DOC-ADR-REQUESTID-CORRECTION`、`DOC-PRODUCT-DRIFT-FIX` 已结案（活跃层 frontmatter 校准 + ARCHITECTURE 转 archived + ADR-001/024 索引标注；adr-017/027/029 追加「机制已定、安装未完成」更正注记；PRODUCT/ROADMAP 接线现状对齐 SYSTEM-DESIGN §4/§5 并清死链）；仅剩 `DOC-P3-MATRIX-TABLE-GRAIN`。此前：2026-11-11 全面审查 W7 台账立单（A5 授权）——新立 4 条知识库维护单（`DOC-PRODUCT-DRIFT-FIX` P1 / `DOC-P3-MATRIX-TABLE-GRAIN` P2 / `DOC-ADR-REQUESTID-CORRECTION` P2 / `DOC-FRONTMATTER-HYGIENE` P3），证据坐标引 ODR-068/069/072（本仓 `docs/archive/odr/`）；本轮只立单不修复。**立单复核三处订正**：① W1-F3 的 REPO-MAP 漂移已被主任 `ad80a3d` 修复 ⇒ DOC-PRODUCT-DRIFT-FIX 收窄到 PRODUCT/ROADMAP；② W2-F11 的 DATA-FUNDAMENTALS-READ-PUBLIC 已被主任归属裁决（data `a454726` 删读面 + core `c85abff`）取代 ⇒ 该 data 单标 ✅ 作废；③ W2-F10 矩阵残留收窄到 REPO-MAP `run.*` 粒度 + core 矩阵 `:43` 行（SYSTEM-DESIGN §5 已对齐）。此前：DOC-10 + DOC-11 + DOC-12 结案（2026-10-26：按第四轮审计订正现状 + ADR-036 服务化定位落档）。此前：DOC-06 结案（2026-10-25）：口径三问全部拍定（均取 §四 建议 A），PRODUCT 新增「系统构成」一节、VISION 只加指针不动八条原则与优先级序，docs/README 两行导航换成「现行」；同日新立 DOC-10（`SYSTEM-DESIGN.md` §7 的"六服务只有占位 doc.go"与实仓冲突）
 ---
 
 # TASKS — tellurion-docs 未完成项
@@ -33,16 +33,6 @@ verified-by: 2026-11-12 W7 文档维护批次：`DOC-FRONTMATTER-HYGIENE`、`DOC
 - **⑥ 边界**：文档侧升级；NT 适配代码归属以届时立单为准。
 - **重开条件**：NautilusTrader v2.0.0 正式版发布，或 `QT-02` 的 `FillTiming` 确认切换。
 
-### DOC-PRODUCT-DRIFT-FIX · 产品入口文档接线现状停在退役波前（PRODUCT/ROADMAP）[P1] ⬜
-
-- **① 目标**：把 `PRODUCT.md` / `ROADMAP.md` 的接线现状对齐到 `SYSTEM-DESIGN.md` 基准（2026-11-11 已对齐），消除退役波后「core 侧零调用方」类过期断言。
-- **② 上下文**：全面审查 W1-F3（[ODR-068](archive/odr/odr-068-audit-wave1-product-governance.md)）。**立单复核订正**：原列 `REPO-MAP.md:16,22,25,71` 漂移**已被主任 commit `ad80a3d`（代码-文档对齐审计 2026-11-11）修复**，`SYSTEM-DESIGN.md` §5 亦已对齐 ⇒ 本单不再含 REPO-MAP/SYSTEM-DESIGN。**残留实测**：① `PRODUCT.md:61`「其余四条（策略资产/分析/编排/交易通道）今天连调用方都没有」——strategy（core resolve 出厂启用）/ broker（`SVC-CORE-BROKER-RETIRE` 2026-11-10）/ orchestration（QT-44 真 run）均已接线，analytics 是「有意为 0」（ADR-0005），故该句过期；② `ROADMAP.md:20`「X1~X6 六服务仓已实装但只有 data 一条读链真接线」同过期；③ `ROADMAP.md:18`「QT-32…仍 ⬜」——core QT-32 已收口（2026-11-10 晚）；④ `ROADMAP.md:99`「MockTrader 足够；XTP 是桩（见 `live-trading.md` 标注）」——进程内 MockTrader 已删（`SVC-CORE-BROKER-RETIRE`），且 `live-trading.md` 不存在（死链，实测 `ls` 零命中）。基准 = `SYSTEM-DESIGN.md` §4/§5（2026-11-11）。
-- **③ 要求**：① `PRODUCT.md:61` 改为「今天真接线 = data 读链 + strategy resolve + risk resolve（出厂 true）+ broker HTTP（唯一通道）+ orchestration worker；analytics 有意为 0（ADR-0005）」，逐条指 SYSTEM-DESIGN §4/§5、不复制接线数字进角色表；② `ROADMAP.md:20` 删「只有 data 一条读链真接线」，改指 SYSTEM-DESIGN §4 现状；③ `ROADMAP.md:18` QT-32 状态对齐 core 台账（已收口）；④ `ROADMAP.md:99` 删 `live-trading.md` 死链 + MockTrader 表述对齐 broker 退役（XTP 挂起见 `tellurion-broker:docs/adr/0003`）；⑤ 两文件 `last-verified` 更新到施工日。
-- **④ 约束与非目标**：不改 REPO-MAP/SYSTEM-DESIGN（已对齐）；不重新裁决产品边界（PRODUCT 哲学层与八条原则不动）；不复制接线数字进角色表（`PRODUCT.md:51` 刻意不复制）；不改代码。
-- **⑤ 验收**：`grep -n "连调用方都没有\|只有 data 一条读链" docs/PRODUCT.md docs/ROADMAP.md` 零命中；`grep -n "live-trading.md" docs/ROADMAP.md` 零命中；`python tools/check_doc_links.py` 活跃层 0 断链；PRODUCT/ROADMAP `last-verified`=施工日。
-- **⑥ 边界**：本仓 `PRODUCT.md` / `ROADMAP.md`；REPO-MAP/SYSTEM-DESIGN 已对齐不动；接线事实以 SYSTEM-DESIGN §4/§5 + 各仓台账为准。
-- **owner**：待定
-
 ### DOC-P3-MATRIX-TABLE-GRAIN · 已落归属裁决未对齐进残留矩阵行（run.backtest_results / 因子派生表）[P2] ⬜
 
 - **① 目标**：把两条已落裁决（`run.backtest_results` owner=core；`factor_returns`/`ic_analysis` owner=core per ADR-038）对齐进残留矩阵行，消除「schema 粒度 `run.*`→orch」与「表粒度 `backtest_results`→core」的矛盾。
@@ -53,7 +43,7 @@ verified-by: 2026-11-12 W7 文档维护批次：`DOC-FRONTMATTER-HYGIENE`、`DOC
 - **⑥ 边界**：本仓 `REPO-MAP.md`（+ SYSTEM-DESIGN §5 核验）；core 矩阵 `:43` 行归 core（跨仓指针，附 ADR-038）。
 - **owner**：待定
 
-> 除上文外，本仓无其它未做 / 挂起 / 外部依赖项（截至 2026-11-12：W7 立单 4 条中 `DOC-FRONTMATTER-HYGIENE`、`DOC-ADR-REQUESTID-CORRECTION` 已结案并归档，其余见上）。跨仓施工任务不在本仓——见 §三指针。
+> 除上文外，本仓无其它未做 / 挂起 / 外部依赖项（截至 2026-11-12：W7 立单 4 条中 `DOC-FRONTMATTER-HYGIENE`、`DOC-ADR-REQUESTID-CORRECTION`、`DOC-PRODUCT-DRIFT-FIX` 已结案并归档，其余见上）。跨仓施工任务不在本仓——见 §三指针。
 
 ## 三、跨仓指针（不在本仓，勿双写）
 

@@ -1,7 +1,7 @@
 ---
 status: evergreen
 last-verified: 2026-11-12
-verified-by: DOC-FRONTMATTER-HYGIENE（2026-11-12）：frontmatter 校时；实质阶段陈述漂移已在同批 DOC-PRODUCT-DRIFT-FIX 订正。此前：DOC-11（2026-10-26）：修正「当前阶段」与阶段表的自相矛盾（S0 已完成、S1 进行中），补工程解耦线与产品线的分工；产品阶段判据未改。此前：产品重构讨论（2026-09-16）
+verified-by: DOC-PRODUCT-DRIFT-FIX（2026-11-12）：QT-32 状态对齐 core 台账（2026-11-10 收口）、删除「仅 data 接线」过期断言并改指 SYSTEM-DESIGN §4/§5、实盘说明死链改指 broker ADR-0003。此前：DOC-FRONTMATTER-HYGIENE（2026-11-12）：frontmatter 校时。此前：DOC-11（2026-10-26）：修正「当前阶段」与阶段表的自相矛盾（S0 已完成、S1 进行中），补工程解耦线与产品线的分工；产品阶段判据未改。此前：产品重构讨论（2026-09-16）
 supersedes: archive/ROADMAP-history.md（Phase 1-4 / Sprint 1-8）
 ---
 
@@ -15,9 +15,9 @@ supersedes: archive/ROADMAP-history.md（Phase 1-4 / Sprint 1-8）
 
 **产品主线：S1 通回路（进行中）。S0 已于 2026-09-17 完成。**
 
-S0 的出口判据（回测数字可信）已达成，所以当前不是 S0。S1 的出口是「无人干预连续跑完 100 次实验」——**今天尚未达成**：core `docs/TASKS.md` 的 QT-32（AI 策略生成闭环）仍 ⬜，agent 的 QT-32-B 仍待裁。
+S0 的出口判据（回测数字可信）已达成，所以当前不是 S0。S1 的出口是「无人干预连续跑完 100 次实验」——**今天尚未达成**：core `docs/TASKS.md` 的 QT-32（AI 策略生成闭环）已于 2026-11-10 收口 ✅、agent 侧 `QT-32-A` 亦已完成，但 core/agent 台账均无「连续 100 次无人干预」的整链验收记录 ⇒ S1 以整链连续运行为出口，不以单点完成为证。
 
-**另有一条工程解耦线在并行推进**（不属于本表的 S0~S4 产品阶段）：S-1 改名建仓 / S0 自治 / W0 契约冻结 / S1 契约落码 / S2 打 tag / S3 agent 去 replace 均已收口；X1~X6 六服务仓已实装但只有 data 一条读链真接线。工程线的状态以 core `docs/TASKS.md` 与第四轮审计（`tellurion:docs/design/qt-decoupling/purpose-alignment-audit-2026-10-26.md`）为准，**不要用工程线的「已落仓」替代本表的 S1 出口**。
+**另有一条工程解耦线在并行推进**（不属于本表的 S0~S4 产品阶段）：S-1 改名建仓 / S0 自治 / W0 契约冻结 / S1 契约落码 / S2 打 tag / S3 agent 去 replace 均已收口；X1~X6 六服务仓已实装，接线现状（data 取数、strategy resolve、risk resolve、broker HTTP、orchestration 队列；analytics 有意为 0）以 [SYSTEM-DESIGN.md](SYSTEM-DESIGN.md) §4/§5 与各仓台账为准。工程线的状态以 core `docs/TASKS.md` 与第四轮审计（`tellurion:docs/design/qt-decoupling/purpose-alignment-audit-2026-10-26.md`）为准，**不要用工程线的「已落仓」替代本表的 S1 出口**。
 
 ---
 
@@ -96,7 +96,7 @@ schema 收口（migrations 可执行 + 版本管理）· 产业链数据底座�
 
 与 [VISION.md](VISION.md) 边界一致，此处只列容易被临时加回来的：
 
-- **实盘交易** — MockTrader 足够；XTP 是桩（见 `live-trading.md` 标注）
+- **实盘交易** — 真钱通道未开（XTP 仍为桩，挂起与重开条件见 [broker ADR-0003](https://github.com/ruoxizhnya/tellurion-broker/blob/main/docs/adr/0003-真钱通道暂不实施与重开条件.md)）；core 进程内 `MockTrader` 已随 `SVC-CORE-BROKER-RETIRE` 退役，唯一通道是 `tellurion-broker` 的 Mock 网关
 - **多 agent 投票 / arbitrator 仲裁** — 错误相关，放大偏差，不可解释
 - **实时行情 / 盘中监控** — 日频已是高频边界
 - **EquityDeep 作为独立智能流程** — 它是数据底座，不是 agent
