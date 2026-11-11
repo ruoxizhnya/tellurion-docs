@@ -58,10 +58,17 @@
 
 analytics 是只读参考实现（ADR-039），它不写回上游、不参与回测；把 factor returns/IC 挪进 `analysis.*` 会让 core 的产物组装跨仓读 analytics，把单向依赖反过来。这是 ADR-0005 明确避免的方向。
 
+### 4.4 实施记录（2026-11-11）
+
+- **代码**：`tellurion/internal/analysisartifact/builder.go` 在全部因子都缺 `factor_returns` 时返回 `FactorReturnsUnavailableError`，用可选探针 `HasFactorReturns` 区分 `no_writer`（整表零行）与 `no_rows`（表有行但窗口内没有）；部分缺失写进 `FactorExposures.MissingFactors`，不再让整类产物静默消失。`pkg/storage/cache.go` 新增 `HasFactorReturns`（`SELECT EXISTS`）。探针缺失/失败降级为 `no_rows`，仍 fail-closed。
+- **测试**：`builder_test.go` 覆盖全缺失（无探针 / no_writer / 有行 / 探针错误）与部分缺失。
+- **破坏验证**：临时改回笼统 `missing("factor_exposures")` ⇒ 3 条用例红，还原复绿。
+- **仍未落地（如实）**：`factor_returns` 依然**零生产写者**（`CORE-FACTOR-CACHE-WRITER` ⏸）。本条只保证「缺失会响亮且可判定」，不假装有数据；`ic_analysis` 读写仍为零调用。
+
 ## 5. 后果
 
-1. **本轮不改代码、不补写者**。`factor_returns` / `ic_analysis` 仍是「有表无写者」，这是**已知且已裁决**的中间态。
-2. 立即要做的只有一件事：把 `analysisartifact` 的静默读空改成显式语义（`CORE-FACTOR-DERIVED-GUARD`，P1）。
+1. **不补写者**。`factor_returns` / `ic_analysis` 仍是「有表无写者」，这是**已知且已裁决**的中间态；写者单 `CORE-FACTOR-CACHE-WRITER` 保持 ⏸。
+2. `analysisartifact` 的静默读空已改为显式语义（`CORE-FACTOR-DERIVED-GUARD`，2026-11-11 ✅，见 §4.4）。
 3. `ic_analysis` 的删除/保留在 `CORE-FACTOR-DERIVED-GUARD` 收口后另立单，需同时给出迁移（DDL 回滚）与读面退出条件。
 4. data / analytics 的文档口径已在本轮订正为 owner=core（见 `docs/design/ddd-boundary-review-2026-11-11.md` §8）。
 

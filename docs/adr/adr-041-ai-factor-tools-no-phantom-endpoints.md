@@ -51,11 +51,18 @@
 - **保留工具但静默降级（返回空值）**：这正是 `multi_factor` 那次 409 之前的老毛病——空结果被当作有效结果。否决。
 - **删工具**：Copilot 的因子研究链路会少一个入口；显式「未提供」比删除更能保住产品语义与用户预期。否决（作为 D2 的替代保留）。
 
+## 4.1 实施记录（2026-11-11）
+
+- **agent**：`pkg/ai/client/factor_client.go` 的 `ComputeFactor` / `EvaluateFactor` 不再发 HTTP，返回 `ErrFactorCapabilityUnavailable`（含 ADR-041 文案）；两个工具与 `compute_factor_ic` 的 Description 标 `[unavailable]`。`endpoint_contract_test.go` 删除 `clientEndpointGaps` 白名单，改为 `phantomFactorEndpoints` 扫描 + `TestFactorClient_UnavailableWithoutHTTP`（假 server 计数为 0）。
+- **core**：`GET /api/factors/:factor_name` 退役为 410 + `factor_http_surface_retired`，不再反代（C8 / `CORE-FACTOR-DEAD-PROXY`）；`docs/SPEC.md` 只保留 `POST /api/factor/registrations` 为现役，5 条陈旧路由标为历史契约。
+- **破坏验证**：agent 侧「恢复发 HTTP」⇒ 3 条用例红；core 侧「恢复反代」⇒ 2 条退役用例红；均真做真还原。
+- **仍未落地（如实）**：因子求值能力本身**不提供**——这是裁决结果，不是欠账。若真实需求出现，按 §6 重开。
+
 ## 5. 后果
 
 1. AI 的因子求值/IC 求值在该栈上**显式不可用**；这是已知且正确的状态，不是回归。
 2. 已登记但必失败的工具不再发无谓请求（省时、省日志噪声，错误可归因）。
-3. `tellurion:docs/SPEC.md` 的因子端点节需要标注「未实现」，避免下一位读者再把它当现行契约。
+3. `tellurion:docs/SPEC.md` 的因子端点节已标注「未实现 / 已退役」（2026-11-11，见 §4.1），下一位读者不会再把它当现行契约。
 
 ## 6. 重开条件
 

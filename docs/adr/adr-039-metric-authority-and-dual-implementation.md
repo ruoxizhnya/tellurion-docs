@@ -47,12 +47,14 @@
 
 - **T1 · 报告出口单点化**：`cmd/analysis` 不再注册任何报告导出/对比路由（`reporting.RenderHTML` / `CompareReports` 的生产调用点归零），且 analytics 的报告端点成为唯一产出面 ⇒ `pkg/backtest/reporting` 不再是运行时承重，可在同 ADR 里删除。
 - **T2 · 口径漂移超限**：同一 golden fixture（同一 run 的净值序列 + 交易明细）在两侧产出的同名指标，**连续两个发布版本**相对差 > `1e-9`（比率类）或绝对差 > `0.01` 元（金额类）⇒ 必须先定权威再修一侧，禁止两边各改各的。
-  - 该触发条件的量测前置是漂移检测单（`tellurion-analytics:ANALYTICS-METRIC-DRIFT`）；检测未落地前，T2 视为「不可判定」，不得据此宣布无漂移。
+  - 该触发条件的量测前置是漂移检测单（`tellurion-analytics:ANALYTICS-METRIC-DRIFT`）。**2026-11-11 已落地**：`internal/analysis/metrics_drift_test.go` + `testdata/core-run-metrics.golden.json`，T2 从「不可判定」变为常规 `go test` 腿；当前 fixture 为 `kind=synthetic_nav`（core 权威实现对确定性净值序列产出），**真实 run artifact 腿仍 ⏸**（需带 seed 数据的真栈），补齐前不得据此宣布「真实 run 无漂移」。
 - **T3 · 冻结解冻**：任何需求要求修改 core 冻结实现的公式（即 `analytics_impl_freeze_test.go` 的快照需要变更）⇒ 必须在同一笔变更里先写「谁是权威、另一侧如何跟随」，不允许改完实现顺手更新快照。**更新快照而不写裁决 = 违反本 ADR。**
 
 **D5 · 漂移检测是 T2 的可判定前提，不是可选项。**
 
-检测形态：以一次真实 core run 的 artifact（净值 + 交易 + 持仓）为输入，跑 analytics 的同名指标计算，输出逐指标差值；固定 fixture 入库，阈值按 D4-T2。检测跑在 analytics 仓（它有实现与测试基建），core 侧只提供 artifact 形状。
+检测形态：以一次 core run 的 artifact（净值 + 交易 + 持仓）为输入，跑 analytics 的同名指标计算，输出逐指标差值；固定 fixture 入库，阈值按 D4-T2。检测跑在 analytics 仓（它有实现与测试基建），core 侧只提供 artifact 形状。
+
+**实施记录（2026-11-11）**：检测已落地为 analytics 的 `TestComputedMetrics_NoDriftAgainstCoreGolden`（fixture hash 钉在测试内，阈值边界另有 `TestIsMetricDrift_Thresholds`）。首个 fixture 用**确定性 60 点净值序列**代替真实 run artifact（`kind=synthetic_nav`，core 的 `CalculateMetrics` 生成 `core_metrics`），理由是当前无可复跑的带 seed 真栈；真实 artifact 腿的重开条件写在 `tellurion-analytics:docs/archive/tasks-archive-2026-11.md#ANALYTICS-METRIC-DRIFT`。在真实腿补齐前，T2 只能证明「实现层面未漂移」，不能证明「真实 run 未漂移」。
 
 ## 4. 否决的候选
 
@@ -63,7 +65,7 @@
 ## 5. 后果
 
 1. 双实现继续共存，但**权威关系与收敛条件可判定**；「谁对」不再靠口头约定。
-2. `ANALYTICS-METRIC-DRIFT` 落地前，T2 不可判定——这一点必须写进 analytics 的台账，避免「没检测 = 没漂移」的误读。
+2. `ANALYTICS-METRIC-DRIFT` 已于 2026-11-11 落地（合成净值 fixture）；真实 run artifact 腿补齐前，T2 的结论只覆盖「实现层」，不得据此宣布「真实 run 无漂移」。
 3. 不改变任何运行时行为、不改公式、不动冻结护栏。
 
 ## 6. 不在本 ADR 范围

@@ -45,6 +45,15 @@
 2. 对拍：真栈固定快照的 `risk_rules_hash` 与迁移前**逐字节一致**（本机基线 `84a95d7d…`，以 `tellurion:CORE-COMPOSE-UNIFY` 施工记录里的值为准）；`contracts/risk` 的 `snapshot_test.go` 与 risk 侧同一 fixture 产出同一 hex。
 3. 破坏验证：临时把 `contracts/risk` 的 `DomainSnapshotHash` 改一个字符 ⇒ 两侧对拍同时红；还原复绿。这证明两侧确实共用一份编码，而不是各留一份。
 
+## 4.1 实施记录（2026-11-11）
+
+- **依赖**：`tellurion-risk/go.mod` 已 pin `github.com/ruoxizhnya/tellurion-contracts v0.10.0`，无 `replace`。
+- **代码**：`internal/rule` 的 `Snapshot` / `SnapshotRule` / `Scope` / `RuleType` / `DomainSnapshotHash` 改为 `contracts/risk` 别名；四个跨仓哨兵改为同一错误值；`SnapshotHash` 委托 `Snapshot.Hash()`；`Bundle` / `ParseBundle` / `ForScope` / 参数字典 / `VersionHash` 留本仓。
+- **对拍腿**：`TestSnapshotHash_DelegatesToContracts` 用同一 fixture 三处比对——本仓 `SnapshotHash`、`contractsrisk.Snapshot.Hash()`、`legacySnapshotEncoding`（迁移前实现的独立重建，域标签用字面量）。迁移只换实现位置、不改字节。
+- **破坏验证**：临时让 `SnapshotHash` 返回固定串 ⇒ 对拍腿红（`risk deadbeef / contracts 6749f14e…`），还原复绿。
+- **与 §4 第 3 条的差异（如实）**：本仓按 **tag** 消费 contracts，临时改 `contracts/risk` 工作区不会进入 risk 的构建（无 `replace`/`go.work`，且不允许加）。因此「改 contracts 常量」这一具体动作在本布局下不可执行；等价覆盖 = 迁移前编码重建腿（contracts 侧编码一变，与字面量重建的 hex 就分离）+ contracts 自己的 golden vector（`14ecab86…`，2026-11-07 取自 risk 真实实现）。
+- **未执行**：§4 第 2 条的真栈固定快照基线（`84a95d7d…`）需带 seed 规则的真栈，随 `tellurion-risk:RISK-RULE-SEED` ⏸；补齐前不宣称真栈 hash 已对拍。
+
 ## 5. 否决的候选
 
 - **不迁，声明 risk 私有**：两份字段集会继续各自演进，且哨兵文案已经靠人工保持一致；治标不治本。否决。
