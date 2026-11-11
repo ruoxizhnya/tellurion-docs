@@ -25,7 +25,8 @@
 | DOC-16 | `REPO-MAP` contracts / kit 版本列按各仓 `go.mod` 实测订正（DDD 审查 C11） | 2026-11-11 | `98a5909` | [原文](#DOC-REPO-MAP-VERSION-CORRECTION) |
 | DOC-FRONTMATTER-HYGIENE | frontmatter 过期 / ARCHITECTURE 状态错位 / ADR 索引取代标注 | 2026-11-12 | `f228c93` | [原文](#DOC-FRONTMATTER-HYGIENE) |
 | DOC-ADR-REQUESTID-CORRECTION | adr-027/029/017「request-id 已跨服务传播」断言更正注记 | 2026-11-12 | `5b18e17` | [原文](#DOC-ADR-REQUESTID-CORRECTION) |
-| DOC-PRODUCT-DRIFT-FIX | PRODUCT/ROADMAP 接线现状与阶段断言对齐 SYSTEM-DESIGN §4/§5 | 2026-11-12 | 本次 commit | [原文](#DOC-PRODUCT-DRIFT-FIX) |
+| DOC-PRODUCT-DRIFT-FIX | PRODUCT/ROADMAP 接线现状与阶段断言对齐 SYSTEM-DESIGN §4/§5 | 2026-11-12 | `b2a473f` | [原文](#DOC-PRODUCT-DRIFT-FIX) |
+| DOC-P3-MATRIX-TABLE-GRAIN | `run.backtest_results` 表粒度例外显式化 + core 矩阵 `:43` 待派指针 | 2026-11-12 | 本次 commit | [原文](#DOC-P3-MATRIX-TABLE-GRAIN) |
 
 ---
 
@@ -205,4 +206,16 @@ PRODUCT.md 的导航行现在指 [`ARCHITECTURE.md`](ARCHITECTURE.md)（已被 D
 - **⑥ 边界**：本仓 `PRODUCT.md` / `ROADMAP.md`；REPO-MAP/SYSTEM-DESIGN 已对齐不动；接线事实以 SYSTEM-DESIGN §4/§5 + 各仓台账为准。
 - **owner**：待定
 - **收口（2026-11-12）**：① `PRODUCT.md:61` 重写为「截至 2026-11-11 core 真正消费的远程能力」清单（data 取数 / strategy `strategy_ref` resolve / risk 限额 `resolve`（events 仍出厂 false）/ broker 唯一下单通道 / orchestration 任务队列；analytics 有意为 0 per ADR-0005），并改指 `SYSTEM-DESIGN.md` §4/§5；② `ROADMAP.md:20` 删「仅 data 接线」断言，改列五条接线现状并指 §4/§5；③ `ROADMAP.md:18` 订正为 QT-32 ✅（2026-11-10 core 台账归档）与 `QT-32-A` 已完成，S1 出口仍以「连续 100 次无人干预」整链验收为准（core/agent 台账均未见该记录）；④ `ROADMAP.md:99` 删 `live-trading.md` 死链，改指 `tellurion-broker:docs/adr/0003`，并写明进程内 `MockTrader` 已随 `SVC-CORE-BROKER-RETIRE` 退役；⑤ 两文件 `last-verified`=2026-11-12。验收：三条过期断言与死链 grep 零命中（正文与 frontmatter 均无残留）；`python tools/check_doc_links.py` 活跃层 0 断（EXIT 0）；破坏验证＝向 `docs/PRODUCT.md` 追加失败链接 → 1 断 / EXIT 1 → 逐字节还原 → 0 断 / EXIT 0。
+
+<a id="DOC-P3-MATRIX-TABLE-GRAIN"></a>
+### DOC-P3-MATRIX-TABLE-GRAIN · 已落归属裁决未对齐进残留矩阵行（run.backtest_results / 因子派生表）[P2] ✅（2026-11-12）
+
+- **① 目标**：把两条已落裁决（`run.backtest_results` owner=core；`factor_returns`/`ic_analysis` owner=core per ADR-038）对齐进残留矩阵行，消除「schema 粒度 `run.*`→orch」与「表粒度 `backtest_results`→core」的矛盾。
+- **② 上下文**：全面审查 W2-F10（[ODR-069](odr/odr-069-audit-wave2-core-architecture.md)）。**立单复核订正**：ADR-037/038 已落（commit `98a5909`/`448a87a`）；`SYSTEM-DESIGN.md` §5 已对齐（2026-11-11，`public` 行 owner=core）；core `CORE-FACTOR-DERIVED-GUARD` ✅（2026-11-11，因子派生表归 core 的代码 + 缺失原因已改）；fundamentals 行已订正（core 矩阵 `:49`，commit `c85abff`）。**残留实测**：① 本仓 `REPO-MAP.md:15`（core 拥有 schema 列「`quant` + `audit` + …`market.index_daily`」）与 `:24`（orch「`run` 六表」）按 schema 粒度把 `run.*` 全归 orch，**未显式标 `run.backtest_results` owner=core**（表粒度例外；证据 `tellurion:pkg/storage/backtest_results.go:40` CREATE + 矩阵 `:41` 裁决）；② `tellurion:docs/design/qt-decoupling/data-service-contract-and-ownership.md:43` 因子派生表行仍写 `owner = tellurion-data`（与 ADR-038 矛盾）——**该文件在 core，跨仓指针归 core，本仓不代改**。
+- **③ 要求**：① REPO-MAP 显式标 `run.backtest_results` owner=core（表粒度例外，附 core `backtest_results.go:40` + 矩阵 `:41` 裁决），不把整张表改成表粒度重写；② 核验 SYSTEM-DESIGN §5 是否已含该例外（已含则只补 REPO-MAP，不重复）；③ core 矩阵 `:43` 行订正归 core（跨仓指针，附 ADR-038；本仓只登记指针不代改 core 文件）；④ 不重新裁决归属（ADR-037/038 已定）。
+- **④ 约束与非目标**：不改 core 文件（跨仓指针）；不重新裁决因子/结果表归属；不动已对齐的 SYSTEM-DESIGN §5 正文（只核验）；不改代码。
+- **⑤ 验收**：`grep -n "backtest_results" docs/REPO-MAP.md` 显式标 core owner；SYSTEM-DESIGN §5 例外核验记录成文；core 矩阵 `:43` 跨仓指针成文（归 core 施工）；`python tools/check_doc_links.py` 绿。
+- **⑥ 边界**：本仓 `REPO-MAP.md`（+ SYSTEM-DESIGN §5 核验）；core 矩阵 `:43` 行归 core（跨仓指针，附 ADR-038）。
+- **owner**：待定
+- **收口（2026-11-12）**：① `REPO-MAP.md` core 行 schema 列补「表粒度例外 `run.backtest_results`」，orch 行补同注，并在 §一表后新增一条例外注（证据 = core `pkg/storage/backtest_results.go` 的 `CREATE TABLE run.backtest_results` + core 审计矩阵 `:41`）；② 核验 `SYSTEM-DESIGN.md` §5：原文 `run` 行**未含**该例外（按 schema 粒度把 `run.*` 全归 orchestration），与 core 矩阵 `:41` 不一致 ⇒ 按「以现码事实为准」在 owner 列补「表粒度例外：`run.backtest_results` 归 core，结果面单一写者；编排只经 API 读」，并把「`run.*` 是唯一状态权威」限定为「任务状态权威」；`public` 行与因子派生表归属未动；③ core 矩阵 `:43`（`factor_hypothesis` / `factor_returns` / `ic_analysis` 仍写 owner=`tellurion-data`）在 core 仓、本仓不代改，已在本仓台账新立跨仓待派指针 `CORE-MATRIX-FACTOR-OWNER-FIX`（六字段）。验收：`grep -n "backtest_results" docs/REPO-MAP.md` 命中 core owner 与 orch 例外；`grep -n "backtest_results" docs/SYSTEM-DESIGN.md` 命中 §5 例外；`python tools/check_doc_links.py` 活跃层 0 断（EXIT 0）；破坏验证＝向 `docs/REPO-MAP.md` 追加失败链接 → 1 断 / EXIT 1 → 逐字节还原 → 0 断 / EXIT 0。
 

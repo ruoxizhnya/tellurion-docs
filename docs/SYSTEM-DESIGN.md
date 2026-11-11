@@ -1,7 +1,7 @@
 ---
 status: evergreen
-last-verified: 2026-11-11
-verified-by: 2026-11-11 DDD 边界审查同步（§4 批量/分析的目标态改为「core 指标权威 + analytics 只读参考，不迁移」，依据 ADR-039；§5 新增 `public` 行，钉因子治理与派生表 owner=core，依据 ADR-037/038；§2 contracts 最新版本改为 `v0.10.0`）；代码-文档对齐审计（2026-11-11）：订正 §3 依赖边（`contracts` 与 `kit` 实测互不 require）、§4「今天」四条链路、§5「今天实际」六行、§7 阶梯与过渡态；删去「生产写入仍由 core `cmd/data` 主写」「core 侧零调用方（strategy/risk）」「core `backtest_jobs` 双 owner」「core 仍留 `experiments`/`factor_hypothesis`」四处过期陈述。依据 = 各仓 `AGENTS.md` / `docs/TASKS.md` + core `internal/repoguard/*_retired_test.go` + 12 仓 `go.mod`。此前：DOC-10 + DOC-11 + DOC-12（2026-10-26）按第四轮目的对齐审计与 ADR-036 订正 §3 依赖边、§5「今天实际」、§7 阶梯/过渡态。
+last-verified: 2026-11-12
+verified-by: DOC-P3-MATRIX-TABLE-GRAIN（2026-11-12）：核验 §5 `run` 行未含 `run.backtest_results` 例外（原文按 schema 粒度把 `run.*` 全归 orchestration），按 core 审计矩阵 `:41` 与 `pkg/storage/backtest_results.go` 的事实补注「表粒度例外：结果面 `run.backtest_results` 归 core，编排只经 API 读」；`public` 行与因子派生表归属未动。此前：2026-11-11 DDD 边界审查同步（§4 批量/分析的目标态改为「core 指标权威 + analytics 只读参考，不迁移」，依据 ADR-039；§5 新增 `public` 行，钉因子治理与派生表 owner=core，依据 ADR-037/038；§2 contracts 最新版本改为 `v0.10.0`）；代码-文档对齐审计（2026-11-11）：订正 §3 依赖边（`contracts` 与 `kit` 实测互不 require）、§4「今天」四条链路、§5「今天实际」六行、§7 阶梯与过渡态；删去「生产写入仍由 core `cmd/data` 主写」「core 侧零调用方（strategy/risk）」「core `backtest_jobs` 双 owner」「core 仍留 `experiments`/`factor_hypothesis`」四处过期陈述。依据 = 各仓 `AGENTS.md` / `docs/TASKS.md` + core `internal/repoguard/*_retired_test.go` + 12 仓 `go.mod`。此前：DOC-10 + DOC-11 + DOC-12（2026-10-26）按第四轮目的对齐审计与 ADR-036 订正 §3 依赖边、§5「今天实际」、§7 阶梯/过渡态。
 ---
 
 # 总体设计（SYSTEM DESIGN）
@@ -89,7 +89,7 @@ verified-by: 2026-11-11 DDD 边界审查同步（§4 批量/分析的目标态�
 | `strategy` | `tellurion-strategy` | 写侧 HTTP / 读侧 resolve | 内置策略仍在 core 本地 registry（不联网）；非空 `strategy_ref` 走本仓 `resolve`（`strategy_asset.resolve_url`，出厂启用）；core 的旧 DB 注册表已删（SVC-STRAT-G3，2026-11-10） |
 | `risk` | `tellurion-risk` | run 前拉快照（内容寻址）；事件异步回传 | core `LoadRiskPolicy` 走 `POST /api/risk/resolve` 的内联 `snapshot` → `risk.PolicyFromSnapshot`（`resolve_enabled` 出厂 **true**，`SVC-CORE-RISK-RETIRE` 2026-11-09）；事件回传 `events_enabled` 仍出厂 **false** |
 | `analysis` | `tellurion-analytics` | 只读上游结果，写自己的报告 | core `cmd/analysis` 仍直接算（ADR-0005：metrics/reporting 保留冻结、不迁移）；analytics 是独立只读服务，**core 零调用是有意为之**（`SVC-AN-G3` 关闭、K7 挂起） |
-| `run` | `tellurion-orchestration` | 任务状态 / artifact 指针（**不含**订单、成交、持仓——那是 `quant`；`strategy_state` 留 core） | `run.*` 是唯一状态权威；core 裸表 `backtest_jobs` / `walk_forward_reports` 已于 Migration 065 删除；worker 进程仍在 core（`cmd/worker`） |
+| `run` | `tellurion-orchestration`（**表粒度例外**：`run.backtest_results` 归 core，结果面单一写者；编排只经 API 读） | 任务状态 / artifact 指针（**不含**订单、成交、持仓——那是 `quant`；`strategy_state` 留 core） | `run.*` 是唯一任务状态权威（结果面 `run.backtest_results` 归 core）；core 裸表 `backtest_jobs` / `walk_forward_reports` 已于 Migration 065 删除；worker 进程仍在 core（`cmd/worker`） |
 | `ai` | `tellurion-agent` | 自持自读 | agent 是唯一写者；core 的 `experiments` / `factor_hypothesis` 裸表与写方法已于 2026-11-10 退役（`SVC-CORE-AI-RETIRE`） |
 | `quant` | `tellurion`（core） | 只有 core 写 | 运行态真相：订单/成交/持仓/组合快照/对账/`risk_events`（`strategy_state` 已裁**留 core**，U3 作废） |
 | `audit` | `tellurion`（core，`pkg/eventstore` + `pkg/msgbus`） | 只追加；用于消息重放 | 与 `risk.audit_logs`（人操作审计）**不是一回事** |
