@@ -23,7 +23,8 @@
 | DOC-13 | ADR-036 就绪门 ↔ 工单 对照索引（防「门有人写、单没人立」） | 2026-11-07 | —（原文未记） | 见本节原文 |
 | DOC-15 | `REPO-MAP` 依赖图补「core → agent 是 HTTP 反代、不是领域依赖」（DDD 审查 C7） | 2026-11-11 | `98a5909` | [原文](#DOC-CORE-AGENT-PROXY-NOTE) |
 | DOC-16 | `REPO-MAP` contracts / kit 版本列按各仓 `go.mod` 实测订正（DDD 审查 C11） | 2026-11-11 | `98a5909` | [原文](#DOC-REPO-MAP-VERSION-CORRECTION) |
-| DOC-FRONTMATTER-HYGIENE | frontmatter 过期 / ARCHITECTURE 状态错位 / ADR 索引取代标注 | 2026-11-12 | 本次 commit | [原文](#DOC-FRONTMATTER-HYGIENE) |
+| DOC-FRONTMATTER-HYGIENE | frontmatter 过期 / ARCHITECTURE 状态错位 / ADR 索引取代标注 | 2026-11-12 | `f228c93` | [原文](#DOC-FRONTMATTER-HYGIENE) |
+| DOC-ADR-REQUESTID-CORRECTION | adr-027/029/017「request-id 已跨服务传播」断言更正注记 | 2026-11-12 | 本次 commit | [原文](#DOC-ADR-REQUESTID-CORRECTION) |
 
 ---
 
@@ -178,5 +179,17 @@ PRODUCT.md 的导航行现在指 [`ARCHITECTURE.md`](ARCHITECTURE.md)（已被 D
 - **⑤ 验收**：活跃层 `.md` 无缺 frontmatter（豁免除外）；`ARCHITECTURE.md` `status: archived`；TEST/PRODUCT/VISION/ROADMAP `last-verified`≥施工日；`python tools/check_doc_links.py` 绿。
 - **⑥ 边界**：本仓 frontmatter 与 `ADR.md` 索引标注；实质内容漂移归 DOC-PRODUCT-DRIFT-FIX。
 - **owner**：待定
-- **收口（2026-11-12）**：① TEST / PRODUCT / VISION / ROADMAP 四份 `last-verified` 校到 2026-11-12；② `ARCHITECTURE.md` `status: evergreen`→`archived`，`type: reference` 与文首「拆仓前历史 Reference」横幅保留；③ 全仓扫描活跃层（排除 `docs/adr` / `docs/archive`）实测缺 frontmatter 的 5 份已补齐——`AGENTS.md`、`README.md`（`status: evergreen`）与 `docs/design/data-factor-unification.md`、`docs/design/equitydeep/EquityDeep_{Product,Technical}_Specification.md`（`status: archived` + `type: reference`），仅剩 `docs/AGENTS_TEMPLATE.md` 按模板豁免；④ `ADR.md` 索引按正文补两处标注：ADR-001 标「人工编写的策略插件机制保留；AI 生成代码不加载不执行，见 ADR-024 §4」，ADR-024 标「2026-10-06 部分被 ADR-029 取代：表达式唯一载体→双轨；『不做 plugin.Open』与三条理由保留」。验收：`python tools/check_doc_links.py` 活跃层 248 条 / 0 断（EXIT 0）；破坏验证＝向 `docs/README.md` 追加一条指向不存在文件的链接 → 活跃层 1 断、EXIT 1 → 逐字节还原 → 0 断、EXIT 0。
+- **收口（2026-11-12）**：① TEST / PRODUCT / VISION / ROADMAP 四份 `last-verified` 校到 2026-11-12；② `ARCHITECTURE.md` `status: evergreen`→`archived`，`type: reference` 与文首「拆仓前历史 Reference」横幅保留；③ 全仓扫描活跃层（排除 `docs/adr` / `docs/archive`）实测缺 frontmatter 的 5 份已补齐——`AGENTS.md`、`README.md`（`status: evergreen`）与 `docs/design/data-factor-unification.md`、`docs/design/equitydeep/EquityDeep_{Product,Technical}_Specification.md`（`status: archived` + `type: reference`），仅剩 `docs/AGENTS_TEMPLATE.md` 按模板豁免；④ `ADR.md` 索引按正文补两处标注：ADR-001 标「人工编写的策略插件机制保留；AI 生成代码不加载不执行，见 ADR-024 §4」，ADR-024 标「2026-10-06 部分被 ADR-029 取代：表达式唯一载体→双轨；『不做 plugin.Open』与三条理由保留」。验收：`python tools/check_doc_links.py` 活跃层 247 条 / 0 断（EXIT 0）；破坏验证＝向 `docs/README.md` 追加一条指向不存在文件的链接 → 活跃层 248 条中 1 断、EXIT 1 → 逐字节还原 → 247 条 / 0 断、EXIT 0。
+
+<a id="DOC-ADR-REQUESTID-CORRECTION"></a>
+### DOC-ADR-REQUESTID-CORRECTION · adr-027/029/017「request-id 已跨服务传播」断言被证伪，加更正注记 [P2] ✅（2026-11-12）
+
+- **① 目标**：给 adr-027/029/017 的「request-id 已跨服务传播」断言加更正注记，承认「机制已有、入站接线未落」，不改写已 Accepted 决策。
+- **② 上下文**：全面审查 W5-F3（[ODR-072](odr/odr-072-audit-wave5-security-reliability-deps.md)）。实测断言被证伪：core `RequestIDMiddleware`（`observability/middleware.go:58`）全仓零安装点；kit gin 版有但 6 服务仓全 stdlib mux 装不上；agent 装 `HTTPTransport` 出站但未装 `RequestIDMiddleware` 入站恒空；6 服务仓 `X-Request-ID` 零命中。被证伪的 ADR 断言（实测仍在原文）：`adr-027:1314-1316`「且已有 request-id 跨服务传播」、`adr-029:126-127`「request-id 已跨服务传播」+ `:448`「rid 传播 ✅ 已有」、`adr-017:151`「`request_id` 贯穿 inbound → 下游 HTTP…两件事都已在生产路径上，不是纸面设计」。修复机制归 `tellurion-kit:KIT-REQUESTID-STDLIB` [P1] + 六仓安装（ODR-072）；本单只做文档更正。
+- **③ 要求**：① 在 adr-027/029/017 各加一条**更正注记**（追加节，不改写原文）：「机制（`RequestIDMiddleware`/`HTTPTransport`/`WithRequestIDHeader`）已定义，但入站零安装 ⇒ 跨服务传播今天不成立；见 ODR-072 W5-F3 与 KIT-REQUESTID-STDLIB」；② adr-017:146-149 的 OTel/span 重开条件不动（本波只做 correlation-id 不做 tracing）；③ 注记带日期 + 指向 ODR-072。
+- **④ 约束与非目标**：**不改写已 Accepted 的 ADR 正文**（ODR 只增不删，更正走注记）；不动 span/trace 重开条件；不在本单做接线施工（归 KIT-REQUESTID-STDLIB + 六仓）；不引入 OpenTelemetry。
+- **⑤ 验收**：adr-027/029/017 各有更正注记节（`grep "更正注记"` + `"W5-F3"` 命中）；原断言正文逐字保留（diff 只增不改）；`python tools/check_doc_links.py` 绿。
+- **⑥ 边界**：本仓 adr-027/029/017 注记；接线施工归 `tellurion-kit:KIT-REQUESTID-STDLIB` + 六仓安装（ODR-072）。
+- **owner**：待定
+- **收口（2026-11-12）**：三份 ADR 各追加「更正注记（2026-11-12，DOC-ADR-REQUESTID-CORRECTION / ODR-072 W5-F3）」节，写明更正对象（adr-017 `:151-152`、adr-027 `:1315`、adr-029 `:126-127` + `:448`）、实测事实（kit 仅 gin 版、stdlib `net/http` 版未落地；core `grep -rn "RequestIDMiddleware("` 仅命中 `pkg/observability/middleware.go` 定义处，各服务入站零安装；出站发头与 metrics 读 context 已存在）与结论「机制已定、安装未完成」，并指向 ODR-072 W5-F3 与 `KIT-REQUESTID-STDLIB`。原断言正文逐字保留：`git diff --numstat` 三文件均为纯新增（+12/0、+10/0、+10/0）；`grep -c "更正注记"` 三文件各 1、`grep -c "W5-F3"` 各 ≥1；adr-017 的 OTel/span 触发条件未动。`python tools/check_doc_links.py` 活跃层 246 条 / 0 断（EXIT 0）；破坏验证＝向 `docs/TASKS.md` 追加一条失败链接 → 1 断 / EXIT 1 → 逐字节还原 → 0 断 / EXIT 0。
 

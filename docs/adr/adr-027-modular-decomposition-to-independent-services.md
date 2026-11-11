@@ -1373,3 +1373,13 @@ _同日三轮头脑风暴追加：§Context⑫⑬⑭（三套数据抽象 · per
 §2.6（策略服务 + reduction-service + data-service 的 DDD 限界上下文 + 数据面裁决）、
 §5 改为 8 步 + 4 项并行清理、图 B 更新为 5 服务拓扑。配套 [ADR-028](adr-028-tiered-extension-of-strategy-expression-capability.md)。_
 _Status 为 Proposed —— 边界划分与数据归属待实验室主任批阅后转 Accepted。_
+
+---
+
+## 更正注记（2026-11-12，DOC-ADR-REQUESTID-CORRECTION / ODR-072 W5-F3）
+
+**更正对象**：正文 §5 / 图 B 说明（`:1315`）的「Pino 的 OTel 标准……request-id 跨服务贯穿请求」及 `:1289` 关于「trace id 在服务边界如何串联」的现状口径。
+
+**实测事实（2026-11-12）**：`RequestIDMiddleware`（gin 版）、`HTTPTransport` / `WithRequestIDHeader`（出站）在 kit `observability` 已定义，但 **kit 目前只有 gin 版**，stdlib `net/http` 版尚未落地（kit 台账 `KIT-REQUESTID-STDLIB`）；各服务**入站零安装**（core 实测 `grep -rn "RequestIDMiddleware("` 仅命中定义处 `pkg/observability/middleware.go`）。拆出服务均未装配该中间件，因此「跨服务贯穿」在拆仓后的拓扑里尚不成立。
+
+**结论**：本文相关表述按「**机制已定、安装未完成**」理解，不得作为拆仓后已具备跨服务 rid 串联的证据。正文逐字保留、未改写；接线施工归 `tellurion-kit:KIT-REQUESTID-STDLIB` + 六仓安装（见 [ODR-072](../archive/odr/odr-072-audit-wave5-security-reliability-deps.md) W5-F3）。

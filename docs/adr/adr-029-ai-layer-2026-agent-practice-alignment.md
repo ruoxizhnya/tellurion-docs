@@ -581,3 +581,13 @@ _Evidence: `internal/sandbox/{wasm/sandbox.go:8-28, runner/rlimit_windows.go, st
 全仓 grep：`jsonrpc|tools/list|tools/call|modelcontextprotocol` → 零命中；
 `wazero|wasmtime|wasmer|extism` in go.mod → 零命中_
 _Supersedes (部分): ADR-024「表达式是唯一执行载体」· ADR-015。Activates: ADR-007 Phase 3_
+
+---
+
+## 更正注记（2026-11-12，DOC-ADR-REQUESTID-CORRECTION / ODR-072 W5-F3）
+
+**更正对象**：正文 `:126-127`「……**request-id 已跨服务传播**。但**无 span / trace 树**」与 §10 对账表 `:448`「**rid 传播** ✅ 已有（`RequestIDMiddleware` + `HTTPTransport` + `WithRequestIDHeader`）」。
+
+**实测事实（2026-11-12）**：出站发头与 metrics 读 context 确已存在；但入站并非「已有」——`RequestIDMiddleware`（gin 版）、`HTTPTransport` / `WithRequestIDHeader` 在 kit `observability` 只有定义，**kit 目前只有 gin 版**，stdlib `net/http` 版未落地（kit 台账 `KIT-REQUESTID-STDLIB`），各服务**入站零安装**（core 实测 `grep -rn "RequestIDMiddleware("` 仅命中定义处 `pkg/observability/middleware.go`）。
+
+**结论**：上述两处应读作「出站侧机制已定、**入站安装未完成**」，跨服务传播今天不成立，不得作为现状证据。正文逐字保留、未改写；接线施工归 `tellurion-kit:KIT-REQUESTID-STDLIB` + 六仓安装（见 [ODR-072](../archive/odr/odr-072-audit-wave5-security-reliability-deps.md) W5-F3）。

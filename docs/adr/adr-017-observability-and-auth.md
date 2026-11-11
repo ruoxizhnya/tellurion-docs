@@ -152,3 +152,15 @@ CREATE INDEX idx_audit_endpoint ON audit_logs(endpoint, timestamp DESC);
   指标走 Prometheus `/metrics`；两件事都已在生产路径上，不是纸面设计。
 
 **核验命令**：`grep -c otel go.mod`（应输出 `0`）；`ls pkg/auth/ | grep -E 'auth|middleware'`。
+
+---
+
+## 更正注记（2026-11-12，DOC-ADR-REQUESTID-CORRECTION / ODR-072 W5-F3）
+
+**更正对象**：正文「当下的替代」段（`:151-152`）的「`request_id` 贯穿 inbound → 下游 HTTP（`HTTPClient` 传播头）→ 日志……两件事都已在生产路径上，不是纸面设计」。
+
+**实测事实（2026-11-12）**：`RequestIDMiddleware`（gin 版）、`HTTPTransport` / `WithRequestIDHeader`（出站）在 kit `observability` 已定义，但 **kit 目前只有 gin 版**，stdlib `net/http` 版尚未落地（kit 台账 `KIT-REQUESTID-STDLIB`）；且各服务**入站零安装**（core 实测 `grep -rn "RequestIDMiddleware("` 仅命中定义处 `pkg/observability/middleware.go`，无任何路由/装配调用）。出站「从 context 读 rid 并写头」与 metrics 读 `RequestIDFromContext` 确实存在，但没有入站生成/注入，跨服务链路今天是断的。
+
+**结论**：本文关于 RequestID 传播的表述只能读作「**机制已定、安装未完成**」，不得作为「已跨服务传播」的现状证据。正文逐字保留、未改写；接线施工归 `tellurion-kit:KIT-REQUESTID-STDLIB` + 六仓安装（见 [ODR-072](../archive/odr/odr-072-audit-wave5-security-reliability-deps.md) W5-F3）。
+
+**不改项**：§「触发条件」与 OTel / span 决策不动（本波只做 correlation-id，不做 tracing）。

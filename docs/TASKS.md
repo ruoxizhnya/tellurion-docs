@@ -1,7 +1,7 @@
 ---
 status: active
 last-verified: 2026-11-12
-verified-by: 2026-11-12 W7 文档维护批次：`DOC-FRONTMATTER-HYGIENE` 结案（补 5 份活跃层 frontmatter、4 份校时、ARCHITECTURE 转 archived、ADR-001/024 索引标注）；其余三条（`DOC-PRODUCT-DRIFT-FIX` / `DOC-P3-MATRIX-TABLE-GRAIN` / `DOC-ADR-REQUESTID-CORRECTION`）按序施工中。此前：2026-11-11 全面审查 W7 台账立单（A5 授权）——新立 4 条知识库维护单（`DOC-PRODUCT-DRIFT-FIX` P1 / `DOC-P3-MATRIX-TABLE-GRAIN` P2 / `DOC-ADR-REQUESTID-CORRECTION` P2 / `DOC-FRONTMATTER-HYGIENE` P3），证据坐标引 ODR-068/069/072（本仓 `docs/archive/odr/`）；本轮只立单不修复。**立单复核三处订正**：① W1-F3 的 REPO-MAP 漂移已被主任 `ad80a3d` 修复 ⇒ DOC-PRODUCT-DRIFT-FIX 收窄到 PRODUCT/ROADMAP；② W2-F11 的 DATA-FUNDAMENTALS-READ-PUBLIC 已被主任归属裁决（data `a454726` 删读面 + core `c85abff`）取代 ⇒ 该 data 单标 ✅ 作废；③ W2-F10 矩阵残留收窄到 REPO-MAP `run.*` 粒度 + core 矩阵 `:43` 行（SYSTEM-DESIGN §5 已对齐）。此前：DOC-10 + DOC-11 + DOC-12 结案（2026-10-26：按第四轮审计订正现状 + ADR-036 服务化定位落档）。此前：DOC-06 结案（2026-10-25）：口径三问全部拍定（均取 §四 建议 A），PRODUCT 新增「系统构成」一节、VISION 只加指针不动八条原则与优先级序，docs/README 两行导航换成「现行」；同日新立 DOC-10（`SYSTEM-DESIGN.md` §7 的"六服务只有占位 doc.go"与实仓冲突）
+verified-by: 2026-11-12 W7 文档维护批次：`DOC-FRONTMATTER-HYGIENE`、`DOC-ADR-REQUESTID-CORRECTION` 已结案（活跃层 frontmatter 校准 + ARCHITECTURE 转 archived + ADR-001/024 索引标注；adr-017/027/029 各追加「机制已定、安装未完成」更正注记）；其余两条（`DOC-PRODUCT-DRIFT-FIX` / `DOC-P3-MATRIX-TABLE-GRAIN`）按序施工中。此前：2026-11-11 全面审查 W7 台账立单（A5 授权）——新立 4 条知识库维护单（`DOC-PRODUCT-DRIFT-FIX` P1 / `DOC-P3-MATRIX-TABLE-GRAIN` P2 / `DOC-ADR-REQUESTID-CORRECTION` P2 / `DOC-FRONTMATTER-HYGIENE` P3），证据坐标引 ODR-068/069/072（本仓 `docs/archive/odr/`）；本轮只立单不修复。**立单复核三处订正**：① W1-F3 的 REPO-MAP 漂移已被主任 `ad80a3d` 修复 ⇒ DOC-PRODUCT-DRIFT-FIX 收窄到 PRODUCT/ROADMAP；② W2-F11 的 DATA-FUNDAMENTALS-READ-PUBLIC 已被主任归属裁决（data `a454726` 删读面 + core `c85abff`）取代 ⇒ 该 data 单标 ✅ 作废；③ W2-F10 矩阵残留收窄到 REPO-MAP `run.*` 粒度 + core 矩阵 `:43` 行（SYSTEM-DESIGN §5 已对齐）。此前：DOC-10 + DOC-11 + DOC-12 结案（2026-10-26：按第四轮审计订正现状 + ADR-036 服务化定位落档）。此前：DOC-06 结案（2026-10-25）：口径三问全部拍定（均取 §四 建议 A），PRODUCT 新增「系统构成」一节、VISION 只加指针不动八条原则与优先级序，docs/README 两行导航换成「现行」；同日新立 DOC-10（`SYSTEM-DESIGN.md` §7 的"六服务只有占位 doc.go"与实仓冲突）
 ---
 
 # TASKS — tellurion-docs 未完成项
@@ -53,17 +53,7 @@ verified-by: 2026-11-12 W7 文档维护批次：`DOC-FRONTMATTER-HYGIENE` 结案
 - **⑥ 边界**：本仓 `REPO-MAP.md`（+ SYSTEM-DESIGN §5 核验）；core 矩阵 `:43` 行归 core（跨仓指针，附 ADR-038）。
 - **owner**：待定
 
-### DOC-ADR-REQUESTID-CORRECTION · adr-027/029/017「request-id 已跨服务传播」断言被证伪，加更正注记 [P2] ⬜
-
-- **① 目标**：给 adr-027/029/017 的「request-id 已跨服务传播」断言加更正注记，承认「机制已有、入站接线未落」，不改写已 Accepted 决策。
-- **② 上下文**：全面审查 W5-F3（[ODR-072](archive/odr/odr-072-audit-wave5-security-reliability-deps.md)）。实测断言被证伪：core `RequestIDMiddleware`（`observability/middleware.go:58`）全仓零安装点；kit gin 版有但 6 服务仓全 stdlib mux 装不上；agent 装 `HTTPTransport` 出站但未装 `RequestIDMiddleware` 入站恒空；6 服务仓 `X-Request-ID` 零命中。被证伪的 ADR 断言（实测仍在原文）：`adr-027:1314-1316`「且已有 request-id 跨服务传播」、`adr-029:126-127`「request-id 已跨服务传播」+ `:448`「rid 传播 ✅ 已有」、`adr-017:151`「`request_id` 贯穿 inbound → 下游 HTTP…两件事都已在生产路径上，不是纸面设计」。修复机制归 `tellurion-kit:KIT-REQUESTID-STDLIB` [P1] + 六仓安装（ODR-072）；本单只做文档更正。
-- **③ 要求**：① 在 adr-027/029/017 各加一条**更正注记**（追加节，不改写原文）：「机制（`RequestIDMiddleware`/`HTTPTransport`/`WithRequestIDHeader`）已定义，但入站零安装 ⇒ 跨服务传播今天不成立；见 ODR-072 W5-F3 与 KIT-REQUESTID-STDLIB」；② adr-017:146-149 的 OTel/span 重开条件不动（本波只做 correlation-id 不做 tracing）；③ 注记带日期 + 指向 ODR-072。
-- **④ 约束与非目标**：**不改写已 Accepted 的 ADR 正文**（ODR 只增不删，更正走注记）；不动 span/trace 重开条件；不在本单做接线施工（归 KIT-REQUESTID-STDLIB + 六仓）；不引入 OpenTelemetry。
-- **⑤ 验收**：adr-027/029/017 各有更正注记节（`grep "更正注记"` + `"W5-F3"` 命中）；原断言正文逐字保留（diff 只增不改）；`python tools/check_doc_links.py` 绿。
-- **⑥ 边界**：本仓 adr-027/029/017 注记；接线施工归 `tellurion-kit:KIT-REQUESTID-STDLIB` + 六仓安装（ODR-072）。
-- **owner**：待定
-
-> 除上文外，本仓无其它未做 / 挂起 / 外部依赖项（截至 2026-11-12：W7 立单 4 条中 `DOC-FRONTMATTER-HYGIENE` 已结案并归档，其余三条见上）。跨仓施工任务不在本仓——见 §三指针。
+> 除上文外，本仓无其它未做 / 挂起 / 外部依赖项（截至 2026-11-12：W7 立单 4 条中 `DOC-FRONTMATTER-HYGIENE`、`DOC-ADR-REQUESTID-CORRECTION` 已结案并归档，其余见上）。跨仓施工任务不在本仓——见 §三指针。
 
 ## 三、跨仓指针（不在本仓，勿双写）
 
