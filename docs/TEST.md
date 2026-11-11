@@ -532,8 +532,11 @@ npm run test:coverage # With coverage report
 # 前置（AUD-58）：整套 playwright 从 127.0.0.1 **一个 IP** 出量，
 # API 密集的几段会越过网关的 100 req/min per ClientIP，于是一批与被测代码
 # 无关的用例拿到 429。所以先切到 **e2e 专用姿势**（把额度抬高）：
-docker compose -f docker-compose.yml -f docker-compose.e2e.yml \
-  up -d --force-recreate --no-deps analysis-service data-service
+# 覆盖层文件已并入基础 compose，只剩环境变量旋钮。
+DATABASE_NAME=tellurion_e2e \
+RATE_LIMIT_PER_MINUTE=100000 \
+ORCHESTRATION_URL=http://orchestration:8088 \
+docker compose --profile full --profile orchestration-worker up -d --build
 
 cd e2e
 npx playwright test                       # Full suite
@@ -544,7 +547,7 @@ npx playwright test --grep "Backtest"     # Backtest-related only
 docker compose up -d --force-recreate --no-deps analysis-service data-service
 ```
 
-> ⚠️ **为什么要单独一层覆盖文件，而不是把默认值调高**：缺省 100 是本地开发该有的
+> ⚠️ **为什么要用命令行 env 覆盖，而不是把默认值调高**：缺省 100 是本地开发该有的
 > 姿势，把它调高等于**把限流从本地开发里静默删掉** —— 比拿到 429 更糟（429 至少看得见）。
 > 代价也写清楚：在 e2e 姿势下**不再覆盖**「限流生效」。限流本身由
 > `cmd/analysis/rate_limit_exempt_test.go`（含对照组腿 + 窄度腿）与

@@ -270,12 +270,15 @@ Playwright 与 `tellurion-ui:e2e/tests/rbac-open-access.spec.ts` **都不带 tok
 e2e 只能打一个 open-access 的栈；开了鉴权的形态只成立 `e2e/tests/auth-login-flow.spec.ts`。
 
 限流也要放宽（整套 e2e 从 `127.0.0.1` **一个 IP** 出量，API 密集段必然撞 100/min）：
-用 core 的显式覆盖层，**不要**改默认值 ——
+用**命令行 env 覆盖**，**不要**改默认值 —— 原先的 `docker-compose.e2e.yml`
+覆盖层已并入基础 compose，只剩这一个旋钮：
 
 ```bash
 cd tellurion
-docker-compose -f docker-compose.yml -f docker-compose.e2e.yml \
-  up -d --force-recreate --no-deps analysis-service data-service
+DATABASE_NAME=tellurion_e2e \
+RATE_LIMIT_PER_MINUTE=100000 \
+ORCHESTRATION_URL=http://orchestration:8088 \
+docker compose --profile full --profile orchestration-worker up -d --build
 ```
 
 代价写在该文件头：这个姿势下 e2e **不再覆盖**「限流生效」，那条由

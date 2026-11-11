@@ -32,7 +32,7 @@ verified-by: 2026-11-11 代码-文档对齐审计订正：① core `docker-compo
 
 | 资产 | 在哪个仓 | 说明 |
 |---|---|---|
-| `docker-compose.yml` / `docker-compose.e2e.yml` | `tellurion` | core compose 的应用服务：`data-service`（**`context: ../tellurion-data`**）、`analysis-service`、`ai-service`、`worker`、`dualrun`（+ postgres/redis）。e2e 那份只覆盖限流额度，不定义服务 |
+| `docker-compose.yml` | `tellurion` | core compose 的应用服务：`data-service`（**`context: ../tellurion-data`**）、`analysis-service`、`ai-service`、`worker`、`dualrun`（+ postgres/redis）。原 e2e 覆盖层已并入本文件（限流额度改由 `RATE_LIMIT_PER_MINUTE` env 覆盖，库名由 `DATABASE_NAME` 覆盖） |
 | `docker-compose.nt.yaml` | `tellurion` | NT 侧车的容器形态；**Windows 下不可用**（`network_mode: host` 进的是 Linux VM 命名空间，见 [nt-sidecar-operations.md](nt-sidecar-operations.md) §3） |
 | `Dockerfile.service` | `tellurion` | `analysis-service` / `worker` / `dualrun` 共用这一个（多阶段） |
 | `cmd/analysis/Dockerfile` | `tellurion` | 今天**只剩这一个** `cmd/*/Dockerfile`；`cmd/data/Dockerfile` 已随目录删除，`Makefile` 的 `build-data` 目标因此是死的（core 待修） |
