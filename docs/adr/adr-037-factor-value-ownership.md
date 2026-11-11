@@ -128,7 +128,7 @@
 
 ## 7. 不在本 ADR 范围
 
-- `factor_returns` / `ic_analysis` / `factor_hypothesis` 的归属（仍按 SPEC-R-02 挂在 data 的待迁移清单，未裁决）；
+- `factor_returns` / `ic_analysis` 的归属——已由 **ADR-038** 裁决为 core（`factor_hypothesis` 归 agent，代码层已闭合）；
 - 因子定义从 core 迁往 strategy 的时间表（ADR-028 §6 已定方向，迁移单另立）；
 - `GET /api/factors/:name` 死链的修复；
 - `multi_factor` 的加权/阈值逻辑。

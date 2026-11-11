@@ -1,7 +1,7 @@
 ---
 status: evergreen
 last-verified: 2026-11-11
-verified-by: 代码-文档对齐审计（2026-11-11）：订正 §3 依赖边（`contracts` 与 `kit` 实测互不 require）、§4「今天」四条链路、§5「今天实际」六行、§7 阶梯与过渡态；删去「生产写入仍由 core `cmd/data` 主写」「core 侧零调用方（strategy/risk）」「core `backtest_jobs` 双 owner」「core 仍留 `experiments`/`factor_hypothesis`」四处过期陈述。依据 = 各仓 `AGENTS.md` / `docs/TASKS.md` + core `internal/repoguard/*_retired_test.go` + 12 仓 `go.mod`。此前：DOC-10 + DOC-11 + DOC-12（2026-10-26）按第四轮目的对齐审计与 ADR-036 订正 §3 依赖边、§5「今天实际」、§7 阶梯/过渡态。
+verified-by: 2026-11-11 DDD 边界审查同步（§4 批量/分析的目标态改为「core 指标权威 + analytics 只读参考，不迁移」，依据 ADR-039；§5 新增 `public` 行，钉因子治理与派生表 owner=core，依据 ADR-037/038；§2 contracts 最新版本改为 `v0.10.0`）；代码-文档对齐审计（2026-11-11）：订正 §3 依赖边（`contracts` 与 `kit` 实测互不 require）、§4「今天」四条链路、§5「今天实际」六行、§7 阶梯与过渡态；删去「生产写入仍由 core `cmd/data` 主写」「core 侧零调用方（strategy/risk）」「core `backtest_jobs` 双 owner」「core 仍留 `experiments`/`factor_hypothesis`」四处过期陈述。依据 = 各仓 `AGENTS.md` / `docs/TASKS.md` + core `internal/repoguard/*_retired_test.go` + 12 仓 `go.mod`。此前：DOC-10 + DOC-11 + DOC-12（2026-10-26）按第四轮目的对齐审计与 ADR-036 订正 §3 依赖边、§5「今天实际」、§7 阶梯/过渡态。
 ---
 
 # 总体设计（SYSTEM DESIGN）
@@ -77,7 +77,7 @@ verified-by: 代码-文档对齐审计（2026-11-11）：订正 §3 依赖边（
 | **回测** | ui → core `cmd/analysis` 的 HTTP → `pkg/backtest` 引擎（进程内）→ 读行情（`pkg/marketdata`：HTTP 客户端 / 本地 PG 两条实现）→ 结果落库 | 引擎仍在 core；**取数走 `tellurion-data` 的 aggregator（run 前 1 次）** | 同一 `dataset_snapshot_hash` 的两次拉取必须逐位一致；前视由 `visible_at` 拦两道 |
 | **AI 实验** | agent（`cmd/ai`）→ 生成策略 → 调 core 回测 → 实验日志落 agent 自持的 `ai.*` | agent 自持 `ai.*`；与 core 只走 HTTP 粗粒度 | 实验必须能回答"用哪份策略 / 数据 / 规则"（三 hash） |
 | **实盘** | core 进程内 `RiskPolicy.CheckOrder`（限额来自 risk 快照）→ `pkg/brokerhttp` 调 `tellurion-broker`（Mock 网关） | 裁决仍进程内；通道走 `tellurion-broker`（对账 + 幂等 + 熔断之后） | **同步裁决永不出仓**；无对账/幂等/熔断不接真钱 |
-| **批量 / 分析** | core 的 `pkg/backtest/batch` + `walkforward` 仍可跑；新的排队 / worker 走 `tellurion-orchestration`；指标/归因仍在 core `cmd/analysis` | 排队与 worker 归 `tellurion-orchestration`；指标与归因归 `tellurion-analytics` | 编排**只派活不裁决**；分析**纯函数**（不读时钟、不读随机，蒙特卡洛必须带 `seed`） |
+| **批量 / 分析** | core 的 `pkg/backtest/batch` + `walkforward` 仍可跑；新的排队 / worker 走 `tellurion-orchestration`；指标/归因仍在 core `cmd/analysis` | 排队与 worker 归 `tellurion-orchestration`；**指标运行时仍归 core（权威）**，`tellurion-analytics` 提供只读参考实现 + 报告/导出面（ADR-039；**不迁移**，收敛条件见该 ADR D4） | 编排**只派活不裁决**；分析**纯函数**（不读时钟、不读随机，蒙特卡洛必须带 `seed`）；同名指标以 core 为准 |
 
 ---
 
@@ -93,6 +93,7 @@ verified-by: 代码-文档对齐审计（2026-11-11）：订正 §3 依赖边（
 | `ai` | `tellurion-agent` | 自持自读 | agent 是唯一写者；core 的 `experiments` / `factor_hypothesis` 裸表与写方法已于 2026-11-10 退役（`SVC-CORE-AI-RETIRE`） |
 | `quant` | `tellurion`（core） | 只有 core 写 | 运行态真相：订单/成交/持仓/组合快照/对账/`risk_events`（`strategy_state` 已裁**留 core**，U3 作废） |
 | `audit` | `tellurion`（core，`pkg/eventstore` + `pkg/msgbus`） | 只追加；用于消息重放 | 与 `risk.audit_logs`（人操作审计）**不是一回事** |
+| `public`（无 schema 前缀：因子治理 / 用户 / 审计 / `factor_cache`·`factor_returns`·`ic_analysis`） | `tellurion`（core） | core 进程内；对外只有治理面 `POST /api/factor/registrations` | 因子定义与派生值同源归 core（ADR-037/038）；`factor_cache` 零写者、按需求值为目标形态；`factor_returns`/`ic_analysis` 零写者，且**不迁 data/analytics**；`GET /api/factors/:name` 是死链（ADR-041） |
 | 无表 | `contracts` / `kit` / `broker` / `ui` | — | 见各仓 `db-schema.md` 的"为什么没有表" |
 
 > 迁移纪律：**按 schema 搬，不按表搬**；每次搬都是"先建第二写者 → 对拍 → 切读 → 停写"，不允许一步切换（QT-17 的四步样板）。
@@ -120,7 +121,7 @@ verified-by: 代码-文档对齐审计（2026-11-11）：订正 §3 依赖边（
 | **S-1** | 12 仓改名 + 建仓 + 推送 | ✅ 完成（QT-60，2026-10-20） |
 | **W0** | 契约形状冻结（abi v2 / 四契约 / 错误三分 / 重放） | ✅ 完成（2026-10-25；QT-01~04） |
 | **S1** | 契约与工具**直接落两个新仓**，core / agent 用 `require` 伪版本（**无 replace**） | ✅ 完成（ADR-D31 形态；contracts / kit 代码已落） |
-| **S2** | 两仓打 `v0.1.0`，下游换 tag；两仓自治补齐 | ✅ 完成（结案时 contracts `v0.6.0` / kit `v0.1.3`；截至 2026-11-11 最新 contracts `v0.9.0`、kit `v0.3.0`，下游按 tag pin）。**pin 升级的推进顺序与前置只写在 [`REPO-MAP.md`](REPO-MAP.md) §「版本 pin 的推进顺序与前置」，此处不重复** |
+| **S2** | 两仓打 `v0.1.0`，下游换 tag；两仓自治补齐 | ✅ 完成（结案时 contracts `v0.6.0` / kit `v0.1.3`；截至 2026-11-11 最新 contracts `v0.10.0`、kit `v0.3.0`，下游按 tag pin）。**pin 升级的推进顺序与前置只写在 [`REPO-MAP.md`](REPO-MAP.md) §「版本 pin 的推进顺序与前置」，此处不重复** |
 | **S3** | agent 删 `replace ../tellurion`，只依赖 tag + HTTP | ✅ 完成（2026-10-25；agent 零 import core） |
 | **X1~X6** | 六个能力服务按 ADR-036 服务化 | ✅ 收口（2026-11-11）：六仓 G0–G4 全绿 —— data G3 2026-11-10、strategy G3/G4 2026-11-10、risk G1/G3/G4 2026-11-10、orchestration G1/G3 2026-11-09、broker G1/G2/G4 已落；analytics 的 `SVC-AN-G3` 由 ADR-0005 关闭、`K7` 挂起，broker `X6c` ⏸。逐仓证据见 [`SERVICE-INDEX.md`](SERVICE-INDEX.md) 与各仓台账归档 |
 

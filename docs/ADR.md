@@ -1,6 +1,6 @@
 ---
 status: evergreen
-last-verified: 2026-10-17
+last-verified: 2026-11-11
 verified-by: REV-15 六条 ADR 状态批量校准（2026-10-17）—— 002→Superseded（实际原生 PG）、006→Accepted（PG-backed，与原推荐相反）、013/016→Accepted、017/018→Accepted（部分实施 + OTel/dockertest 未实施登记）；此前 AUD-30 索引表与「已取代」尾注校准（2026-09-22）—— 顶层定位改 ADR-023/024；新增 ADR-025（2026-09-25，AUD-52 的栈侧一半：P0-4 判据从绑定地址换到发布层）；新增 ADR-026（2026-09-25，AUD-52 的收尾项：首个管理员自助引导 + SPA 鉴权，含落地后撞出的 AUD-57 —— 限流探针的 429 被读成「未登录」）；新增 ADR-027~030（2026-10-06/07，模块化拆分 / 表达力分层 / AI 层对齐 / 观察清单）；新增 ADR-031（2026-10-12，内核可插拔 + 外围 NT-ready，buy vs build 路线，承接模块化内核蓝图 D1–D5）。索引表与本尾注两处同步，两处是两套真相来源
 ---
 
@@ -8,7 +8,7 @@ verified-by: REV-15 六条 ADR 状态批量校准（2026-10-17）—— 002→Su
 
 > **Location:** `docs/adr/` — architectural ADR files | `docs/archive/odr/` — operational ODR files
 > **Owner:** 龙少 (Longshao) — AI Assistant
-> **Version:** 3.25.0
+> **Version:** 3.27.0
 > **Created:** 2026-03-24
 
 ---
@@ -53,6 +53,11 @@ verified-by: REV-15 六条 ADR 状态批量校准（2026-10-17）—— 002→Su
 | [ADR-034](adr/adr-034-repo-topology-and-ladder.md) | **分仓拓扑与 S0~S3 阶梯（原 D29 升格）** —— 仓 = 模块/服务 · R1~R6 自治不变量（含 R6 三份契约与 2026-10-21 的 core/docs 豁免声明）· S0~S3(+S4) 阶梯与收回判据 · C1~C5 契约纪律（C5 保留一个版本周期）· 依赖方向最终形态 | **Accepted**（2026-10-22 升格；§7 的 S1 形态已被 ADR-D31 替代，其余不变） | 2026-10-19 / 升格 2026-10-22 |
 | [ADR-035](adr/adr-035-repo-inventory-and-naming.md) | **仓清单与命名（原 D30 升格）** —— 项目定名 `tellurion`：应用/服务用单段短名（编译器拒绝 require，是护栏不是坑）、库用 `github.com/ruoxizhnya/<仓>`、owner 不变 · 12 仓表（上限而非承诺终态）· **M5 对账结案：六个能力边界 ≠ 六个进程**，四仓无容器位置 · 可见性与 `GOPRIVATE` 前提 · **附录：本轮待裁决 A/D/E/F/G/H 处置**（唯一未裁：C） | **Accepted**（2026-10-22 升格 + 附录；**M5 结论已由 ADR-036 取代**） | 2026-10-19 / 升格 2026-10-22 |
 | [ADR-036](adr/adr-036-service-topology-and-readiness-gate.md) | **服务化目标拓扑：仓定位、服务就绪门与并行 MVP** —— 12 仓定性（core 单体 / agent+ui 应用 / contracts+kit 库 / 六服务）· service G0~G4 就绪门 · G0/G1/G2 并行、G3 切读串行 · 部署资产回服务仓、compose 为本地唯一真相 · 同 PG 多 schema 即数据自治 · risk = 控制面服务 + core 进程内裁决 · broker = 服务（Mock MVP；X6d 暂缓被取代）· 旧实现退役与删除任务绑定 | **Accepted** | 2026-10-26 |
+| [ADR-037](adr/adr-037-factor-value-ownership.md) | **因子值的归属与生产方** —— `factor_cache` 是分析上下文的读模型（owner=core）；目标形态 = 消费点按需实时计算（`pkg/expression`，run 级内存），`factor_cache` 退为可选预热源、不新增数据库写者；否决 core 恢复预热作业与归 data；表的退出条件可判定 | **Accepted** | 2026-11-11 |
+| [ADR-038](adr/adr-038-factor-derived-tables-ownership.md) | **因子派生表归属：`factor_returns` / `ic_analysis` 归 core** —— 与因子值同源（派生计算），沿用「消费点按需求值、不设跨上下文写者」；否决 data（无表达式引擎，重写即双实现）与 agent（实验编排层不持分析真相）；零写者表必须响亮、不许静默读空 | **Accepted** | 2026-11-11 |
+| [ADR-039](adr/adr-039-metric-authority-and-dual-implementation.md) | **指标权威：core 运行时权威，analytics 只读参考实现** —— 五条共存边界（写面隔离 / 调用方向 / 口径仲裁 / 引用面冻结 / 承诺面子集）+ 三条**可判定**收敛触发（报告出口单点化、漂移超限、冻结解冻）；漂移检测是 T2 的判定前置 | **Accepted** | 2026-11-11 |
+| [ADR-040](adr/adr-040-risk-snapshot-single-source.md) | **风控快照形状唯一真相 = `contracts/risk`** —— 形状/编码/四哨兵进契约，`Bundle`/`ParseBundle`/`ForScope` 留 risk（服务策略）；risk 改类型别名 + 委托，零数据迁移、hash 逐字节不变；对拍腿 + 破坏验证 | **Accepted** | 2026-11-11 |
+| [ADR-041](adr/adr-041-ai-factor-tools-no-phantom-endpoints.md) | **AI 因子工具面：不新造端点** —— 实测 core 只有 `/api/factor/registrations` 与死链反代（`compute-returns`/`compute-ic` 只在陈旧 SPEC 里）；语义对不上 ⇒ agent 工具显式返回「该能力当前未提供」，工具标 `unavailable`；禁止空壳端点与改 allowlist 变绿 | **Accepted** | 2026-11-11 |
 
 ---
 
@@ -178,7 +183,9 @@ _2026-10-08 状态变更 (本次): ADR-027/028/029/030 补录入索引（此前�
 _2026-10-14 状态变更 (本次): ODR-067 新建 Accepted (**单人维护期允许直接提交 `main` —— 分支约定改判** — 起因是 A-07 收口盘点时三个仓的改动全在**从未推送过**的本地分支上（ui 44 / core 6 / agent 2 条，是该工作的唯一副本），主任据此裁决直推 main；真正的问题不是授权而是**授权与文档相反**：`AGENTS.md` §8.5「不直接提交到 `main`」与 §9 Never Do「绝不直接提交到 `main` — 使用 PR 工作流」两处**同步**改判（不同步就等于把「哪条算数」交给下一个执行者）；**三条边界**防授权被读宽 —— ① 他人贡献仍走 PR，② 上游仓（`nautilus_trader` 自有规约）不套用，③ 补偿门禁写成可执行清单（受影响包测试 + `go vet` + `gofmt -l` 当场跑 / 一个 commit 一件事 / **不得把新红混进既有红**）；**代价与依赖如实记录**：失去外部检查点后，区分「这条提交弄坏了」与「本来就坏的」只能靠红逐条登记在案，而当日实测全量 e2e = **61 failed / 116 passed / 2 skipped** ⇒「套件绿了才准提交」这条门**物理上不存在**，AUD-61 阶段一因此在 trunk-based 下优先级上升；顺带登记 `AGENTS.md` 里 `docs/PRODUCT.md`·`ADR.md`·`VISION.md`·`docs/adr/`·`docs/archive/odr/` 已随文档拆仓移出 core 的**既有指针漂移**（本次不批量改链，已立条目）；ADR.md index 3.24.0 → 3.25.0 (ODR 66 → 67, Process 1 → 2) — ODR-067_
 _2026-10-26 状态变更 (本次): ADR-036 新建 Accepted（**服务化目标拓扑：仓定位、服务就绪门与并行 MVP** — 依据主任 2026-10-26 的四条指令与第四轮目的对齐审计：① 12 仓定性 = core 单体 / agent+ui 应用 / contracts+kit 库 / 六服务；② service G0~G4 就绪门（G0/G1/G2 并行、G3 切读串行）；③ 部署资产回服务仓、compose 为本地唯一真相、K8s 非必需；④ 同 PG 多 schema 即数据自治；⑤ risk = 控制面服务 + core 进程内裁决；⑥ broker = 服务（Mock MVP，X6d 暂缓被取代）；⑦ 旧实现退役与删除任务绑定。**修订** ADR-027 §2.1（risk 同进程）、ADR-034 §S4（每仓升容器各需 ADR）、ADR-035 §M5（四仓进程不升）、repo-inventory §1.2（六仓≠六进程/未触发不建仓）、broker X6d（独立进程暂缓）、D1 的「不拆进程」口径 —— 均为「部分取代」，核心热路径不拆、真实 XTP 仍受 X6c 阻塞、K8s 不作强制项）；ADR.md index 3.25.0 → 3.26.0 (ADR 34 → 35) — ADR-036_
 _Last updated by: AI Assistant — 2026-10-14 (新建 ODR-067 单人维护期直推 main 的分支约定改判；前一条 ODR-066 Stitch 设计稿评审与边界裁决为 2026-10-13)_
-_ADR 累计 36 条: 架构 31 (ADR-001~016 + ADR-022~036) + 业务 1 (ADR-017) + 测试 1 (ADR-018) + 服务合并 1 (ADR-019) + 重构 1 (ADR-020) + 研究层 1 (ADR-021); 其中 ADR-014 由 ADR-020 §6 取代、ADR-021 与 ADR-022 均由 ADR-023 取代（ADR-022 从未实施，仅存于 archive/superseded-adr/）；ADR-027/028/029 为 Proposed、ADR-030 为 Draft，均尚未裁决；ADR-032~036 为 Accepted（036 于 2026-10-26 新建，修订 027/034/035 的部分结论）
+_2026-11-11 状态变更 (本次): ADR-037 补入索引（2026-11-11 已落盘但索引漏登），并新建 **ADR-038~041**（12 仓 DDD 限界审查的裁决批，依据 `docs/design/ddd-boundary-review-2026-11-11.md`）：**037** 因子值归属（`factor_cache` owner=core、消费点按需求值）；**038** 因子派生表 `factor_returns`/`ic_analysis` 归 core（否决 data 无引擎重写、agent 不持分析真相）；**039** 指标权威 = core，analytics 为只读参考实现（五条共存边界 + 三条可判定收敛触发）；**040** 风控快照形状唯一真相 = `contracts/risk`（`Bundle`/`ParseBundle` 留 risk）；**041** AI 因子工具面不新造端点（能力未提供即显式未提供）；ADR.md index 3.26.0 → 3.27.0 (ADR 36 → 41)_
+
+_ADR 累计 41 条: 架构 36 (ADR-001~016 + ADR-022~041) + 业务 1 (ADR-017) + 测试 1 (ADR-018) + 服务合并 1 (ADR-019) + 重构 1 (ADR-020) + 研究层 1 (ADR-021); 其中 ADR-014 由 ADR-020 §6 取代、ADR-021 与 ADR-022 均由 ADR-023 取代（ADR-022 从未实施，仅存于 archive/superseded-adr/）；ADR-027/028/029 为 Proposed、ADR-030 为 Draft，均尚未裁决；ADR-032~041 为 Accepted（036 于 2026-10-26 新建，修订 027/034/035 的部分结论；037~041 于 2026-11-11 由 DDD 边界审查批量裁决）
 _ODR 累计 67 条: Cleanup 4 (ODR-001/006/008/045) | Audit 15 (ODR-002/009/010/012/013/015/043/047/049/054/061/062/063/065/066) | Migration 7 (ODR-003/005/007/011/014/044/046) | Process 2 (ODR-004/067) | Implementation 37 (ODR-016~021 + ODR-023~042 + ODR-050~053 + ODR-055~060 + ODR-064) | Refactor 2 (ODR-022/048)
 _2026-10-13 状态变更 (本次): ODR-066 新建 Accepted (**Stitch 设计稿评审与产品边界裁决** — 12 屏 UI 重构稿对 `user-flows.md` v1.0 基线的吻合度核查；三项裁决 ① 边界不动·越界判删（实盘高频 execution / 分钟线与盘中 / L2 行情链路 / 集群算力布景，源码实测数据层只有日频）② 语义契约违规判按契约改图（二值 VALIDATED·六维缺冗余·unassessed 仅 1 处·决策性措辞·摘要三要素错位·采纳缺理由）③ 设计系统以设计稿为准合一，但先暴露 12 份 code.html token 两两不同 + 现仓 visual.md = 三套真相源；**幻觉能力 7 组**逐条点名，其中 strategies 屏生成 Python 策略类三重违反 ADR-024；**自我更正 1 条**：初判「后端无 SSE」经复核过强并推翻（sync 作业进度确有 `text/event-stream` + 前端确有 `EventSource`），不存在的是 explore 推送与行情推送 ⇒ 连带修 `user-flows.md` §6.7 的事实性过时；**产品边界变更 0**；ADR.md index 3.23.0 → 3.24.0 (ODR 65 → 66, Audit 14 → 15) — ODR-066_
 _2026-09-25 状态变更 (本次): ADR-025 新建 Accepted (P0-4 鉴权豁免的判据从「绑定地址」换成「**发布层**」 — 起因是 AUD-52：容器**必须**绑 `0.0.0.0` 才能被发布端口转发，而 `decideAuthStartup` 只在 `server.host` 是 loopback 时允许 `AUTH_INSECURE` ⇒「服务进容器」与「dev/e2e 免鉴权」**结构上互斥**；配 `JWT_SECRET` 则因前端无登录页/无首个管理员引导而**全站 401**（实测经 nginx 的前端接口全 401 = 整个 SPA 与 160 条 Playwright 不可用）。决策：新增**逐字匹配**的显式声明 `AUTH_INSECURE_EXPOSURE=loopback-published`（拼错即拒绝启动），`server.host` 为 loopback 的原路径不变；**基础不变量未放松**，改由**两处机器校验**守 —— 静态 `check_deploy_consistency.py` 检查 3c（四条双向规则：open-access ⟹ 每条 ports 映射回环 / 非回环映射 ⟹ 必须有 `JWT_SECRET` / open-access ⟹ 必须有 exposure 声明 / 两者并存 ⟹ 报错）+ 运行时 `tools/local-stack.sh status`（读真实 netstat）。配套：compose 四条映射改 `127.0.0.1:` 前缀、`JWT_SECRET` 不再必填、`e2e/tests` 的门改与断言同源（404→FAIL / 要鉴权→skip 并打印姿势指引）；5 个备选方案（只改测试侧 / 自取 token / host 网络 / 自动推断 / 放宽公开路径）逐条给出否决理由；ADR.md index 3.21.0 → 3.22.0 (ADR 24 → 25) — AUD-52_
