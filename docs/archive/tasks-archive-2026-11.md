@@ -27,6 +27,7 @@
 | DOC-ADR-REQUESTID-CORRECTION | adr-027/029/017「request-id 已跨服务传播」断言更正注记 | 2026-11-12 | `5b18e17` | [原文](#DOC-ADR-REQUESTID-CORRECTION) |
 | DOC-PRODUCT-DRIFT-FIX | PRODUCT/ROADMAP 接线现状与阶段断言对齐 SYSTEM-DESIGN §4/§5 | 2026-11-12 | `b2a473f` | [原文](#DOC-PRODUCT-DRIFT-FIX) |
 | DOC-P3-MATRIX-TABLE-GRAIN | `run.backtest_results` 表粒度例外显式化 + core 矩阵 `:43` 待派指针 | 2026-11-12 | 本次 commit | [原文](#DOC-P3-MATRIX-TABLE-GRAIN) |
+| CORE-MATRIX-FACTOR-OWNER-FIX | core 矩阵 `:43` 因子派生表 owner 仍写 `tellurion-data`（docs 侧按 ADR-037 订正；core 行待派） | 2026-11-12 | 本次 commit | [施工记录](#CORE-MATRIX-FACTOR-OWNER-FIX) |
 
 ---
 
@@ -218,4 +219,38 @@ PRODUCT.md 的导航行现在指 [`ARCHITECTURE.md`](ARCHITECTURE.md)（已被 D
 - **⑥ 边界**：本仓 `REPO-MAP.md`（+ SYSTEM-DESIGN §5 核验）；core 矩阵 `:43` 行归 core（跨仓指针，附 ADR-038）。
 - **owner**：待定
 - **收口（2026-11-12）**：① `REPO-MAP.md` core 行 schema 列补「表粒度例外 `run.backtest_results`」，orch 行补同注，并在 §一表后新增一条例外注（证据 = core `pkg/storage/backtest_results.go` 的 `CREATE TABLE run.backtest_results` + core 审计矩阵 `:41`）；② 核验 `SYSTEM-DESIGN.md` §5：原文 `run` 行**未含**该例外（按 schema 粒度把 `run.*` 全归 orchestration），与 core 矩阵 `:41` 不一致 ⇒ 按「以现码事实为准」在 owner 列补「表粒度例外：`run.backtest_results` 归 core，结果面单一写者；编排只经 API 读」，并把「`run.*` 是唯一状态权威」限定为「任务状态权威」；`public` 行与因子派生表归属未动；③ core 矩阵 `:43`（`factor_hypothesis` / `factor_returns` / `ic_analysis` 仍写 owner=`tellurion-data`）在 core 仓、本仓不代改，已在本仓台账新立跨仓待派指针 `CORE-MATRIX-FACTOR-OWNER-FIX`（六字段）。验收：`grep -n "backtest_results" docs/REPO-MAP.md` 命中 core owner 与 orch 例外；`grep -n "backtest_results" docs/SYSTEM-DESIGN.md` 命中 §5 例外；`python tools/check_doc_links.py` 活跃层 0 断（EXIT 0）；破坏验证＝向 `docs/REPO-MAP.md` 追加失败链接 → 1 断 / EXIT 1 → 逐字节还原 → 0 断 / EXIT 0。
+
+---
+
+<a id="CORE-MATRIX-FACTOR-OWNER-FIX"></a>
+### CORE-MATRIX-FACTOR-OWNER-FIX · core 审计矩阵 `:43` 因子派生表 owner 仍写 `tellurion-data`（与 ADR-038 矛盾）[P2] ✅（2026-11-12，docs 侧）
+
+> 以下六字段为收口前的台账原文，逐字保留：
+
+- **① 目标**：把 core `docs/design/qt-decoupling/data-service-contract-and-ownership.md:43` 的 `factor_hypothesis` / `factor_returns` / `ic_analysis` 行 owner 由 `tellurion-data（SPEC-R-02）` 订正为 `tellurion`（core），与 ADR-037/038、本仓 `SYSTEM-DESIGN.md` §5 `public` 行一致。
+- **② 上下文**：本仓 `DOC-P3-MATRIX-TABLE-GRAIN` 施工实测（2026-11-12）。ADR-038 已裁「因子定义与派生值同源归 core」；core 已落 `CORE-FACTOR-DERIVED-GUARD`（2026-11-11）；本仓 `SYSTEM-DESIGN.md` §5 `public` 行 owner=core（2026-11-11）；但 core 矩阵 `:43` 仍写 `owner = tellurion-data`，并称写者为 `pkg/storage/factor_hypothesis.go` 与 `cache.go`。该文件在 core 仓，本仓不代改。
+- **③ 要求**：在 core 仓订正该行 owner 与说明，附 ADR-038 依据；不改 DDL / 代码（代码侧已由 `CORE-FACTOR-DERIVED-GUARD` 收口）。
+- **④ 约束与非目标**：本仓不代改 core 文件；不重新裁决归属（ADR-037/038 已定）；不在本仓复制 core 矩阵正文。
+- **⑤ 验收**（归 core）：该行 owner=core 且与 `SYSTEM-DESIGN.md` §5 一致；纯文档改动，`go build ./...` 不受影响。
+- **⑥ 边界**：`tellurion:docs/design/qt-decoupling/data-service-contract-and-ownership.md:43`；派单、施工、验收均在 core 仓台账。
+- **owner**：待定（跨仓派单）
+
+> **施工记录（2026-11-12，docs 侧，`docs(docs): CORE-MATRIX-FACTOR-OWNER-FIX 按 ADR-037 D3 订正因子归属口径`）**：
+> - **核清结论（core 侧未被任何提交修掉）**：只读核对 core HEAD `9858dd6` 的 `docs/design/qt-decoupling/data-service-contract-and-ownership.md:43`，
+>   原文仍为 `owner = tellurion-data（SPEC-R-02）`，写者列 `pkg/storage/factor_hypothesis.go` 与 `cache.go`；
+>   该文件最后一次改动 `6f2cc24` 只订正 fundamentals 行，与因子行无关；`git log --all` 无其它分支修复。
+> - **与 ADR-037 的一致性核对**：ADR-037 §3 D2/§8（2026-11-12 落实）= 消费点按需求值、run 级内存、**不新增数据库写者**；
+>   D3（2026-11-12 修订）= `public.factor_cache` **退役遗留表**：不得写入、覆盖度门禁不读它、空表是预期状态；
+>   §7 = `factor_returns` / `ic_analysis` 归 core（ADR-038），`factor_hypothesis` 归 agent（core 裸表 2026-11-10 已退役）。
+>   结论：core 矩阵 `:43` 与上述三处均不一致（owner、写者、`factor_hypothesis` 归属）。
+> - **docs 侧订正（本仓写权内）**：
+>   ① `SYSTEM-DESIGN.md` §5 `public` 行：把「`factor_cache` 零写者、按需求值为目标形态」改为
+>   「按需求值已于 2026-11-12 落地（run setup → run 级内存）；`factor_cache` 已退役为遗留表：禁止新增写者、门禁不读、空表预期」；
+>   ② `ARCHITECTURE.md`：Phase 3 的「因子缓存预热 Engine 从 factor_cache 加载 z-score」追加退役注记（ADR-037 D2/D3）；
+>   L2 副作用示例「回测写 `backtest_jobs`、因子写 `factor_cache`」改为「回测写 `run.backtest_results`、因子按需求值落 run 级内存、不写 `public.factor_cache`」。
+> - **未覆盖（跨仓边界，如实登记）**：core 矩阵 `:43` 本行未改——core 仓本轮归其它会话写权，本仓不代改；
+>   待 core 仓台账派单后按本条目 ①②⑤ 施工（owner 分三行：`factor_returns`/`ic_analysis`→core，`factor_hypothesis`→agent/`ai.*`）。
+> - **验收**：`grep -n "factor_cache" docs/SYSTEM-DESIGN.md docs/ARCHITECTURE.md`——§5 旧口径「按需求值为目标形态」已消失；
+>   ARCHITECTURE 的历史更新清单保留原句（不改写历史），但紧邻下一行是「已退役（ADR-037 D2/D3）」注记，L2 副作用句已改为不写 `public.factor_cache`；
+>   `python tools/check_doc_links.py` 活跃层 246 条链接 0 断、EXIT=0（历史层 174 断仅统计不判红）；纯文档改动，不涉代码门禁。
 

@@ -51,6 +51,7 @@ _原文截至 2026-04-08 (Phase 3)，2026-09-16 补充架构总览与现状对�
 - Event-Driven 数据管道 (pkg/marketdata/eventbus.go + provider 接口)
 - 多数据源适配器: Postgres / HTTP / InMemory / Cached (Redis)（原 `pkg/marketdata` 的 Tushare / AkShare **直连** provider 已于 ADR-022 §1 退役，外部源统一经 L0 单一摄取入口，见 [ODR-058](archive/odr/odr-058-p5-1-retire-direct-providers.md)）
 - 因子缓存预热: Engine 自动从 factor_cache 表加载 z-score，注入 FactorZScoreReader
+  — ⚠️ **已退役**（2026-11-12，ADR-037 D2/D3 修订）：改为 run setup 按需求值 → run 级内存；`public.factor_cache` 是退役遗留表，门禁不读它、禁止新增写者
 - 限价单支持: strategy.Signal 增加 OrderType/LimitPrice，Tracker 按日内高低价判断成交
 - 股息/送股处理: Tracker.ProcessDividend + ProcessSplit，Engine 日循环自动处理
 - 指数成分股股票池: BacktestRequest.IndexCode，从 index_constituents 按日期加载
@@ -86,7 +87,7 @@ L1  数据层       行情 | 财务 | 产业链图谱 | 研究洞察 | 实验日
 | **L3 AI 编排层** | 试错、搜索、**因果审查** | **唯一需要人在环的一层**；会自主循环的只有实验员 |
 
 **分界线是"能否无人值守"，不是"静态 vs 动态"，也不是"有无状态"**：L1/L2 给定输入必有确定输出，可自动测试、可复现；L3 会失败，必须可监督。
-注意 L2 **可以有副作用**（回测写 `backtest_jobs`、因子写 `factor_cache`）——确定性指的是**行为可复现**，不是无状态。
+注意 L2 **可以有副作用**（回测写 `run.backtest_results`、因子按需求值落在 run 级内存、**不写** `public.factor_cache`（ADR-037 D3））——确定性指的是**行为可复现**，不是无状态。
 
 **三个必须记住的位置**：
 

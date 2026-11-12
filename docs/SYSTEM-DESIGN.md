@@ -93,7 +93,7 @@ verified-by: DOC-P3-MATRIX-TABLE-GRAIN（2026-11-12）：核验 §5 `run` 行未
 | `ai` | `tellurion-agent` | 自持自读 | agent 是唯一写者；core 的 `experiments` / `factor_hypothesis` 裸表与写方法已于 2026-11-10 退役（`SVC-CORE-AI-RETIRE`） |
 | `quant` | `tellurion`（core） | 只有 core 写 | 运行态真相：订单/成交/持仓/组合快照/对账/`risk_events`（`strategy_state` 已裁**留 core**，U3 作废） |
 | `audit` | `tellurion`（core，`pkg/eventstore` + `pkg/msgbus`） | 只追加；用于消息重放 | 与 `risk.audit_logs`（人操作审计）**不是一回事** |
-| `public`（无 schema 前缀：因子治理 / 用户 / 审计 / `factor_cache`·`factor_returns`·`ic_analysis`） | `tellurion`（core） | core 进程内；对外只有治理面 `POST /api/factor/registrations` | 因子定义与派生值同源归 core（ADR-037/038）；`factor_cache` 零写者、按需求值为目标形态；`factor_returns`/`ic_analysis` 零写者，且**不迁 data/analytics**；`GET /api/factors/:name` 是死链（ADR-041） |
+| `public`（无 schema 前缀：因子治理 / 用户 / 审计 / `factor_cache`·`factor_returns`·`ic_analysis`） | `tellurion`（core） | core 进程内；对外只有治理面 `POST /api/factor/registrations` | 因子定义与派生值同源归 core（ADR-037/038）；按需求值已于 2026-11-12 落地（run setup 求值 → run 级内存，ADR-037 D2/§8）；`factor_cache` **已退役为遗留表**（ADR-037 D3 修订）：零写者、**禁止新增写者**、覆盖度门禁不读它，空表是预期状态；`factor_returns`/`ic_analysis` 零写者，且**不迁 data/analytics**；`GET /api/factors/:name` 是死链（ADR-041） |
 | 无表 | `contracts` / `kit` / `broker` / `ui` | — | 见各仓 `db-schema.md` 的"为什么没有表" |
 
 > 迁移纪律：**按 schema 搬，不按表搬**；每次搬都是"先建第二写者 → 对拍 → 切读 → 停写"，不允许一步切换（QT-17 的四步样板）。
