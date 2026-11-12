@@ -122,3 +122,6 @@
 - **W5-F6 探针归属订正（analytics → strategy）**：上文 W5-F6 行与 Artifacts 把 `nc -z 127.0.0.1 8090` 弱探针记为 **analytics**，并据此派 `AN-READYZ-PROBE`。W7 立单时逐行核 core 统一 `docker-compose.yml` 实测：`:463-486` 是 **strategy** 服务（`command -addr 0.0.0.0:8090`、端口 `8090`），其 healthcheck `:480-481` 才是 `nc -z 8090`；**analytics** 服务在 `:488-519`，healthcheck `:515-516` 已是 `curl -fsS http://127.0.0.1:8087/healthz`（HTTP，非 TCP）。弱探针的真实落点是 strategy 自证资产：`tellurion-strategy:Dockerfile:40-41`（`HEALTHCHECK ... nc -z 8090`）+ `deploy/compose.yaml:28-29`，core 统一 compose 镜像了同一行。
 - **处置**：撤销 `AN-READYZ-PROBE`（前提被源码证伪，analytics 无需改）；改立 `STRAT-READYZ-PROBE [P3]`（`tellurion-strategy:docs/TASKS.md`），core 统一 compose `:480-481` 的同步行归 core。W5-F6 的另一半 `UI-HEALTHCHECK [P3]`（ui Dockerfile 无 HEALTHCHECK）不受影响，仍成立。W5 发现总数与严重度不变（仍 7 项 / Low 2），仅 F6 的仓归属订正。
 - **教训补**：判定表里的 `文件:行号` 在派工前必须按**服务边界**复核——compose 里相邻服务的 healthcheck 行号极易串位（8090=strategy / 8087=analytics），端口号是比行号更可靠的归属锚。
+## 追加验收（2026-11-12，W5 起栈时执行）
+
+- **迁移账本首启验证**：截至 2026-11-12，部署库 `tellurion` 仍**没有** `core_schema_migrations`——运行中的 analysis 容器早于账本提交 `07411fd` 构建（StartedAt 06:52:15Z vs 提交 07:11:01Z）。W5 起隔离栈时用新镜像验证两点：① 新镜像**首次**启动后 `SELECT count(*) FROM core_schema_migrations` = 当时 `allMigrationStatements()` 条数（2026-11-12 口径 **85**，含存量接管的一次性全量重放）；② **二次**启动零重放：`MAX(version)` 不变且 `MAX(applied_at)` 不变。不满足即按「存量接管/账本分档」缺陷回退排查。
