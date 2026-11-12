@@ -41,7 +41,7 @@
 | W2-F11 | Medium | stock_fundamentals 域归属错位（core 建 public，data 按 market 前缀读，已登记已知限制） | data reference.go:14-16,95；data AGENTS §1 G3 段已登记 | D6=b → DATA-FUNDAMENTALS-READ-PUBLIC [P2] + 例外登记 |
 | W2-F12 | Low | analytics ErrReportConflict 无 wire 映射漏到 500；contracts 无可重试/终态机器分类 API | analytics errors.go:18 + pgstore.go:126 真使用，classify default→500（report_id 确定性派生实际难触发）；contracts engine/execution_errors.go:20-43 三类语义只在注释 | AN-REPORT-CONFLICT-409 [P3]；机器分类缺口登记不主张现在造 API |
 | W7-F1 | Medium | core CI「Doc link check」基线红（归档死链 + deploy 漂移），本地全绿因判工作区 | check_doc_links.py --include-archive EXIT=1：c06770e 归档层级没改（约 17 处 cross-repo-* 缺 ../、../deploy/README.md 应 ../../）+ 2 条失效配置引用；check_deploy_consistency.py EXIT=1：13c4b40 `${DATABASE_NAME:-tellurion}` 参数化 4 处漂移（非真连错库） | CORE-CI-ARCHIVE-LINKS-FIX [P2] + CORE-DEPLOY-DRIFT-PARAM [P2，D7 联动] |
-| W7-F2 | Medium | core CI「Build & Test」Test 步间歇红（根因待 CI 日志） | 6156dda 红→9d58238（docs-only）绿→02d1847 红；本地无 -race 全套件/覆盖率/windows vet/gofmt/conformance 全绿排除；候选 runner_test.go:338/:578 墙钟上限残余（-race 放大+CI 满载 spawn 吃穿 5s）；logs API 502 根因未坐实 | CORE-RUNNER-FLAKE-RESIDUAL [P2，待根因] |
+| W7-F2 | Medium | core CI「Build & Test」Test 步红——根因已坐实，非 runner flake | 三段真因：① `9fa052c` 红于 `pkg/alert` 日志汇 DATA RACE（`WebhookChannel.deliver` 与 `AlertManager.Fire` 写同一个 bytes.Buffer）→ `b25fb6a` 修；② `b25fb6a` 红于 `pkg/backtest` 种子 bar DATA RACE（`Load` 浅拷贝 + `Get` zero-copy + `processStockJob` 回写末根 bar）→ `fac3a3f` 修；③ `fac3a3f` 红于 qt31：5ms/call 在 `-race` 构建下前提不成立（插桩放大 wazero 热点）→ `4054f52` **按构建模式分档**（race 50ms / 普通保持 5ms，性能口径不放宽），本地 `-race -count=20` **20 PASS / 0 FAIL**。原「偶发 flake、重跑即绿」判断作废 | CORE-RUNNER-FLAKE-RESIDUAL 已关闭（两个真 race + 一处构建模式预算分档） |
 
 ### 已通过项（正证据，不立案）
 
@@ -58,14 +58,14 @@
 ## Consequences
 
 **Positive**:
-- core CI 基线红首次被坐实并拆出三个可施工修复单（归档死链 / deploy 参数化 / runner flake），消除「本地绿掩盖 CI 红」的 QT-01 同型风险；
+- core CI 基线红首次被坐实并拆出三个可施工修复单（归档死链 / deploy 参数化 / Test 步红：两个真 DATA RACE + race 构建预算分档），消除「本地绿掩盖 CI 红」的 QT-01 同型风险；
 - Redis 退役收口（死代码+依赖+k8s 残留）与 k8s 无主面退役一并清理，部署面收敛到 compose 唯一主路径；
 - kit 导出面冻结补齐后，依赖图底座的 breaking 改动有符号级机器闸（对齐 contracts）。
 
 **Negative**:
 - D6=b 是止血而非根治：stock_fundamentals 仍在 core public，与「数据面归 data」大方向暂不一致，须靠退出任务（a）随数据面收敛搬迁，否则例外长期化；
 - D7=a 退役 k8s 是破坏性操作，施工前须确认无活跃 k8s 部署（compose 已定唯一主路径，但删目录不可逆，另逐单授权）；
-- W7-F2 根因未坐实（logs API 502），CORE-RUNNER-FLAKE-RESIDUAL 在根因明确前不盲改。
+- W7-F2 根因已坐实并修复（`pkg/alert` / `pkg/backtest` 两处真 DATA RACE；qt31 的 5ms 预算在 `-race` 下改为按构建模式分档），不再按「runner flake」挂账。
 
 ## Artifacts
 
