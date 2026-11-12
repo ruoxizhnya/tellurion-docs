@@ -66,9 +66,14 @@
 - 失败语义保持 `CORE-FACTOR-GUARD` 的响亮失败：必需因子一个有效值都算不出来时，回测拒跑并点名因子与原因；
 - 不新增 core 的定时职责，不把 core 从「读多写少的 API 主体」改成批处理系统。
 
-**D3 · `factor_cache` 保留为可选预热源（只读），不作为任何策略的前置条件。**
+**D3 · `factor_cache` 已退役为遗留表：不得写入，覆盖度门禁不读它（2026-11-12 修订）。**
 
-有外部预计算就 Warm，没有就按需求值；两者产出同一口径。表的废弃条件见 §6。
+D2 落地后（见 §8），`public.factor_cache` **没有任何数据库写者，也不再是任何门禁的前置**：
+
+- **不得写入**：`SaveFactorCacheBatch` 全仓零调用方，本 ADR 禁止新增写者；
+- **门禁不读它**：覆盖度门禁只读 run 级内存里的按需求值结果（`runContext.factorCoverage`）；
+- **空表是预期状态**，不是故障；表中残留行不构成可用因子值；
+- 表本身的删除与读面清理（`GetFactorCacheRange` / `Warm` / `Load` 触库腿）另立单 `CORE-FACTOR-CACHE-RETIRE`，见 §8.4。
 
 **D4 · 定义归属按 ADR-028 §6：目标在 strategy，当前在 core 属过渡。**
 
@@ -101,7 +106,7 @@
 
 ## 5. 后果
 
-1. `multi_factor` 在「没有预计算缓存」时仍会拒跑，直到 (c) 落地；这是**已知且正确**的中间态，不是回归。
+1. `multi_factor` 在 2026-11-12 之前「没有预计算缓存」时拒跑；这是**已知且正确**的中间态，不是回归。按需求值已于 2026-11-12 落地（§8），该中间态结束。
 2. `GET /api/factors/:name` 是死链（转发到 data 已撤掉的路由）。本 ADR 记录为已知后果；修复（改指向 core 的按需求值或直接退役）不在本条范围。
 3. 实现 (c) 有四个必须先设计的卡点，已写入 `CORE-FACTOR-CACHE-WRITER`：
    - `pkg/expression` 的横截面算子只对**最新时点**生效（`evaluator.go:210-257`），`cs_zscore` 不能直接产出时序，必须逐日重算或先算原始序列再逐日标准化；
@@ -124,6 +129,9 @@
 
 - 出现**实测证据**表明「多消费者需要同一份重计算因子且缓存命中率低」，届时再评估 (a) 或独立的物化作业；在此之前不恢复写者。
 
+> **2026-11-12 状态**：条件 1 的真栈验收尚未完成（容器镜像尚未重建，真栈仍跑旧代码）；条件 2 无实测数字；条件 3 的两个读点已改（回测门禁 + 按需求值），分析产物 `zscoresFor` 的读点不在本轮范围。因此本轮**只把 `factor_cache` 降为退役遗留、不删表**，删除走 `CORE-FACTOR-CACHE-RETIRE`。
+
+
 ---
 
 ## 7. 不在本 ADR 范围
@@ -132,3 +140,39 @@
 - 因子定义从 core 迁往 strategy 的时间表（ADR-028 §6 已定方向，迁移单另立）；
 - `GET /api/factors/:name` 死链的修复；
 - `multi_factor` 的加权/阈值逻辑。
+
+---
+
+## 8. 2026-11-12 修订：D2 已实现，D3 降为退役遗留
+
+### 8.1 实现（core 仓，`CORE-FACTOR-CACHE-WRITER`）
+
+- `pkg/backtest/factor_derive.go`：run setup 阶段按策略的 `RequiredFactors()` 求缺失因子；用 `pkg/expression` 逐日求原始序列，再逐日做横截面 z-score（总体标准差，`std == 0` 与 `n < 2` 不出值），物化到 **run 级内存**（`FactorCacheAccessor` 内存容器），**不写库**。
+- `warmFundamentalsIfNeeded` 触发条件改为「`strategy.FundamentalAware` **或** 因子定义的 `InputFields` 命中财报字段（`pe/pb/ps/roe/roa/revenue/profit`）」，不再只依赖策略接口。
+- 覆盖度门禁 `runContext.factorCoverage` 只读 run 级物化结果；`pkg/backtest/engine.go` 的拒跑文案点名「`public.factor_cache` 是退役遗留表，门禁不读它」。
+- 幂等：同一 run 内第二次求值 `MissingFactors` 为空，直接返回，不重算。
+
+### 8.2 为什么不是「写穿缓存落库」
+
+曾有提议「算完顺手写入 `factor_cache`，下次复用」。否决理由（排序即权重）：
+
+1. **不引入第二个写者**——D2 的核心约束是只有消费点算、只有 run 级内存持有；一旦落库就产生了跨进程共享状态，需要并发、失效、PIT 可见性一整套设计。
+2. **不留过期缓存**——库里的因子值会随复权、财报更正、定义修订失效，而没有人负责回收。
+3. **同一 run 内可复现**——run 级内存与 run 参数同生命周期，天然一致；落库会让「同一 run 重跑」取决于库里当时有什么。
+
+这三条比「少算一次」重要得多：省一次计算换来的是一个新的持久化契约与不确定的过期语义。
+
+### 8.3 门禁口径变更（破坏验证标的）
+
+- 旧口径：读 `public.factor_cache` 判断「有没有因子」。
+- 新口径：读 run 级物化结果。
+- 破坏验证：把门禁改回读 DB ⇒「物化有值仍放行」的用例失败；摘掉按需求值的接线 ⇒ 多标的 `multi_factor` 回测用例以 409 失败并点名退役表。
+
+### 8.4 遗留表处置
+
+`public.factor_cache` 自本轮起为**退役遗留表**：无写者、门禁不读、空表是预期状态。表的**删除**与读面清理（`pkg/storage` 读写方法、`GetFactorCacheRange`、`Warm`/`Load` 触库腿、迁移语句）**不在本 ADR 内顺手做**，另立单 `CORE-FACTOR-CACHE-RETIRE`（core `docs/TASKS.md`），并要求删表前确认表为空或已备份、迁移可回滚。
+
+### 8.5 重开条件（与 §6 并列）
+
+若将来要求**跨 run 复用**已算好的因子值，或出现外部预计算缓存需被多个 run 消费，则须**重新裁决**因子值的 owner 与物化形态；不得以「恢复 `factor_cache` 写者」作为默认答案。
+
