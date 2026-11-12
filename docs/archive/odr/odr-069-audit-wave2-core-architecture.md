@@ -110,3 +110,11 @@
 - **W2-F10 矩阵粒度收窄（DOC-P3-MATRIX-TABLE-GRAIN）**：上文 W2-F10 指 `run.*` / 因子派生表的 owner 粒度在多份矩阵里不一致。W7 立单时实测：主任已落 **ADR-037 / ADR-038**（factor_cache 无写者 / factor_returns·ic_analysis 派生表归 core），`SYSTEM-DESIGN.md §5` 已对齐，core 侧 `CORE-FACTOR-DERIVED-GUARD` 已 ✅（护栏钉住派生表 owner），`data-service-contract-and-ownership.md:49` 的基本面行已由主任 2026-11-12 订正。**残余只剩两处**：① `tellurion-docs:REPO-MAP.md:24` orchestration 行仍写「`run`（六表）」未显式区分 core 拥有的 `run.backtest_results`（结果面，见 core 矩阵 `:41`）；② core `docs/design/qt-decoupling/data-service-contract-and-ownership.md:43` 仍把 `factor_returns / ic_analysis` 列在「owner = tellurion-data（SPEC-R-02）」，与 ADR-038 冲突。
 - **处置**：`DOC-P3-MATRIX-TABLE-GRAIN [P2]`（`tellurion-docs:docs/TASKS.md`）收窄到上述两处残余；其中 ② 是 **core 文件**，本单只登记跨仓指针（`tellurion:docs/design/qt-decoupling/data-service-contract-and-ownership.md:43`），**不从 docs 仓改 core 正文**（归属边界）。W2 发现总数与严重度不变，仅 F10 施工面收窄、F11 转作废。
 - **教训补**：裁决（D6）不是终态——主任侧可能用更彻底的归属裁决取代审查时点的止血方案。立单前对每条「待施工」裁决都要按当前源码复核它是否已被上游施工取代；被取代的标作废并留证据，不重复派工，也不静默丢弃原裁决（保留作历史）。
+
+## 订正注记（2026-11-12，I-2 迁移账本事实）
+
+> ODR 只增不删：上文 W2-F2 行的「`migrate()` 逐条 Exec 无事务包裹」是 2026-11-11 审查时点的历史现场，**不改写**；本注记记录其后已落地的事实与本波口述中的一处错误。
+
+- **账本已在且是启动路径**：core 提交 **07411fd**（CORE-MIGRATION-REPLAY-GUARD）已落「逐条迁移一个事务 + 同事务记账」：`pkg/storage/postgres.go:42` 的 `NewPostgresStore` 启动即调 `migrate()`（:679），账本表 `core_schema_migrations(version, checksum, applied_at)` 定义在 `:690`，`planMigrations`（:719）对「指纹不符」与「账本领先于代码」fail-closed 拒绝启动。W2-F2 因此已归档 ✅。
+- **本波口述错误，作废**：此前「core 迁移无版本表、23 张表全量幂等重放」的表述**是错的**，以本条为准。实测（一次性 dockertest 容器走生产 `migrate()`）：账本 **85 行 / max(version)=85**，代码序列 `allMigrationStatements()` **85 条**，二次启动 `MAX(applied_at)` 不变（零重放）；「23」是 `postgres.go` 中 `CREATE TABLE` 字样出现的行数，不是迁移条数（迁移序列里以 `CREATE TABLE` 开头的语句为 25 条，其余为索引与 retention DDL）。全量重放只发生在**账本为空的存量库接管**场景，且要求语句幂等，已由 integration 用例覆盖。
+- **当前部署库状态（如实）**：宿主 PG 的 `tellurion` 库 `information_schema.tables` 中**没有** `core_schema_migrations`——运行中的 `tellurion-analysis-service-1` 容器 StartedAt `2026-11-12T06:52:15Z`，早于 07411fd（`07:11:01Z`）19 分钟，镜像是账本合入前构建且未重建。该库下次以新镜像启动时会走「存量库接管」：建账并全量重放一次幂等 DDL，此后按账本增量执行。
