@@ -126,3 +126,12 @@
 ## 追加验收（2026-11-12，W5 起栈时执行）
 
 - **迁移账本首启验证**：截至 2026-11-12，部署库 `tellurion` 仍**没有** `core_schema_migrations`——运行中的 analysis 容器早于账本提交 `07411fd` 构建（StartedAt 06:52:15Z vs 提交 07:11:01Z）。W5 起隔离栈时用新镜像验证两点：① 新镜像**首次**启动后 `SELECT count(*) FROM core_schema_migrations` = 当时 `allMigrationStatements()` 条数（2026-11-12 口径 **85**，含存量接管的一次性全量重放）；② **二次**启动零重放：`MAX(version)` 不变且 `MAX(applied_at)` 不变。不满足即按「存量接管/账本分档」缺陷回退排查。
+
+### 验收结果（2026-11-12，隔离卷 / 独立库）
+
+- **隔离形态**：独立网络 `w5net` + 独立卷 `w5-pgdata` + 独立容器 `w5-pg`（`postgres:16-alpine`，库名 `tellurion`）；analysis-service 单跑为 `w5-analysis-1`，镜像 `tellurion-core:w5-20261112`（`sha256:c745594c1c70...`，`Dockerfile.service` 本地构建）。**全程不指向宿主机 5432 部署库**，验收后容器/卷/网络全部删除。
+- **启动前提**（缺一即 fatal，实测踩过）：`BROKER_URL` + `BROKER_CHANNEL=mock` + `BROKER_ALLOW_MOCK=true` + `BROKER_SERVICE_TOKEN`（装配期 GET `/version` 对拍）、`AUTH_INSECURE=true` + `AUTH_INSECURE_EXPOSURE=loopback-published`、`RISK_SERVICE_RESOLVE_ENABLED=false`（否则尝试 POST `http://localhost:8089/api/risk/resolve` 后退出）。
+- **① 首启（空库）**：`count(*)|min(version)|max(version)|max(applied_at)` = `85|1|85|2026-11-12 15:24:00.889372+00`，与代码侧 `allMigrationStatements()` **85 条**一致（版本 1..85 连续、无空洞）；账本指纹 `md5(string_agg(version||':'||checksum, ',' order by version))` = `81dde09be08d9935678748fb789bb0a6`；`/health` → `{"service":"analysis-service","status":"healthy",...}`；日志 `fatal` 命中 0。
+- **② 二启（`docker restart w5-analysis-1`，同卷同库）**：账本仍 `85|1|85`、`max(applied_at)` 不变、指纹摘要仍 `81dde09be08d9935678748fb789bb0a6`；日志 `Applying migration` 命中 **0** 次、`Analysis Service starting` 2 次、`fatal` 0 次 ⇒ **零重放**，且不是靠跳过整段迁移换来的（账本读取与指纹校验照常执行）。
+- **结论**：①② 均成立，`CORE-MIGRATION-REPLAY-GUARD` 在真实镜像形态下验收通过；同一组证据记入 `tellurion:docs/TASKS.md` §五「W5 起栈追加验收（2026-11-12）」。
+- **遗留（刻意不做）**：宿主部署库 `tellurion` 仍是「无账本 + 旧镜像」，本次不动它；下次用同一新镜像起即可完成一次性接管（幂等 DDL 重放并记账），不会再建重复对象。
