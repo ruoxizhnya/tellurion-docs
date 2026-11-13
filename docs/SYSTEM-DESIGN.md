@@ -1,7 +1,7 @@
 ---
 status: evergreen
 last-verified: 2026-11-13
-verified-by: DOC-21（2026-11-13）：§2 版本 pin 数字全部改为指向 `REPO-MAP.md` §「版本 pin」（该节由脚本比对 12 仓 `go.mod`，本页不重复维护版本号）。DOC-19（2026-11-13）：§7 部署路径句删除已不存在的 services 覆盖层 compose 文件（2026-11-11 回收），改指 core 唯一 `docker-compose.yml` + `--profile`（full / nt / orchestration-worker / tools，实测 core 仓 compose 服务与 profile）。此前：DOC-P3-MATRIX-TABLE-GRAIN（2026-11-12）：核验 §5 `run` 行未含 `run.backtest_results` 例外（原文按 schema 粒度把 `run.*` 全归 orchestration），按 core 审计矩阵 `:41` 与 `pkg/storage/backtest_results.go` 的事实补注「表粒度例外：结果面 `run.backtest_results` 归 core，编排只经 API 读」；`public` 行与因子派生表归属未动。此前：2026-11-11 DDD 边界审查同步（§4 批量/分析的目标态改为「core 指标权威 + analytics 只读参考，不迁移」，依据 ADR-039；§5 新增 `public` 行，钉因子治理与派生表 owner=core，依据 ADR-037/038；§2 contracts 版本口径当时同步，2026-11-13 起统一指向 REPO-MAP）；代码-文档对齐审计（2026-11-11）：订正 §3 依赖边（`contracts` 与 `kit` 实测互不 require）、§4「今天」四条链路、§5「今天实际」六行、§7 阶梯与过渡态；删去「生产写入仍由 core `cmd/data` 主写」「core 侧零调用方（strategy/risk）」「core `backtest_jobs` 双 owner」「core 仍留 `experiments`/`factor_hypothesis`」四处过期陈述。依据 = 各仓 `AGENTS.md` / `docs/TASKS.md` + core `internal/repoguard/*_retired_test.go` + 12 仓 `go.mod`。此前：DOC-10 + DOC-11 + DOC-12（2026-10-26）按第四轮目的对齐审计与 ADR-036 订正 §3 依赖边、§5「今天实际」、§7 阶梯/过渡态。
+verified-by: ODR-074（2026-11-13）：九条挂起任务裁决同步——§4 实盘行补「live + 回环只 Warn 为有意设计」（D5）、表后补实盘域代码边界（D1）、§7 过渡态补实盘交易域代码退役批（D1/D3）。DOC-21（2026-11-13）：§2 版本 pin 数字全部改为指向 `REPO-MAP.md` §「版本 pin」（该节由脚本比对 12 仓 `go.mod`，本页不重复维护版本号）。DOC-19（2026-11-13）：§7 部署路径句删除已不存在的 services 覆盖层 compose 文件（2026-11-11 回收），改指 core 唯一 `docker-compose.yml` + `--profile`（full / nt / orchestration-worker / tools，实测 core 仓 compose 服务与 profile）。此前：DOC-P3-MATRIX-TABLE-GRAIN（2026-11-12）：核验 §5 `run` 行未含 `run.backtest_results` 例外（原文按 schema 粒度把 `run.*` 全归 orchestration），按 core 审计矩阵 `:41` 与 `pkg/storage/backtest_results.go` 的事实补注「表粒度例外：结果面 `run.backtest_results` 归 core，编排只经 API 读」；`public` 行与因子派生表归属未动。此前：2026-11-11 DDD 边界审查同步（§4 批量/分析的目标态改为「core 指标权威 + analytics 只读参考，不迁移」，依据 ADR-039；§5 新增 `public` 行，钉因子治理与派生表 owner=core，依据 ADR-037/038；§2 contracts 版本口径当时同步，2026-11-13 起统一指向 REPO-MAP）；代码-文档对齐审计（2026-11-11）：订正 §3 依赖边（`contracts` 与 `kit` 实测互不 require）、§4「今天」四条链路、§5「今天实际」六行、§7 阶梯与过渡态；删去「生产写入仍由 core `cmd/data` 主写」「core 侧零调用方（strategy/risk）」「core `backtest_jobs` 双 owner」「core 仍留 `experiments`/`factor_hypothesis`」四处过期陈述。依据 = 各仓 `AGENTS.md` / `docs/TASKS.md` + core `internal/repoguard/*_retired_test.go` + 12 仓 `go.mod`。此前：DOC-10 + DOC-11 + DOC-12（2026-10-26）按第四轮目的对齐审计与 ADR-036 订正 §3 依赖边、§5「今天实际」、§7 阶梯/过渡态。
 ---
 
 # 总体设计（SYSTEM DESIGN）
@@ -76,8 +76,10 @@ verified-by: DOC-21（2026-11-13）：§2 版本 pin 数字全部改为指向 `R
 |---|---|---|---|
 | **回测** | ui → core `cmd/analysis` 的 HTTP → `pkg/backtest` 引擎（进程内）→ 读行情（`pkg/marketdata`：HTTP 客户端 / 本地 PG 两条实现）→ 结果落库 | 引擎仍在 core；**取数走 `tellurion-data` 的 aggregator（run 前 1 次）** | 同一 `dataset_snapshot_hash` 的两次拉取必须逐位一致；前视由 `visible_at` 拦两道 |
 | **AI 实验** | agent（`cmd/ai`）→ 生成策略 → 调 core 回测 → 实验日志落 agent 自持的 `ai.*` | agent 自持 `ai.*`；与 core 只走 HTTP 粗粒度 | 实验必须能回答"用哪份策略 / 数据 / 规则"（三 hash） |
-| **实盘** | core 进程内 `RiskPolicy.CheckOrder`（限额来自 risk 快照）→ `pkg/brokerhttp` 调 `tellurion-broker`（Mock 网关） | 裁决仍进程内；通道走 `tellurion-broker`（对账 + 幂等 + 熔断之后） | **同步裁决永不出仓**；无对账/幂等/熔断不接真钱 |
+| **实盘** | core 进程内 `RiskPolicy.CheckOrder`（限额来自 risk 快照）→ `pkg/brokerhttp` 调 `tellurion-broker`（Mock 网关） | 裁决仍进程内；通道走 `tellurion-broker`（对账 + 幂等 + 熔断之后） | **同步裁决永不出仓**；无对账/幂等/熔断不接真钱；`BROKER_CHANNEL=live` + 回环地址**只 Warn 不拦截**为有意设计——误配由 `/version.channel` 对拍拒绝启动，同机真实网关合法（ODR-074 D5） |
 | **批量 / 分析** | core 的 `pkg/backtest/batch` + `walkforward` 仍可跑；新的排队 / worker 走 `tellurion-orchestration`；指标/归因仍在 core `cmd/analysis` | 排队与 worker 归 `tellurion-orchestration`；**指标运行时仍归 core（权威）**，`tellurion-analytics` 提供只读参考实现 + 报告/导出面（ADR-039；**不迁移**，收敛条件见该 ADR D4） | 编排**只派活不裁决**；分析**纯函数**（不读时钟、不读随机，蒙特卡洛必须带 `seed`）；同名指标以 core 为准 |
+
+> **实盘域的代码边界（ODR-074 D1）**：停牌 / 退市 / 强平校验（`pkg/trading/stockstate`）的全部语义绑定 `LiveTrader`，已裁决随实盘通道退役；将来接真实柜台时按 broker ADR-0003 的重开路径重建，不在当前阶段保留「看起来能交易」的第二条路径。
 
 ---
 
@@ -132,6 +134,7 @@ verified-by: DOC-21（2026-11-13）：§2 版本 pin 数字全部改为指向 `R
 - **DDL 双 owner 已收窄到一处**：`market.index_daily`（core `pkg/storage/postgres.go` Migration 057）。`run` / `strategy` / `ai` 三簇的 core 侧表已退役（Migration 065 / SVC-STRAT-G3 / SVC-CORE-AI-RETIRE）。
 - **部署路径**：core 的 `Dockerfile.service` 已于 2026-10-26 删除 `cmd/strategy` 的 build/COPY 行；六个服务仓按 ADR-036 各自持有 `Dockerfile + deploy/compose.yaml`，本地联调走 core 仓唯一的 `docker-compose.yml`，按需加 `--profile`（`full` / `nt` / `orchestration-worker` / `tools`）。**部署真相 = compose**；K8s 清单若与仓内 Dockerfile/镜像名不一致即视为 experimental。
 - **服务间凭证**：各仓对 kit 的当前 pin 见 [`REPO-MAP.md`](REPO-MAP.md) §「版本 pin」；自 kit 支持 `role=service` 起，非数字 subject 不再 401，服务间调用可用。
+- **实盘交易域代码已裁决退役（ODR-074 D1/D3，2026-11-13）**：`pkg/trading/stockstate`（证券状态校验）与 `pkg/backtest/auction`、`pkg/strategy/options`、`pkg/trading/margin` 退役（core 施工会话删除，repoguard 以 `retiredPackages` 负断言防复活）；原因 = 实盘不做 + 无数据源/无 broker 面，重开见 broker ADR-0003。**不变量 R1~R6 不受影响**（均为工具包与装配面）。
 
 > 上文过渡态由 2026-11-11 代码-文档对齐审计复核（依据各仓 `AGENTS.md` / `docs/TASKS.md`、core `internal/repoguard/*_retired_test.go`、12 仓 `go.mod`）；更早的取证见 [核心仓第四轮目的对齐审计](https://github.com/ruoxizhnya/tellurion/blob/main/docs/design/qt-decoupling/purpose-alignment-audit-2026-10-26.md)。本文不复制其正文。
 

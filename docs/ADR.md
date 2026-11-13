@@ -8,7 +8,7 @@ verified-by: DOC-21（2026-11-13）：确立「索引表 = ADR 状态唯一真�
 
 > **Location:** `docs/adr/` — architectural ADR files | `docs/archive/odr/` — operational ODR files
 > **Owner:** 龙少 (Longshao) — AI Assistant
-> **Version:** 3.28.0
+> **Version:** 3.29.0
 > **Created:** 2026-03-24
 
 ---
@@ -142,6 +142,7 @@ verified-by: DOC-21（2026-11-13）：确立「索引表 = ADR 状态唯一真�
 | [ODR-071](archive/odr/odr-071-audit-wave4-agent-ai-risk.md) | 第五轮 · agent AI 风险（W4）— W4-F1~F3（LLM 预算零代码·ai_costs 零写者 / explore run 态内存 map 崩溃留孤儿 running / parseTheory 宽松提取无单测）+ A-1~A-7 判定表（A-1/2/3/4/6 ✅ E1，A-5 ✗，A-7 🔶）；D4=a 平台侧日累计 USD 硬闸 + 持久化 / D10=b 启动收尸必须有（run 态持久化随计数读面）；sandbox 121 PASS + agent 319 PASS / 1 诚实 DSN skip；QT-32 promote 闸门 fail-closed ✅；A3 破坏腿三组待施工 | Accepted | Audit | 2026-11-11 |
 | [ODR-072](archive/odr/odr-072-audit-wave5-security-reliability-deps.md) | 第五轮 · 安全 / 可靠性 / 依赖（W5）— 7 发现（High 2〔依赖漏洞 10/12 仓符号可达·GO-2026-5004 pgx SQLi ×7 仓 / 宿主 PG 无备份·不可重建实验资产单副本〕/ Medium 2〔四服务无优雅停机·data 作业孤儿 / correlation-id 半接线·ADR-027/029 断言被证伪〕/ Low~Med 1〔九仓 CI 不构建镜像〕/ Low 2〔弱探针 / compose 默认 token〕）；D1=b pgx 一步收敛 v5.11.0 / D11=b compose dev-only token 保留 + 登记例外 + runbook 轮换；govulncheck E1 矩阵 + 前提订正 6 条；S-2 curl / R-2 SIGTERM 演练待 A4 | Accepted | Audit | 2026-11-11 |
 | [ODR-073](archive/odr/odr-073-audit-wave6-service-repos-frontend.md) | 第五轮 · 服务仓 / 前端逐仓巡检（W6）— 六服务仓战术纪律 D-T2/D-T3/K-4/K-7/C-4 **6/6 全绿** + W6-F1 risk 集成测试双 DSN 名静默 skip（假绿）/ W6-F2 ★H promote 闸门无人类操作面 + Copilot.vue 把闸门拦下误报「沙箱未启用」+ 承诺不存在的回测跳；D3=b runbook 人工 promote 先行 + a UI 立案 / D12=a data /health→/healthz；跨仓矩阵 T-1 CI 缺口（6 服务仓 + agent + contracts 无 -race/staticcheck，**core+kit 已有·前提订正**）/ C-6 探针命名分裂 + I-4 结果表保留期 Low；ui 38 文件 / 540 PASS 无退化 | Accepted | Audit | 2026-11-11 |
+| [ODR-074](archive/odr/odr-074-rulings-on-nine-suspended-tasks.md) | 九条挂起任务裁决（退役 / 不做 / 保留 / 维持挂起）— stockstate 退役 · 回测引擎切分作废 · 死包 9 保留 + 交易三包退役 · 测试证据 CI artifact + 仓内摘要 · live+回环维持 Warn 成文（归属 core 纠偏）· 产业链仅 API · 主题死控件移除 · CI 仅交叉编译门 · `hypothesis_source` 维持挂起 | Accepted | Process | 2026-11-13 |
 
 ---
 
@@ -188,11 +189,12 @@ When to create an ODR:
 ODR template: see `docs/archive/odr/odr-001-document-cleanup.md` for the canonical example.
 
 ---
-_Last updated by: AI Assistant — 2026-11-13 (DOC-23：ADR-027 标 Superseded by ADR-036；变更日志按日期单调重排)_
+_Last updated by: AI Assistant — 2026-11-13 (ODR-074：九条挂起任务裁决落档；变更日志按日期单调重排)_
 
 _ADR 累计 41 条: 架构 36 (ADR-001~016 + ADR-022~041) + 业务 1 (ADR-017) + 测试 1 (ADR-018) + 服务合并 1 (ADR-019) + 重构 1 (ADR-020) + 研究层 1 (ADR-021)。**各条当前状态（Accepted / Proposed / Draft / Superseded）一律以本文上方索引表为准；本行与下方变更日志只记历史，不再重复列状态。**_
-_ODR 累计 73 条: Cleanup 4 (ODR-001/006/008/045) | Audit 21 (ODR-002/009/010/012/013/015/043/047/049/054/061/062/063/065/066/068/069/070/071/072/073) | Migration 7 (ODR-003/005/007/011/014/044/046) | Process 2 (ODR-004/067) | Implementation 37 (ODR-016~021 + ODR-023~042 + ODR-050~053 + ODR-055~060 + ODR-064) | Refactor 2 (ODR-022/048)
+_ODR 累计 74 条: Cleanup 4 (ODR-001/006/008/045) | Audit 21 (ODR-002/009/010/012/013/015/043/047/049/054/061/062/063/065/066/068/069/070/071/072/073) | Migration 7 (ODR-003/005/007/011/014/044/046) | Process 3 (ODR-004/067/074) | Implementation 37 (ODR-016~021 + ODR-023~042 + ODR-050~053 + ODR-055~060 + ODR-064) | Refactor 2 (ODR-022/048)
 
+_2026-11-13 状态变更 (本次): 新建 **ODR-074**（九条挂起任务裁决，依据主任 2026-11-13 拍板与 [`decision-materials-suspended-9`](reviews/2026-11-13/decision-materials-suspended-9-2026-11-13.md)）：**D1** `CORE-STOCKSTATE-DISPOSITION` 退役（语义绑 `LiveTrader`、零调用、实盘不做）/ **D2** `CORE-BACKTEST-ENGINE-SPLIT` 不做、台账标作废并保留原文 / **D3** 死包工具 9 保留 + auction·options·margin 退役 / **D4** 测试证据 = CI artifact + 仓内摘要 / **D5** `BROKER-LIVE-LOOPBACK-GUARD` 维持 Warn + 成文，**归属纠偏到 core `pkg/brokerhttp/trader.go`** / **D6** 产业链当期仅 API、建页触发 = S2 出口 / **D7** 主题死控件移除、深色为唯一基线 / **D8** 不引入 Windows runner、改交叉编译门 / **D9** `hypothesis_source` 维持挂起（补记「加列已解锁」）。同步订正 PRODUCT §三层结构/能力状态/边界、ROADMAP §明确不做/§S2、SYSTEM-DESIGN §4/§7；ADR.md index 3.28.0 → 3.29.0 (ODR 73 → 74, Process 2 → 3) — ODR-074_
 _2026-11-11 状态变更 (本次): ADR-037 补入索引（2026-11-11 已落盘但索引漏登），并新建 **ADR-038~041**（12 仓 DDD 限界审查的裁决批，依据 `docs/design/ddd-boundary-review-2026-11-11.md`）：**037** 因子值归属（`factor_cache` owner=core、消费点按需求值）；**038** 因子派生表 `factor_returns`/`ic_analysis` 归 core（否决 data 无引擎重写、agent 不持分析真相）；**039** 指标权威 = core，analytics 为只读参考实现（五条共存边界 + 三条可判定收敛触发）；**040** 风控快照形状唯一真相 = `contracts/risk`（`Bundle`/`ParseBundle` 留 risk）；**041** AI 因子工具面不新造端点（能力未提供即显式未提供）；ADR.md index 3.26.0 → 3.27.0 (ADR 36 → 41)_
 _2026-11-11 状态变更 (本次): 新建 **ODR-068~073**（第五轮全系统审查 · 12 仓拆仓后全维度复检，14 工作流 / 86 审查项 / 风险分层 T0~T3 / 波次 W0~W7；主任 2026-11-11 批准计划并授权落仓立案 A5）：**068** 产品与治理 W1（9 发现，D8=b 散文引用 / D13 子台账订正）/ **069** core 架构与契约 W2（12 发现 + W7 CI 基线红 2 项，D5=a / D6=b / D7=a）/ **070** 回测正确性 W3（W3-F1 + 9 组 E1 预取证全绿，D9=a）/ **071** agent AI 风险 W4（W4-F1~F3 + A-1~A-7 判定表，D4=a / D10=b）/ **072** 安全/可靠性/依赖 W5（7 发现，High 2 = 依赖漏洞 10/12 仓符号可达 + 宿主 PG 无备份，D1=b / D11=b）/ **073** 服务仓/前端逐仓巡检 W6（战术纪律 6/6 全绿 + W6-F1 双 DSN / W6-F2 ★H promote 无人类操作面 + 跨仓矩阵 T-1/C-6 + I-4，D3=b+a / D12=a）。**86 项全判定**，静态/取证面收口；真跑/破坏腿挂 A1/A3/A4（主任批复「所有需要授权的都同意」）。技术岔路 D1/D3~D13 按既往约定由审查方实测后直接定并写明代价；各 ODR Artifacts 指向各仓 `docs/TASKS.md` 六字段立单（修复施工另逐单授权）。前提订正：T-1「仅 kit 有 -race」错（core AUD-12 也有）；W0 红名单「空」只对本地工作区成立（CI 维度 core 基线红）；W2-F8 screen/count 已被主任 8c5272d 修复转验证；ADR.md index 3.27.0 → 3.28.0 (ODR 67 → 73, Audit 15 → 21) — ODR-068~073_
 _2026-10-26 状态变更 (本次): ADR-036 新建 Accepted（**服务化目标拓扑：仓定位、服务就绪门与并行 MVP** — 依据主任 2026-10-26 的四条指令与第四轮目的对齐审计：① 12 仓定性 = core 单体 / agent+ui 应用 / contracts+kit 库 / 六服务；② service G0~G4 就绪门（G0/G1/G2 并行、G3 切读串行）；③ 部署资产回服务仓、compose 为本地唯一真相、K8s 非必需；④ 同 PG 多 schema 即数据自治；⑤ risk = 控制面服务 + core 进程内裁决；⑥ broker = 服务（Mock MVP，X6d 暂缓被取代）；⑦ 旧实现退役与删除任务绑定。**修订** ADR-027 §2.1（risk 同进程）、ADR-034 §S4（每仓升容器各需 ADR）、ADR-035 §M5（四仓进程不升）、repo-inventory §1.2（六仓≠六进程/未触发不建仓）、broker X6d（独立进程暂缓）、D1 的「不拆进程」口径 —— 均为「部分取代」，核心热路径不拆、真实 XTP 仍受 X6c 阻塞、K8s 不作强制项）；ADR.md index 3.25.0 → 3.26.0 (ADR 34 → 35) — ADR-036_

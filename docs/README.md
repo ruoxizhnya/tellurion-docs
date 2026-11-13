@@ -1,7 +1,7 @@
 ---
 status: evergreen
 last-verified: 2026-11-13
-verified-by: 2026-11-13 DOC-17 入口页校准——ADR 条数 41/至 ADR-041、12 份 SERVICE.md 已落地、ODR 001–073、归档子目录改为实测名、R5 CI 状态改为现行实现；DOC-20 把 `status: archived` 的 ARCHITECTURE 移出主表与推荐顺序（文件移入 `archive/ARCHITECTURE-pre-split.md`）、R3 同步移除其页数上限；此前 2026-11-11 增加服务卡导航行（guides/service-card.md 规范 + 模板 + 示例）
+verified-by: 2026-11-13 ODR-074 落档——ODR 001–074（新增九条挂起任务裁决）；此前 DOC-17 入口页校准——ADR 条数 41/至 ADR-041、12 份 SERVICE.md 已落地、ODR 001–073、归档子目录改为实测名、R5 CI 状态改为现行实现；DOC-20 把 `status: archived` 的 ARCHITECTURE 移出主表与推荐顺序（文件移入 `archive/ARCHITECTURE-pre-split.md`）、R3 同步移除其页数上限；此前 2026-11-11 增加服务卡导航行（guides/service-card.md 规范 + 模板 + 示例）
 ---
 
 # Quant Lab 文档入口
@@ -93,7 +93,7 @@ CI 扫描常青文档里引用的文件路径、API 路径、表名、配置项�
 
 | 目录 | 内容 |
 |---|---|
-| `archive/odr/` | ODR 001–073（实施与取证记录，与 git log 重复） |
+| `archive/odr/` | ODR 001–074（实施与取证记录，与 git log 重复） |
 | `archive/superseded-adr/` | 已被取代的 ADR 009/010/012/021/022 |
 | `archive/ARCHITECTURE-pre-split.md` | 拆仓前（2026-10-09 前）的历史架构 Reference，端口/表数已失效，**勿引用数字** |
 | `archive/TASKS-history.md` | 旧任务文档（217KB，含 Sprint 1–6） |

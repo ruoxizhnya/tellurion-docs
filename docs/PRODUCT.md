@@ -1,7 +1,7 @@
 ---
 status: evergreen
 last-verified: 2026-11-13
-verified-by: DOC-27（2026-11-13）：成功指标节补「数据从哪来 / 多久可评 / 能否回填 / 责任仓」表——先证伪：读取 agent `handlers_pipeline.go` 与 `api-schema.md`、core `cmd/analysis/main.go` 保留期（90/365 天）、data `internal/sync` 与 `ingest.raw`、三仓 CI artifact（仅 UI e2e 7 天）；结合 ODR-072「宿主 PG 无备份」结论，明确四个指标均「可测但不可回填」。DOC-26（2026-11-13）：按 analytics 本仓 ADR-0005 把 `tellurion-analytics` 从「扩展舱（可独立部署能力单元）」移出，单列「参考实现」角色（core 调用方 0 = 设计），删除正文「有意为之」的旧表述。DOC-25（2026-11-13）：按实测补三处能力状态标——产业链查询（core openapi Industry P2-2 / Macro P2-1 已有，UI `web/src` 零命中 ⇒ 后端可用、仅 API）、`hypothesis_source`（12 仓零命中 ⇒ 未实现，对齐 ROADMAP S2 部分达成）、测量端点（agent `handlers_pipeline.go` 已实现，契约权威在 agent `api-schema.md`，core openapi 已非真相源）。此前：DOC-PRODUCT-DRIFT-FIX（2026-11-12）：按 SYSTEM-DESIGN §4/§5 基准订正「系统构成」接线现状段（data 取数 + strategy resolve + risk resolve + broker HTTP + orchestration 队列，analytics 有意为 0），删除「其余四条无调用方」类过期断言。此前：DOC-FRONTMATTER-HYGIENE（2026-11-12）：frontmatter 校时。此前：DOC-06 成文（2026-10-25 口径三问拍定：扩展舱按"可选项"叙事 / 工程纪律不升入 VISION / 系统构能用功能粒度）——哲学层未动，只补「系统构成」一节并把架构指针从 ARCHITECTURE.md 换到 SYSTEM-DESIGN.md
+verified-by: ODR-074（2026-11-13）：九条挂起任务裁决后同步对外口径——L2 产业链查询改为「仅 API，无 UI 入口」、能力状态补建页触发（S2 出口）与 `hypothesis_source` 维持挂起、边界表补实盘证券状态校验 / 期权·两融·竞价 / 产业链 UI / 浅色主题四行。DOC-27（2026-11-13）：成功指标节补「数据从哪来 / 多久可评 / 能否回填 / 责任仓」表——先证伪：读取 agent `handlers_pipeline.go` 与 `api-schema.md`、core `cmd/analysis/main.go` 保留期（90/365 天）、data `internal/sync` 与 `ingest.raw`、三仓 CI artifact（仅 UI e2e 7 天）；结合 ODR-072「宿主 PG 无备份」结论，明确四个指标均「可测但不可回填」。DOC-26（2026-11-13）：按 analytics 本仓 ADR-0005 把 `tellurion-analytics` 从「扩展舱（可独立部署能力单元）」移出，单列「参考实现」角色（core 调用方 0 = 设计），删除正文「有意为之」的旧表述。DOC-25（2026-11-13）：按实测补三处能力状态标——产业链查询（core openapi Industry P2-2 / Macro P2-1 已有，UI `web/src` 零命中 ⇒ 后端可用、仅 API）、`hypothesis_source`（12 仓零命中 ⇒ 未实现，对齐 ROADMAP S2 部分达成）、测量端点（agent `handlers_pipeline.go` 已实现，契约权威在 agent `api-schema.md`，core openapi 已非真相源）。此前：DOC-PRODUCT-DRIFT-FIX（2026-11-12）：按 SYSTEM-DESIGN §4/§5 基准订正「系统构成」接线现状段（data 取数 + strategy resolve + risk resolve + broker HTTP + orchestration 队列，analytics 有意为 0），删除「其余四条无调用方」类过期断言。此前：DOC-FRONTMATTER-HYGIENE（2026-11-12）：frontmatter 校时。此前：DOC-06 成文（2026-10-25 口径三问拍定：扩展舱按"可选项"叙事 / 工程纪律不升入 VISION / 系统构能用功能粒度）——哲学层未动，只补「系统构成」一节并把架构指针从 ARCHITECTURE.md 换到 SYSTEM-DESIGN.md
 supersedes: 2026-09-15 版（"双对等工作面 + 飞轮闭环"）
 ---
 
@@ -69,7 +69,7 @@ supersedes: 2026-09-15 版（"双对等工作面 + 飞轮闭环"）
 
 ```
 L3  AI 编排层    AI 实验员（唯一编排者，会循环） · 因果审查（被调用，不循环）  ← 唯一需要人在环
-L2  能力层       [MCP 工具桥] → 因子计算 | 回测 | 产业链查询（后端 ✅ / UI 入口 ⬜） | 证据查询 | 验证器链×5   ← 禁止 AI 直接摸数据
+L2  能力层       [MCP 工具桥] → 因子计算 | 回测 | 产业链查询（后端 ✅ / 仅 API，无 UI 入口） | 证据查询 | 验证器链×5   ← 禁止 AI 直接摸数据
 L1  数据层       行情 | 财务 | 产业链图谱 | 研究洞察 | 实验日志
 ```
 
@@ -78,8 +78,8 @@ L1  数据层       行情 | 财务 | 产业链图谱 | 研究洞察 | 实验日
 EquityDeep 提供数据与洞察（产业链图谱 + 研究洞察库），**不做独立编排**。
 
 **能力状态（2026-11-13 实测）**：
-- **产业链查询：后端可用，UI 无入口** —— core `docs/openapi.yaml` 已收录 `Industry (P2-2)`（行业树 / 供应链边 / 行业活力 / ETF 成分）与 `Macro (P2-1)`（宏观序列）；UI `web/src` 零 `industry` 命中，`UI-INDUSTRY-ENTRY` 尚无裁决。性质 = **能力已具备、未暴露**，不是未实现。
-- **因果来源（`hypothesis_source`）：未实现** —— S2 中该项尚未开始（产业链底座已达成，见 [ROADMAP.md](ROADMAP.md) §S2）；12 仓代码零命中。性质 = **确实缺功能**，不随本页文案改善。
+- **产业链查询：后端可用，仅 API（无 UI 入口）** —— core `docs/openapi.yaml` 已收录 `Industry (P2-2)`（行业树 / 供应链边 / 行业活力 / ETF 成分）与 `Macro (P2-1)`（宏观序列）；UI `web/src` 零 `industry` 命中。2026-11-13 已裁决**当期仅 API、不做界面**（[ODR-074](archive/odr/odr-074-rulings-on-nine-suspended-tasks.md) D6）；建页触发条件 = **S2 出口**（至少 1 个行业假设因子完成验证并带 `hypothesis_source`）。性质 = **能力已具备、未暴露**，不是未实现。
+- **因果来源（`hypothesis_source`）：未实现，维持挂起** —— S2 中该项尚未开始（产业链底座已达成，见 [ROADMAP.md](ROADMAP.md) §S2）；12 仓代码零命中。2026-11-13 裁决**维持挂起至 S1 出口**（ODR-074 D9），字段形状由真实探索数据决定。性质 = **确实缺功能**，不随本页文案改善。
 
 ---
 
@@ -160,6 +160,10 @@ EquityDeep 提供数据与洞察（产业链图谱 + 研究洞察库），**不�
 | 实时行情 / 盘中监控 | 按财报期驱动，日频已是高频边界 |
 | 多 agent 投票 / arbitrator 仲裁 | 错误相关、放大偏差、不可解释 |
 | 让 EquityDeep 成为第二个 agent | 它提供数据与洞察，不做独立智能流程 |
+| 实盘证券状态校验（停牌 / 退市 / 强平） | 只在真实柜台下成立；已裁决随实盘通道退役（ODR-074 D1） |
+| 期权 / 两融 / 集合竞价撮合 | 无数据源、无 broker 面、不在任何阶段；代码包已裁决退役（ODR-074 D3） |
+| 产业链 / 宏观 UI 页面 | 观察窗页面须绑定用户动作；S2 出口前只有 API（ODR-074 D6） |
+| 浅色主题 / 主题切换 | 深色是唯一经设计验收的基线；控件已裁决移除（ODR-074 D7） |
 | SaaS / 多租户 | 服务单个个体 |
 
 ---

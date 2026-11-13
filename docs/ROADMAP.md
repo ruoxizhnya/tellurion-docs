@@ -1,7 +1,7 @@
 ---
 status: evergreen
 last-verified: 2026-11-13
-verified-by: DOC-24（2026-11-13）：S2 由「⬜ 待开始」改为「🔶 部分达成」——实测 core `docs/openapi.yaml` 已收录 Industry (P2-2) 四个端点与 Macro (P2-1)，`hypothesis_source` 在 12 仓零命中；出口判据逐条标注。此前：DOC-PRODUCT-DRIFT-FIX（2026-11-12）：QT-32 状态对齐 core 台账（2026-11-10 收口）、删除「仅 data 接线」过期断言并改指 SYSTEM-DESIGN §4/§5、实盘说明死链改指 broker ADR-0003。此前：DOC-FRONTMATTER-HYGIENE（2026-11-12）：frontmatter 校时。此前：DOC-11（2026-10-26）：修正「当前阶段」与阶段表的自相矛盾（S0 已完成、S1 进行中），补工程解耦线与产品线的分工；产品阶段判据未改。此前：产品重构讨论（2026-09-16）
+verified-by: ODR-074（2026-11-13）：九条挂起任务裁决同步——§明确不做 补实盘证券状态校验 / 期权·两融·竞价 / 产业链 UI / 浅色主题四行，§S2 补 `hypothesis_source` 维持挂起与「加列已解锁」。DOC-24（2026-11-13）：S2 由「⬜ 待开始」改为「🔶 部分达成」——实测 core `docs/openapi.yaml` 已收录 Industry (P2-2) 四个端点与 Macro (P2-1)，`hypothesis_source` 在 12 仓零命中；出口判据逐条标注。此前：DOC-PRODUCT-DRIFT-FIX（2026-11-12）：QT-32 状态对齐 core 台账（2026-11-10 收口）、删除「仅 data 接线」过期断言并改指 SYSTEM-DESIGN §4/§5、实盘说明死链改指 broker ADR-0003。此前：DOC-FRONTMATTER-HYGIENE（2026-11-12）：frontmatter 校时。此前：DOC-11（2026-10-26）：修正「当前阶段」与阶段表的自相矛盾（S0 已完成、S1 进行中），补工程解耦线与产品线的分工；产品阶段判据未改。此前：产品重构讨论（2026-09-16）
 supersedes: archive/ROADMAP-history.md（Phase 1-4 / Sprint 1-8）
 ---
 
@@ -74,7 +74,7 @@ schema 收口（migrations 可执行 + 版本管理）· 产业链数据底座�
 
 **现状（2026-11-13 实测）**：
 - 产业链数据底座 ✅ —— core `docs/openapi.yaml` 已收录 `Industry (P2-2)`（`/api/industry/tree` · `/edges` · `/vitality` · `/etf/{etf_code}/constituents`）与 `Macro (P2-1)`（`/api/macro/series`），路由实现在 `cmd/analysis`；
-- `hypothesis_source` ⬜ —— 12 仓 `*.go` / `*.py` / `*.sql` 零命中，字段与写入链均未开始；
+- `hypothesis_source` ⬜ —— 12 仓 `*.go` / `*.py` / `*.sql` 零命中，字段与写入链均未开始；2026-11-13 裁决**维持挂起**（ODR-074 D9）：等 S1 出口，形状由真实探索数据决定；加列技术上已解锁（core 七表 DDL 退役、漂移对拍退场），阶段门是唯一阻因；
 - 红队验证器链 ⬜ —— 未见落地证据。
 
 **出口**：至少 1 个"从产业链假设出发"的因子完成完整验证并带因果来源。
@@ -103,6 +103,10 @@ schema 收口（migrations 可执行 + 版本管理）· 产业链数据底座�
 与 [VISION.md](VISION.md) 边界一致，此处只列容易被临时加回来的：
 
 - **实盘交易** — 真钱通道未开（XTP 仍为桩，挂起与重开条件见 [broker ADR-0003](https://github.com/ruoxizhnya/tellurion-broker/blob/main/docs/adr/0003-真钱通道暂不实施与重开条件.md)）；core 进程内 `MockTrader` 已随 `SVC-CORE-BROKER-RETIRE` 退役，唯一通道是 `tellurion-broker` 的 Mock 网关
+- **实盘证券状态校验（停牌 / 退市 / 强平）** — 只在真实柜台下成立；`pkg/trading/stockstate` 已裁决随实盘通道退役，重开见 broker ADR-0003（ODR-074 D1）
+- **期权 / 两融 / 集合竞价撮合** — 无数据源、无 broker 面；`pkg/backtest/auction` / `pkg/strategy/options` / `pkg/trading/margin` 已裁决退役（ODR-074 D3）
+- **产业链 / 宏观 UI 页面** — 当期仅 API；S2 出口（≥1 个行业假设因子带 `hypothesis_source`）后再建页（ODR-074 D6）
+- **浅色主题 / 主题切换** — 深色是唯一经设计验收的基线（ODR-074 D7）
 - **多 agent 投票 / arbitrator 仲裁** — 错误相关，放大偏差，不可解释
 - **实时行情 / 盘中监控** — 日频已是高频边界
 - **EquityDeep 作为独立智能流程** — 它是数据底座，不是 agent
