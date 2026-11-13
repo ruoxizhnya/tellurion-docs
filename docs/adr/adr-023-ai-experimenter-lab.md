@@ -4,7 +4,7 @@
 > **Date**: 2026-09-16
 > **Category**: Architecture / Product
 > **Supersedes**: [ADR-022](../archive/superseded-adr/adr-022-unified-research-platform.md)（Proposed 期间即被取代，从未实施）、[ADR-021](../archive/superseded-adr/adr-021-equitydeep-research-layer.md)
-> **Related**: [PRODUCT.md](../PRODUCT.md) · [VISION.md](../VISION.md) · [ARCHITECTURE.md](../ARCHITECTURE.md) · [ADR-001](adr-001-plugin-loading.md) · [ADR-015](adr-015-ai-agent-architecture.md)
+> **Related**: [PRODUCT.md](../PRODUCT.md) · [VISION.md](../VISION.md) · [ARCHITECTURE.md](../archive/ARCHITECTURE-pre-split.md) · [ADR-001](adr-001-plugin-loading.md) · [ADR-015](adr-015-ai-agent-architecture.md)
 > **Upstream**: 用户（若曦）2026-09-16 产品重构讨论
 
 ---

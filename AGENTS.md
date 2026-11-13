@@ -15,11 +15,14 @@ verified-by: DOC-FRONTMATTER-HYGIENE（2026-11-12）：补 frontmatter；正文�
 
 ## 1. 构建 / 检查
 
-本仓无代码，可执行物是三个巡检脚本：
+本仓无代码，可执行物是四个巡检脚本：
 
 ```bash
 python tools/check_doc_links.py          # 活跃层 0 断链才通过（退出码 0/1，CI 同款）
 python tools/check_doc_links.py --all    # 连历史层明细一起看
+
+python tools/check_doc_counts.py         # 入口页计数 vs ADR/ODR 台账（CI 同款）
+python tools/check_doc_counts.py --workspace ..  # 连 12 份 SERVICE.md 存在性（工作区级，不进 CI）
 
 python tools/check_guide_refs.py         # docs/guides 的 `repo:path` 引用：只查仓名（CI 同款）
 python tools/check_guide_refs.py --workspace ..   # 连路径存在性（工作区级，不进 CI）
@@ -43,7 +46,7 @@ python tools/test_check_repo_docs.py     # 巡检脚本自身的夹具测试（1
 | `docs/SYSTEM-DESIGN.md` | **现行总体设计**：分层 / 四条主链路 / 数据归属 / 边界原则 / 演进阶梯 | 单仓的表与端点 |
 | `docs/REPO-MAP.md` | 12 仓：管什么 / 不管什么 / 拥有 schema / 依赖 | 实现细节 |
 | `docs/SERVICE-INDEX.md` | 各仓 db / api / dataflow 的**索引** | 复制过来的契约正文 |
-| `docs/ARCHITECTURE.md` | ⚠️ 拆仓前历史 Reference（不再更新） | 新的现状描述 |
+| `docs/archive/ARCHITECTURE-pre-split.md` | ⚠️ 拆仓前历史 Reference（已归档，不再更新） | 新的现状描述 |
 | `docs/adr/` | 跨领域架构决策（编号 `adr-NNN`） | 单仓决策（放该仓 `docs/adr/`） |
 | `docs/design/` | 跨领域功能规格（如 EquityDeep） | 服务实现设计 |
 | `docs/guides/` | 本地起步 / 部署 / 数据依赖 / 运维 | 一次性排查记录（进 `archive/`） |

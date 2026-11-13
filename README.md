@@ -69,7 +69,7 @@ verified-by: DOC-FRONTMATTER-HYGIENE（2026-11-12）：补 frontmatter；正文�
 | [`docs/SYSTEM-DESIGN.md`](docs/SYSTEM-DESIGN.md) | **现行总体设计**：分层 / 四条主链路 / 数据归属 / 边界原则 / 演进阶梯 |
 | [`docs/REPO-MAP.md`](docs/REPO-MAP.md) | 12 仓地图：职责 / 拥有 schema / 对外面 / 依赖方向 / 状态 |
 | [`docs/SERVICE-INDEX.md`](docs/SERVICE-INDEX.md) | 服务仓功能边界索引（每仓三份契约的直达链接） |
-| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | ⚠️ **历史 Reference**（拆仓前实测），现状看 SYSTEM-DESIGN |
+| [`docs/archive/ARCHITECTURE-pre-split.md`](docs/archive/ARCHITECTURE-pre-split.md) | ⚠️ **历史 Reference**（拆仓前实测，已归档），现状看 SYSTEM-DESIGN |
 | [`docs/VISION.md`](docs/VISION.md) / [`docs/PRODUCT.md`](docs/PRODUCT.md) / [`docs/ROADMAP.md`](docs/ROADMAP.md) | 愿景 / 产品 / 路线图 |
 | [`docs/ADR.md`](docs/ADR.md) + [`docs/adr/`](docs/adr/) | 跨领域架构决策（Accepted 后只读） |
 | [`docs/guides/`](docs/guides/) | 本地起步 / 部署配置 / 数据依赖 / NT 侧车运维 |

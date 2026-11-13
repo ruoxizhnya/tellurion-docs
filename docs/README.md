@@ -1,7 +1,7 @@
 ---
 status: evergreen
 last-verified: 2026-11-13
-verified-by: 2026-11-13 DOC-17 入口页校准——ADR 条数 41/至 ADR-041、12 份 SERVICE.md 已落地、ODR 001–073、归档子目录改为实测名、R5 CI 状态改为现行实现；此前 2026-11-11 增加服务卡导航行（guides/service-card.md 规范 + 模板 + 示例）
+verified-by: 2026-11-13 DOC-17 入口页校准——ADR 条数 41/至 ADR-041、12 份 SERVICE.md 已落地、ODR 001–073、归档子目录改为实测名、R5 CI 状态改为现行实现；DOC-20 把 `status: archived` 的 ARCHITECTURE 移出主表与推荐顺序（文件移入 `archive/ARCHITECTURE-pre-split.md`）、R3 同步移除其页数上限；此前 2026-11-11 增加服务卡导航行（guides/service-card.md 规范 + 模板 + 示例）
 ---
 
 # Quant Lab 文档入口
@@ -34,7 +34,7 @@ verified-by: 2026-11-13 DOC-17 入口页校准——ADR 条数 41/至 ADR-041、
 |---|---|---|
 | 了解这个产品是什么、为谁做 | [PRODUCT.md](PRODUCT.md) | **现行**（2026-10-25 DOC-06 成文：哲学层 2026-09-16 定稿未动，新增「系统构成」一节按**功能角色**写，仓级清单只指 [REPO-MAP.md](REPO-MAP.md) 不复制） |
 | 了解设计原则 | [VISION.md](VISION.md) | **现行**（八条原则与优先级序未动；74KB 原文见 `archive/VISION-full.md`。2026-10-25 口径②拍定：分仓工程纪律**不升入原则**，改为文件头与边界表各留一条指针指 SYSTEM-DESIGN §2/§8） |
-| 了解系统怎么搭 | [SYSTEM-DESIGN.md](SYSTEM-DESIGN.md) → 细节查 [ARCHITECTURE.md](ARCHITECTURE.md) | **SYSTEM-DESIGN 现行**；ARCHITECTURE 是**拆仓前历史 Reference**（端口/表数已失效） |
+| 了解系统怎么搭 | [SYSTEM-DESIGN.md](SYSTEM-DESIGN.md) | **现行**（拆仓前历史架构在 `archive/ARCHITECTURE-pre-split.md`，端口/表数已失效，仅追溯用） |
 | 后端架构设计蓝图（模块化内核） | `tellurion:docs/design/kernel/`（kernel-pluggable-nt-ready.md → 已升格 [ADR-031](adr/adr-031-kernel-pluggable-nt-ready.md)） | Draft（D1–D5 已拍板；ADR-031 已 Accepted） |
 | 解耦与模块化重构设计集（ADR-D1~D30） | `tellurion:docs/design/qt-decoupling/`（先读其 [README 索引](https://github.com/ruoxizhnya/tellurion/blob/main/docs/design/qt-decoupling/README.md)） | **部分已裁决**：D24/D25/D26/D28 已由用户拍板，**D29（分仓拓扑）与 D30（仓清单与命名）已裁决**，其余仍为草案。**引用任何 ADR-D 编号前先查索引**；正式升格走本仓 ADR-NNN（先例：kernel 蓝图 → ADR-031） |
 | **仓清单与命名（ADR-D30，施工前必读）** | `tellurion:docs/design/qt-decoupling/repo-inventory.md` | **已裁决**——项目定名 **tellurion**、owner 保持 `ruoxizhnya` 不变、**应用/服务用单段短名 / 库用全名**、12 仓表 + 旧→新映射；**建新仓 / 改 `go.mod` 前先读**（QT-60 ✅ 2026-10-20） |
@@ -53,7 +53,7 @@ verified-by: 2026-11-13 DOC-17 入口页校准——ADR 条数 41/至 ADR-041、
 | **当前在做什么** | [TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md) | 现行（只放未完成项） |
 | 找历史记录 / 旧决策 / 取证报告 | [archive/](archive/) | **只读，不维护** |
 
-**新来的人读这份顺序**：PRODUCT → SYSTEM-DESIGN → SPEC。三份读完就能上手（ARCHITECTURE 是拆仓前历史 Reference，只用于追溯）。
+**新来的人读这份顺序**：PRODUCT → SYSTEM-DESIGN → SPEC。三份读完就能上手。
 
 ---
 
@@ -72,7 +72,7 @@ verified-by: 2026-11-13 DOC-17 入口页校准——ADR 条数 41/至 ADR-041、
 | `archived` | 历史快照 | **只读、不改、不进本页导航** |
 
 **R3 · 常青层字数上限**
-PRODUCT ≤3 页 / VISION ≤2 页 / ARCHITECTURE ≤5 页 / ROADMAP ≤2 页 / TASKS ≤5 页。
+PRODUCT ≤3 页 / VISION ≤2 页 / ROADMAP ≤2 页 / TASKS ≤5 页（ARCHITECTURE 已归档，不再受本限制）。
 超限 → 细节外移到 `design/`。
 
 **R4 · 何时该写 ADR**
@@ -95,6 +95,7 @@ CI 扫描常青文档里引用的文件路径、API 路径、表名、配置项�
 |---|---|
 | `archive/odr/` | ODR 001–073（实施与取证记录，与 git log 重复） |
 | `archive/superseded-adr/` | 已被取代的 ADR 009/010/012/021/022 |
+| `archive/ARCHITECTURE-pre-split.md` | 拆仓前（2026-10-09 前）的历史架构 Reference，端口/表数已失效，**勿引用数字** |
 | `archive/TASKS-history.md` | 旧任务文档（217KB，含 Sprint 1–6） |
 | `archive/VISION-full.md` | 旧愿景文档原文（74KB） |
 | `archive/RESEARCH-equitydeep-legacy.md` | EquityDeep 旧详案（定位已变更） |

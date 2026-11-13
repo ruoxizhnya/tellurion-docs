@@ -7,7 +7,7 @@ verified-by: DOC-19（2026-11-13）：§7 部署路径句删除已不存在的 s
 # 总体设计（SYSTEM DESIGN）
 
 > **本文是"整个系统怎么设计"的现行版本。** 只写跨仓的结构与边界判断；每个仓的表、接口、链路细节在**该仓的 `docs/`** 里，本文只给指针。
-> 与 [`ARCHITECTURE.md`](ARCHITECTURE.md) 的分工：那份是**拆仓前的历史 Reference**（含端口/表数等已失效数字），本文是**现任**。两者冲突时以本文 + 各仓 `docs/` 为准。
+> 与 [`archive/ARCHITECTURE-pre-split.md`](archive/ARCHITECTURE-pre-split.md) 的分工：那份是**拆仓前的历史 Reference**（含端口/表数等已失效数字，已移入归档层），本文是**现任**。两者冲突时以本文 + 各仓 `docs/` 为准。
 
 ---
 

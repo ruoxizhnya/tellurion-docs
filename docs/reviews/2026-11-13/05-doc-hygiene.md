@@ -78,7 +78,7 @@ ADR/ODR 双台账、逐仓服务卡与三份契约索引都真实存在且在维
 [README.md:68-L72](../../README.md#L66-L72) 规定 `archived` = "只读、不改、**不进本页导航**"；
 [README.md:108](../../README.md#L108) 再次强调"文档进入 archived 状态时，必须从导航表移除"。
 
-但 [docs/ARCHITECTURE.md](../../ARCHITECTURE.md) 的 frontmatter 是 `status: archived`，
+但 [docs/ARCHITECTURE.md](../../archive/ARCHITECTURE-pre-split.md) 的 frontmatter 是 `status: archived`，
 却被 [README.md:37](../../README.md#L37) 放进"我该读哪一份"主表，
 并在 [README.md:56](../../README.md#L56) 再次作为推荐顺序提及。该文件自述
 "端口/表数已失效"、体积 65.9KB（目录实测），是当前导航层里最大的一份失效文档。
