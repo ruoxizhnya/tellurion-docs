@@ -1,7 +1,7 @@
 ---
 status: evergreen
-last-verified: 2026-11-11
-verified-by: 2026-11-11 增加服务卡导航行（guides/service-card.md 规范 + 模板 + 示例），此前 2026-10-25 DOC-06 的 PRODUCT / VISION 导航口径不变
+last-verified: 2026-11-13
+verified-by: 2026-11-13 DOC-17 入口页校准——ADR 条数 41/至 ADR-041、12 份 SERVICE.md 已落地、ODR 001–073、归档子目录改为实测名、R5 CI 状态改为现行实现；此前 2026-11-11 增加服务卡导航行（guides/service-card.md 规范 + 模板 + 示例）
 ---
 
 # Quant Lab 文档入口
@@ -42,12 +42,12 @@ verified-by: 2026-11-11 增加服务卡导航行（guides/service-card.md 规范
 | **各仓功能边界（判断功能放哪）** | 本仓 [SERVICE-INDEX.md](SERVICE-INDEX.md) → 逐仓 `db-schema` / `api-schema` / `dataflow` | 现行（10 仓已建三份契约） |
 | **P0 修复基线（实施前必读）** | `tellurion:docs/design/qt-decoupling/p0-remediation-design.md`（第一轮 20 项）+ `p0-round2-review.md`（第二轮：闭环核对 + N1~N9） | **现行基线**——两份合起来才完整；依赖顺序以 round2 §4 为准（wave-0 契约冻结在最前） |
 | 查 API / 数据模型 / 契约 | [SPEC.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md) | 现行（Reference 类，可长） |
-| 查某个架构决策的来龙去脉 | [ADR.md](ADR.md) → [adr/](adr/) | 现行（31 条；编号至 ADR-036，009/010/012/021/022 已归档） |
+| 查某个架构决策的来龙去脉 | [ADR.md](ADR.md) → [adr/](adr/) | 现行（41 条；编号至 ADR-041，009/010/012/021/022 已归档） |
 | 了解测试策略 | [TEST.md](TEST.md) | 现行 |
 | 看阶段规划 | [ROADMAP.md](ROADMAP.md) | 现行 |
 | 本地起步（环境 / 命令 / 已知坑） | [guides/local-dev.md](guides/local-dev.md) | 现行 |
 | NT 侧车运维（版本升级 / 故障回退） | [guides/nt-sidecar-operations.md](guides/nt-sidecar-operations.md) | 现行 |
-| 5 分钟了解某个仓**是什么、和谁连、坏了找谁** | [guides/service-card.md](guides/service-card.md)（规范 + [模板](guides/service-card-template.md) + 示例） | 现行（2026-11-11 规范设计；12 仓未落地） |
+| 5 分钟了解某个仓**是什么、和谁连、坏了找谁** | [guides/service-card.md](guides/service-card.md)（规范 + [模板](guides/service-card-template.md) + 示例） | 现行（2026-11-11 规范设计；2026-11-13 实测 12 仓已全部落地） |
 | 加数据源 / 加因子 / 跑一轮实验 | — | 待补（S1 / S3 开工前再写） |
 | 实盘接口（核心抽象实盘-ready，仅 paper 实现） | [live-trading.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/live-trading.md) | 已标注 |
 | **当前在做什么** | [TASKS.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/TASKS.md) | 现行（只放未完成项） |
@@ -83,7 +83,7 @@ PRODUCT ≤3 页 / VISION ≤2 页 / ARCHITECTURE ≤5 页 / ROADMAP ≤2 页 / 
 
 **R5 · 文档必须可被验证**
 CI 扫描常青文档里引用的文件路径、API 路径、表名、配置项，验证其真实存在。
-**这是文档不腐烂的唯一可靠机制。**（当前 CI 缺失，见 TASKS.md P0）
+**这是文档不腐烂的唯一可靠机制。**（已进 CI：Markdown 相对链接由 `tools/check_doc_links.py` 校验，`guides/` 跨仓仓名由 `tools/check_guide_refs.py` 校验，入口见 `.github/workflows/ci.yml`；关键计数与路径存在性的机械校验见 TASKS.md DOC-18）
 
 ---
 
@@ -93,12 +93,13 @@ CI 扫描常青文档里引用的文件路径、API 路径、表名、配置项�
 
 | 目录 | 内容 |
 |---|---|
-| `archive/odr/` | ODR 001–064（实施与取证记录，与 git log 重复） |
-| `archive/superseded-adr/` | 已被取代的 ADR 009/010/012/021 |
+| `archive/odr/` | ODR 001–073（实施与取证记录，与 git log 重复） |
+| `archive/superseded-adr/` | 已被取代的 ADR 009/010/012/021/022 |
 | `archive/TASKS-history.md` | 旧任务文档（217KB，含 Sprint 1–6） |
 | `archive/VISION-full.md` | 旧愿景文档原文（74KB） |
 | `archive/RESEARCH-equitydeep-legacy.md` | EquityDeep 旧详案（定位已变更） |
-| `archive/2026-Q2/*` | 早期报告、计划、调研 |
+| `archive/reports-2026-Q2/`、`archive/research-2026-Q2/` | 2026-Q2 早期报告与调研 |
+| `archive/plans-2026-Q3/`、`archive/reports-2026-Q3/` | 2026-Q3 计划与报告 |
 
 ---
 
