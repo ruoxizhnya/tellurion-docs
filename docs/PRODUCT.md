@@ -1,7 +1,7 @@
 ---
 status: evergreen
 last-verified: 2026-11-13
-verified-by: DOC-25（2026-11-13）：按实测补三处能力状态标——产业链查询（core openapi Industry P2-2 / Macro P2-1 已有，UI `web/src` 零命中 ⇒ 后端可用、仅 API）、`hypothesis_source`（12 仓零命中 ⇒ 未实现，对齐 ROADMAP S2 部分达成）、测量端点（agent `handlers_pipeline.go` 已实现，契约权威在 agent `api-schema.md`，core openapi 已非真相源）。此前：DOC-PRODUCT-DRIFT-FIX（2026-11-12）：按 SYSTEM-DESIGN §4/§5 基准订正「系统构成」接线现状段（data 取数 + strategy resolve + risk resolve + broker HTTP + orchestration 队列，analytics 有意为 0），删除「其余四条无调用方」类过期断言。此前：DOC-FRONTMATTER-HYGIENE（2026-11-12）：frontmatter 校时。此前：DOC-06 成文（2026-10-25 口径三问拍定：扩展舱按"可选项"叙事 / 工程纪律不升入 VISION / 系统构能用功能粒度）——哲学层未动，只补「系统构成」一节并把架构指针从 ARCHITECTURE.md 换到 SYSTEM-DESIGN.md
+verified-by: DOC-26（2026-11-13）：按 analytics 本仓 ADR-0005 把 `tellurion-analytics` 从「扩展舱（可独立部署能力单元）」移出，单列「参考实现」角色（core 调用方 0 = 设计），删除正文「有意为之」的旧表述。DOC-25（2026-11-13）：按实测补三处能力状态标——产业链查询（core openapi Industry P2-2 / Macro P2-1 已有，UI `web/src` 零命中 ⇒ 后端可用、仅 API）、`hypothesis_source`（12 仓零命中 ⇒ 未实现，对齐 ROADMAP S2 部分达成）、测量端点（agent `handlers_pipeline.go` 已实现，契约权威在 agent `api-schema.md`，core openapi 已非真相源）。此前：DOC-PRODUCT-DRIFT-FIX（2026-11-12）：按 SYSTEM-DESIGN §4/§5 基准订正「系统构成」接线现状段（data 取数 + strategy resolve + risk resolve + broker HTTP + orchestration 队列，analytics 有意为 0），删除「其余四条无调用方」类过期断言。此前：DOC-FRONTMATTER-HYGIENE（2026-11-12）：frontmatter 校时。此前：DOC-06 成文（2026-10-25 口径三问拍定：扩展舱按"可选项"叙事 / 工程纪律不升入 VISION / 系统构能用功能粒度）——哲学层未动，只补「系统构成」一节并把架构指针从 ARCHITECTURE.md 换到 SYSTEM-DESIGN.md
 supersedes: 2026-09-15 版（"双对等工作面 + 飞轮闭环"）
 ---
 
@@ -55,10 +55,11 @@ supersedes: 2026-09-15 版（"双对等工作面 + 飞轮闭环"）
 | **仪器** | 回测 / 撮合 / 组合结算 / 策略运行时 / 仪器域存储——给定输入必有确定输出，可无人值守 | `tellurion`（core）。**一名多角色**：它既是仪器本体，又是仪器域数据的唯一写者 |
 | **实验员** | 挖因子、调系数、跑回测、看结果、决定下一步（唯一会自主循环的那个） | `tellurion-agent` |
 | **观察窗** | 让人能审阅、能干预、能拍板（5 分钟知道该关注什么） | `tellurion-ui` |
-| **扩展舱** | 数据面 / 策略资产 / 风控规则 / 分析 / 编排 / 交易通道——按需触发、可独立部署的能力单元 | `tellurion-data` · `-strategy` · `-risk` · `-analytics` · `-orchestration` · `-broker` |
+| **扩展舱** | 数据面 / 策略资产 / 风控规则 / 编排 / 交易通道——按需触发、可独立部署的能力单元 | `tellurion-data` · `-strategy` · `-risk` · `-orchestration` · `-broker` |
+| **参考实现** | 独立只读的指标 / 分析参考实现：单仓自证可用，验证方法论，不接生产热路径；**core 调用方为 0 是设计不是缺陷** | `tellurion-analytics`（本仓 ADR-0005：独立只读参考实现，core 指标保留并冻结、不迁移） |
 | **契约底座** | 跨边界只交换**形状**与**纯技术能力**，不交换实现 | `tellurion-contracts`（port / DTO / 值对象 / 哨兵错误）+ `tellurion-kit`（日志 / 十进制 / 统计 / DB 连接…） |
 
-**扩展舱不是"已经如此"的名单。** 截至 2026-11-11，core 真正消费的远程能力是：`tellurion-data` 的回测取数；`tellurion-strategy` 的非空 `strategy_ref` resolve（出厂启用）；`tellurion-risk` 的限额快照 `resolve`（出厂 true，事件回传仍出厂 false）；`tellurion-broker` 的唯一下单通道（core 进程内 `MockTrader` 已退役）；`tellurion-orchestration` 的任务队列（worker 进程仍在 core）。`tellurion-analytics` 的 core 调用方为 0 是**有意为之**（ADR-0005，只读参考实现）。逐条接线现实以 [SYSTEM-DESIGN.md](SYSTEM-DESIGN.md) §4/§5 为基准、随施工漂移，所以刻意**不写进上面这张角色表**。
+**扩展舱不是"已经如此"的名单。** 截至 2026-11-11，core 真正消费的远程能力是：`tellurion-data` 的回测取数；`tellurion-strategy` 的非空 `strategy_ref` resolve（出厂启用）；`tellurion-risk` 的限额快照 `resolve`（出厂 true，事件回传仍出厂 false）；`tellurion-broker` 的唯一下单通道（core 进程内 `MockTrader` 已退役）；`tellurion-orchestration` 的任务队列（worker 进程仍在 core）。`tellurion-analytics` **不在这张名单里**：它的定位是参考实现（本仓 ADR-0005），core 调用方为 0 是设计而非待接线项。逐条接线现实以 [SYSTEM-DESIGN.md](SYSTEM-DESIGN.md) §4/§5 为基准、随施工漂移，所以刻意**不写进上面这张角色表**。
 
 **为什么产品叙事不数进程**：承重句是「AI 操作底座、人拍板」。底座拆成几个可独立部署的单元，不改变这句话；拆与不拆的判据是**热路径不出进程**（[SYSTEM-DESIGN.md](SYSTEM-DESIGN.md) §2 的 P1），不是"服务越多越像平台"。
 
