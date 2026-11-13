@@ -1,6 +1,6 @@
 # TASKS 归档 — tellurion-docs（2026-11）
 
-> **本文件是 `docs/TASKS.md` 的历史归档，进 git、不删除**。归档时间 2026-11-11；收录范围 = 截至 2026-11-10 已收口（✅）的任务原文与当时的施工记录，**逐字搬入、未改写**（原文件 frontmatter 留在新台账；任务标题与正文原样保留）。
+> **本文件是 `docs/TASKS.md` 的历史归档，进 git、不删除**。归档时间 2026-11-11（首批）；收录范围 = 截至 2026-11-10 已收口（✅）的任务原文与当时的施工记录，**逐字搬入、未改写**；2026-11-13 追加「五角审查批次 DOC-17~DOC-29」原文与施工记录（原文件 frontmatter 留在新台账；任务标题与正文原样保留）。
 
 > **检索方式**：按任务 ID `grep -n "<ID>" docs/archive/tasks-archive-2026-11.md`；按 commit `grep -n "<sha>" docs/archive/tasks-archive-2026-11.md`；索引表在本节下方，含 ID / 标题 / 收口日期 / commit / 证据链接。
 
@@ -28,6 +28,19 @@
 | DOC-PRODUCT-DRIFT-FIX | PRODUCT/ROADMAP 接线现状与阶段断言对齐 SYSTEM-DESIGN §4/§5 | 2026-11-12 | `b2a473f` | [原文](#DOC-PRODUCT-DRIFT-FIX) |
 | DOC-P3-MATRIX-TABLE-GRAIN | `run.backtest_results` 表粒度例外显式化 + core 矩阵 `:43` 待派指针 | 2026-11-12 | 本次 commit | [原文](#DOC-P3-MATRIX-TABLE-GRAIN) |
 | CORE-MATRIX-FACTOR-OWNER-FIX | core 矩阵 `:43` 因子派生表 owner 仍写 `tellurion-data`（docs 侧按 ADR-037 订正；core 行待派） | 2026-11-12 | 本次 commit | [施工记录](#CORE-MATRIX-FACTOR-OWNER-FIX) |
+| DOC-17 | 入口页五项失效目标一次性校准 | 2026-11-13 | `81f5382` | [原文](#DOC-17) |
+| DOC-18 | 入口页关键计数改为脚本校验 + 落实 R5 文档可验证 CI | 2026-11-13 | `1085cff` | [原文](#DOC-18) |
+| DOC-19 | SYSTEM-DESIGN 部署句改指 core `docker-compose.yml` | 2026-11-13 | `b7b8348` | [原文](#DOC-19) |
+| DOC-20 | 把 archived 的 ARCHITECTURE 移出活跃导航 | 2026-11-13 | `ad440f6` | [原文](#DOC-20) |
+| DOC-21 | 版本 pin 与 ADR 状态的「单一真相」收敛 | 2026-11-13 | `5395205` | [原文](#DOC-21) |
+| DOC-22 | 归档层可信索引重建 + status 语义修正 | 2026-11-13 | `848b08c` | [原文](#DOC-22) |
+| DOC-23 | ADR-027 标 Superseded + 变更日志单调化 | 2026-11-13 | `777eca2` | [原文](#DOC-23) |
+| DOC-24 | ROADMAP S2 改为「部分达成」 | 2026-11-13 | `04182ff` | [原文](#DOC-24) |
+| DOC-25 | PRODUCT 能力状态显式化（产业链 / EquityDeep / S2） | 2026-11-13 | `73ab7fa` | [原文](#DOC-25) |
+| DOC-26 | PRODUCT 对 analytics 的定位对齐 ADR-0005（参考实现） | 2026-11-13 | `a4aa43b` | [原文](#DOC-26) |
+| DOC-27 | 测量口径的数据积累与回填策略落档（先证伪） | 2026-11-13 | `ea1e6e1` | [原文](#DOC-27) |
+| DOC-28 | `REPO-MAP.md` 六处漂移订正（中心视图对齐 go.mod/路由） | 2026-11-13 | `95a644d` | [原文](#DOC-28) |
+| DOC-29 | `TEST.md` 改为历史快照或读数链接 | 2026-11-13 | `13a031b` | [原文](#DOC-29) |
 
 ---
 
@@ -254,3 +267,168 @@ PRODUCT.md 的导航行现在指 [`ARCHITECTURE.md`](ARCHITECTURE.md)（已被 D
 >   ARCHITECTURE 的历史更新清单保留原句（不改写历史），但紧邻下一行是「已退役（ADR-037 D2/D3）」注记，L2 副作用句已改为不写 `public.factor_cache`；
 >   `python tools/check_doc_links.py` 活跃层 246 条链接 0 断、EXIT=0（历史层 174 断仅统计不判红）；纯文档改动，不涉代码门禁。
 
+---
+
+## 2026-11-13 五角审查批次（DOC-17~DOC-29）
+
+### 立单原文（2026-11-13，随施工记录一并归档）
+
+> 来源：`docs/reviews/2026-11-13/`（`index.md` + 五个角度）。本轮按审查推进顺序分档落单，**只写台账，不改既有文档**；沿用六字段与既有状态图例。每条标题下的「档 / 来源 / 顺序 / 依赖」行为施工顺序与跨仓指向。完成后按惯例移入归档。
+
+#### 档 1 · 文档架构与卫生
+
+### DOC-17 · 入口页五项失效目标一次性校准 [P1] ✅ 2026-11-13
+
+> 档 1（文档架构与卫生）· 来源：05-doc-hygiene H1 · 顺序 1-1 · 依赖：无
+
+- **① 目标**：把 `docs/README.md` 主入口上 5 处指向"不存在 / 已变化"对象的表述改为实测现状。
+- **② 上下文**：审查实测证据——`README.md:101` 指 `archive/2026-Q2/*`（实际为 `archive/reports-2026-Q2/` 与 `archive/research-2026-Q2/`）；`:86` 写"文档链接 CI 当前缺失，见 TASKS.md P0"（台账已无 P0）；`:50` 写服务卡"12 仓未落地"（12 份 `SERVICE.md` 全部存在）；`:45` 写 ADR"31 条；编号至 ADR-036"（实际 41 条、至 ADR-041，见 `ADR.md:195`）；`:97` 写归档 ODR"001–064"（实际 73 份，至 ODR-073），且 superseded 列表漏 ADR-022。
+- **③ 要求**：逐项改为实测值：① 归档路径改两个真实子目录；② CI 句改为"链接检查已进 CI（`.github/workflows/docs-ci.yml`）"并删 P0 指引；③ 服务卡改"12 仓已落地"；④ ADR 改"41 条、至 ADR-041"；⑤ ODR 改"001–073"，superseded 补 ADR-022。
+- **④ 约束与非目标**：只改入口页事实；不重排导航结构；不动归档正文与 ADR 正文。
+- **⑤ 验收**：5 处逐一核对为真值；`grep -n "31 条\|001–064\|archive/2026-Q2" docs/README.md` 0 命中；文档链接检查 CI 绿。
+- **⑥ 边界**：`tellurion-docs` 的 `docs/README.md`。
+- **施工记录（2026-11-13）**：`81f5382`：README 五处改为实测值（归档路径 / CI / 服务卡 / ADR 41 条 / ODR 001–073 + ADR-022）；`tools/check_doc_counts.py` 同批上线。
+
+### DOC-18 · 入口页关键计数改为脚本校验 + 落实 R5 文档可验证 CI [P2] ✅ 2026-11-13
+
+> 档 1（文档架构与卫生）· 来源：05-doc-hygiene H1 建议 1 + 评分表「R5 自述缺失」 · 顺序 1-2 · 依赖：DOC-17（先校准，避免校验固化错值）
+
+- **① 目标**：ADR 条数 / ODR 范围 / 服务卡覆盖 / 归档目录清单由脚本校验（或生成），并把 R5 写回治理规则。
+- **② 上下文**：H1 的根因是手写数字无校验；仓库已有 `scripts/check_doc_links.py` 的 CI 接入模式可扩展；R5"文档可验证 CI"在评分表中被记为自述缺失且台账无开放项。
+- **③ 要求**：① 扩展/新增文档校验脚本：比对 `ADR.md` 条数与 `adr-0*.md` 文件数、`archive/odr/` 范围、12 仓 `SERVICE.md` 存在性、`README.md` 计数段落；② 接入 docs CI；③ `README.md` 治理节把"R5 缺失"改为"由脚本校验（命令/CI 位置）"。
+- **④ 约束与非目标**：不引入新依赖；不改其他仓 CI；只读其他仓文件做存在性校验；本轮不追求自动改写。
+- **⑤ 验收**：人为改错一处计数 → CI 红；逐字节还原 → 绿（破坏验证）；台账/README 不再出现"R5 缺失"。
+- **⑥ 边界**：`tellurion-docs` 的 `scripts/`、`.github/workflows/docs-ci.yml`、`docs/README.md`。
+- **施工记录（2026-11-13）**：`1085cff`：新增 `tools/check_doc_counts.py`（ADR/ODR/服务卡/计数/pin 四条腿）并接入 `.github/workflows/ci.yml`；破坏验证：改错 ADR 计数 → 红，还原 → 绿；README 治理节改写 R5。
+
+### DOC-19 · SYSTEM-DESIGN 部署句改指 core `docker-compose.yml` [P1] ✅ 2026-11-13
+
+> 档 1（文档架构与卫生）· 来源：05-doc-hygiene H2 · 顺序 1-3 · 依赖：无
+
+- **① 目标**：删除常青文档对已删除部署资产的引用。
+- **② 上下文**：`SYSTEM-DESIGN.md:133` 写"本地联调走 `docker-compose.services.yml`"；core 实测只剩 `docker-compose.yml`，core `ARCHITECTURE.md` frontmatter 记录 2026-11-11 已删 `.services.yml`/`.e2e.yml`/`.nt.yaml` 三份。
+- **③ 要求**：§5 部署句改为 `tellurion:docker-compose.yml` + profile；全文扫 `.services.yml`/`.e2e.yml`/`.nt.yaml` 残留，改指或删除。
+- **④ 约束与非目标**：只改部署事实，不动架构描述；不复制 compose 内容；不替 core 改仓。
+- **⑤ 验收**：活跃文档 `grep -rn "docker-compose.services"` 仅归档层命中；SYSTEM-DESIGN 无死引用；链接检查 CI 绿。
+- **⑥ 边界**：`tellurion-docs` 的 `docs/SYSTEM-DESIGN.md`。
+- **施工记录（2026-11-13）**：`b7b8348`：SYSTEM-DESIGN §7 部署句改 `docker-compose.yml` + `--profile`；guides/local-dev、deploy-config、TEST.md 同批标注三份细分 compose 已于 2026-11-11 删除。
+
+### DOC-20 · 把 archived 的 ARCHITECTURE 移出活跃导航 [P1] ✅ 2026-11-13
+
+> 档 1（文档架构与卫生）· 来源：05-doc-hygiene H3 · 顺序 1-4 · 依赖：无
+
+- **① 目标**：终止"归档文档仍被当作推荐读物"的 R2 自违反。
+- **② 上下文**：`docs/ARCHITECTURE.md` frontmatter 为 `status: archived`，却出现在 `README.md:37` 主表与 `:56` 推荐顺序；该文件自述"端口/表数已失效"，体积 65.9KB。
+- **③ 要求**：① 从 README 主表与推荐顺序移除；② 在归档层（或其归档位置）保留一条"历史架构参考"入口；③ 若该文件仍留在 `docs/` 根，按 R2 评估移入 `archive/` 或降级为脚注。
+- **④ 约束与非目标**：不删除文件、不改其正文；不再放回导航。
+- **⑤ 验收**：README 导航与推荐顺序 0 处指向 ARCHITECTURE；R2 自检通过；链接检查绿。
+- **⑥ 边界**：`tellurion-docs` 的 `docs/README.md`（及可能的文件位置调整）。
+- **施工记录（2026-11-13）**：`ad440f6`：ARCHITECTURE 移出 README 主表与推荐顺序；`git mv` 至 `archive/ARCHITECTURE-pre-split.md`，仅改顶部指针。
+
+### DOC-21 · 版本 pin 与 ADR 状态的「单一真相」收敛 [P2] ✅ 2026-11-13
+
+> 档 1（文档架构与卫生）· 来源：05-doc-hygiene H4 · 顺序 1-5 · 依赖：无（数字对错由 DOC-28 承接）
+
+- **① 目标**：消除"同一事实两处写、两处错"。
+- **② 上下文**：`REPO-MAP.md:46` 自称 pin 规则"唯一处"；但 `SYSTEM-DESIGN.md:124/134` 仍复制 contracts/kit 版本数字；`ADR.md:4` 的 verified-by 自认"索引表与尾注两处是两套真相来源"。
+- **③ 要求**：① `SYSTEM-DESIGN` §2 的 pin 数字改为指针（只留 `REPO-MAP` 链接，不写版本号）；② `ADR.md` 尾注改为"索引表为唯一状态源"，不再重复维护状态；③ 在 DOC-18 的校验脚本中加 `go.mod` pin ↔ `REPO-MAP` 比对（只读其他仓）。
+- **④ 约束与非目标**：不删 ADR 正文与历史记录；不取得其他仓写权；本条只做机制，具体数字订正归 DOC-28。
+- **⑤ 验收**：`SYSTEM-DESIGN` 不再出现具体 pin 版本号；人为改错 pin → 校验脚本可检出（破坏验证）。
+- **⑥ 边界**：`tellurion-docs` 的 `SYSTEM-DESIGN.md`、`ADR.md`、校验脚本。
+- **施工记录（2026-11-13）**：`5395205`：REPO-MAP §版本 pin 改机器可读表（pins 标记）+ go.mod 比对腿；SYSTEM-DESIGN §2 去版本号只留指针；ADR.md 明确「索引表 = 唯一状态源」并删重复状态清单。
+
+### DOC-22 · 归档层可信索引重建 + status 语义修正 [P2] ✅ 2026-11-13
+
+> 档 1（文档架构与卫生）· 来源：05-doc-hygiene H5 · 顺序 1-6 · 依赖：无（可与 DOC-18 共用脚本）
+
+- **① 目标**：`archive/README.md` 覆盖全部 6 个子目录 + 11 个顶层文件；归档文件 frontmatter 统一 `status: archived`。
+- **② 上下文**：`archive/README.md:41` 目录树停在 2026-04-11、只列两个子目录，漏 `odr/`、`superseded-adr/`、`plans-2026-Q3/`、`reports-2026-Q3/`、`tasks-archive-2026-11.md`、`TASKS-history.md`、`VISION-full.md` 等；`:29` 指向已不存在的 `docs/odr/`；顶层 11 份 .md 中 `TASKS-2026-10-08-archived.md:2` 与 `REORG-PLAN.md:2` 仍是 `status: active`。
+- **③ 要求**：① 重写 `archive/README.md` 为"子目录 + 顶层文件 + 日期 + 一句话"清单（优先由 DOC-18 脚本生成）；② `docs/odr/` 死指针改为 `archive/odr/`；③ 两份 `status: active` 改 `archived`；④ 在归档 README 写明"索引维护是归档层唯一例外"。
+- **④ 约束与非目标**：不改归档正文内容；只动索引与 frontmatter status。
+- **⑤ 验收**：脚本比对归档实测清单缺口为 0；活跃文档无 `docs/odr/` 指针；`^status:` 扫描归档顶层 0 个 `active`。
+- **⑥ 边界**：`tellurion-docs` 的 `docs/archive/`。
+- **施工记录（2026-11-13）**：`848b08c`：`archive/README.md` 重建为 17 条清单（11 顶层文件 + 6 子目录）+ `tools/check_archive_index.py` 双向覆盖；`REORG-PLAN.md` / `TASKS-2026-10-08-archived.md` 的 `status: active` → `archived`。
+
+### DOC-23 · ADR-027 标 Superseded + 变更日志单调化 [P3] ✅ 2026-11-13
+
+> 档 1（文档架构与卫生）· 来源：05-doc-hygiene H6 · 顺序 1-7 · 依赖：无
+
+- **① 目标**：消除"两条服务拓扑结论并存"；决策台账时间线可顺序阅读。
+- **② 上下文**：`ADR.md:46-L49` 中 ADR-027/028/029 自 2026-10-06 维持 `Proposed`、ADR-030 维持 `Draft`；ADR-027 主题"模块化拆解为独立服务（5→7）"已被 2026-10-26 的 ADR-036（12 仓拓扑，`ADR.md:190` 明写修订 027 §2.1）取代，却未标 `Superseded`；`:191` 的 `_Last updated_ 2026-10-14_` 夹在 10-26 与 11-11 条目之间，`:197` 又是 10-13，日志非单调。
+- **③ 要求**：① ADR-027 索引状态改 `Superseded by ADR-036`，并在 adr-027 文件头加一行注记（不改正文）；② 变更日志按日期单调整理；③ `_Last updated_` 更新为本次。
+- **④ 约束与非目标**：ADR-028/029/030 的状态不在本条擅自改判，只记录现状；不动 ADR-036。
+- **⑤ 验收**：ADR 索引中 027 状态与链接正确；变更日志日期单调；链接检查绿。
+- **⑥ 边界**：`tellurion-docs` 的 `docs/ADR.md` + `docs/adr/adr-027*.md` 头部注记。
+- **施工记录（2026-11-13）**：`777eca2`：ADR-027 索引状态改 `Superseded by ADR-036`，文件头加注记（未搬迁，因 40+ 入链）；变更日志按日期降序单调（40 块，脚本校验 monotonic=True）。
+
+### DOC-24 · ROADMAP S2 改为「部分达成」 [P3] ✅ 2026-11-13
+
+> 档 1（文档架构与卫生）· 来源：05-doc-hygiene H7 · 顺序 1-8 · 依赖：与 DOC-25 口径一致
+
+- **① 目标**：阶段台账反映"产业链底座已实现、`hypothesis_source` 未实现"的真实状态。
+- **② 上下文**：`ROADMAP.md:40` 把 S2 标"⬜ 待开始"，出口判据第一条"产业链数据底座可用"；但 core 已装配 `/api/industry/*`（SW 行业树 / 供应链边 / 行业活力 / ETF 成分）与 `/api/macro/series`，core `openapi.yaml` tag 描述写明 `Industry (P2-2)`、`Macro (P2-1)`。
+- **③ 要求**：S2 状态改"🔶 部分达成：产业链底座 ✅ / `hypothesis_source` ⬜"，并在出口判据逐条标注已满足项。
+- **④ 约束与非目标**：不改 S2 目标本身；不因部分达成提前进入 S3。
+- **⑤ 验收**：S2 状态与出口判据自洽；与 `PRODUCT.md` 的能力状态表述一致（见 DOC-25）。
+- **⑥ 边界**：`tellurion-docs` 的 `docs/ROADMAP.md`。
+
+#### 档 2 · 产品设计
+- **施工记录（2026-11-13）**：`04182ff`：ROADMAP S2 改「🔶 部分达成（底座 ✅ / hypothesis_source ⬜）」，附 core openapi Industry P2-2 / Macro P2-1 证据。
+
+### DOC-25 · PRODUCT 能力状态显式化（产业链 / EquityDeep / S2）[P2] ⬜
+
+> 档 2（产品设计）· 来源：01-product-design P1-1/P2-1/P2-2 · 顺序 2-7 · 依赖：与 UI-INDUSTRY-ENTRY 裁决、DOC-24 保持一致
+
+- **① 目标**：把 `PRODUCT.md` 的现在时承诺与"已实现 / 仅 API / 未实现"对齐，避免读者把设计设想读成现状。
+- **② 上下文**：`PRODUCT.md:71` 把"产业链查询"列为 L2，但 UI 无入口（性质 = 能力已具备未暴露）；`:166-168` 把 adoption / calibration / experiments/count 写成"可测"当前能力，但 core `openapi.yaml` 未收录（性质 = 契约索引缺口）；S2 的 `hypothesis_source` 12 仓零命中（性质 = 确实缺功能）。
+- **③ 要求**：三处加状态标——① 产业链："后端可用；UI 入口见 UI-INDUSTRY-ENTRY 裁决"（若裁 B 则写"仅 API"）；② 测量端点："已实现；core 契约索引补齐中（见档 5 `CORE-OPENAPI-MEASUREMENT-INDEX`）"；③ 因果来源："S2 未开始，依赖 S1 出口"。
+- **④ 约束与非目标**：不新增需求；不把 S2 写成已开始；不动八条原则与优先级序。
+- **⑤ 验收**：三处均能区分"已实现 / 仅 API / 未实现"；与 ROADMAP S2、UI 裁决单口径一致。
+- **⑥ 边界**：`tellurion-docs` 的 `docs/PRODUCT.md`。
+
+### DOC-26 · PRODUCT 对 analytics 的定位对齐 ADR-0005（参考实现）[P3] ⬜
+
+> 档 2（产品设计）· 来源：01-product-design P2-4 · 顺序 2-8 · 依赖：无
+
+- **① 目标**：消除"扩展舱"叙事与"core 调用方为 0"的落差。
+- **② 上下文**：`PRODUCT.md:58/61` 把 analytics 列为扩展舱；`REPO-MAP.md:23` 与 ADR-0005 已裁决 core 调用方为 0、analytics 是独立只读参考实现。性质 = 透明接受的产品冗余，不是隐瞒，但叙事应降级。
+- **③ 要求**：PRODUCT 中 analytics 改为"参考实现（非主流程依赖）"，并写"进入主流程"的重开条件（出现真实消费者 + 数据一致性验收 + 新 ADR）；不删仓、不新增对接需求。
+- **④ 约束与非目标**：不动 VISION 八条原则；不把"参考实现"写成"将被替换"。
+- **⑤ 验收**：PRODUCT / REPO-MAP / ADR-0005 三处口径一致；无"将接入主流程"式现在时承诺。
+- **⑥ 边界**：`tellurion-docs` 的 `docs/PRODUCT.md`（必要时 `SERVICE-INDEX.md` 一行指针）。
+
+### DOC-27 · 测量口径的数据积累与回填策略落档（先证伪）[P3] ⬜
+
+> 档 2（产品设计）· 来源：01-product-design P3-1（"缺少回填策略"为**推断**）· 顺序 2-9 · 依赖：无
+
+- **① 目标**：让 GT-1~GT-6 的"可测"有数据来源、积累窗口与回填能力说明。
+- **② 上下文**：`PRODUCT.md:164-169` 自评"采纳记录需人工、校准需半年数据、证据覆盖率部分（JSON Pointer 未实现）"；审查在 TASKS/ADR 未检索到回填策略，但明确标注为推断。施工第一步必须先证伪前提——查 data 同步/备份脚本、CI artifact、报表脚本、run 结果保留策略（`CORE-RESULT-RETENTION` 已定 90/365 天）。
+- **③ 要求**：① 核实现有积累与回填机制并记录证据；② 若有缺口，在 PRODUCT 测量节写清"数据从哪来 / 多久可评 / 能否回填 / 责任仓"；③ 若确认无缺口，本条标 ✅ 作废并附证据。
+- **④ 约束与非目标**：不新造指标；不写无法兑现的"可回填"承诺；不改 `CORE-RESULT-RETENTION` 已定保留期。
+- **⑤ 验收**：每个 GT 指标都能回答上述三问；或本条带证据作废。
+- **⑥ 边界**：`tellurion-docs` 的 `docs/PRODUCT.md` + 必要时 data/analytics 文档指针。
+
+#### 档 5 · 文档与代码一致性
+
+### DOC-28 · `REPO-MAP.md` 六处漂移订正（中心视图对齐 go.mod/路由）[P1] ⬜
+
+> 档 5（文档与代码一致性）· 来源：04-doc-consistency P1-1 · 顺序 5-1 · 依赖：DOC-21 的机械门可后置，本条先修数
+
+- **① 目标**：让"仓矩阵唯一现行视图"与当前 `go.mod` / 路由一致，消除 agent 按旧图找错的情况。
+- **② 上下文**：实测漂移——`:17` kit 最新/pin 仍写 `v0.3.0`、`:18` agent 写 `v0.2.0`（实际 7 仓均 `v0.5.0`）；`:20` data 仍列已撤的 `/factors/{name}@{hash}`、schema 写 23（实际 25）；`:21` strategy 写"写 7 + 读 2"（实际 8 + 5 = 13）；`:22` risk 写"零 import contracts"（实际直接依赖 `contracts v0.10.0`，ADR-040 迁移后）；`:24` orchestration 写"任务 4 + 批量 4 + 算力 2 + provenance"（仓内 `api-schema.md` 为 16 条）；`:48` 重复旧数字同腐。
+- **③ 要求**：逐行改为实测值；在表头写"本表以各仓 `go.mod` / `docs/api-schema.md` 为准，最后核对日期"；`:48` 与 `:17` 单一化，不保留两份数字。
+- **④ 约束与非目标**：不复制服务仓细节表；不在本条改其他文档的数字；不删"不放过期数字"的自定规则。
+- **⑤ 验收**：6 处逐条与 `go.mod` / 路由文档对上；表头有核对日期；改错一行能被 DOC-21 的校验脚本检出（若已落地）。
+- **⑥ 边界**：`tellurion-docs` 的 `docs/REPO-MAP.md`。
+
+### DOC-29 · `TEST.md` 改为历史快照或读数链接 [P1] ✅ 2026-11-13
+
+> 档 5（文档与代码一致性）· 来源：04-doc-consistency P1-2 · 顺序 5-2 · 依赖：无
+
+- **① 目标**：消除 `TEST.md` 正文现在时陈述与实际测试状态相反的三处。
+- **② 上下文**：`:438` 写"CI 不设覆盖率阈值"（实际 core 有 `-total-min=52`）；`:478` 前端"18 个文件 / 208 条"（当日实测 52 / 643）；`:567/:585` e2e"18 spec / 163 例、127 passed / 34 failed"（实际 31 spec、211 passed / 7 failed）；frontmatter 虽标"正文未改，实质基线 2026-09-22"，但正文会被外部读者当现状。
+- **③ 要求**：建议 **B 更新读数并注明日期与日志链接**（§6/§7 的计数改为"截至某日 + `reports/...` 或 CI 链接"）；其余章节保留 2026-09-22 历史快照并加顶部横幅"历史快照，勿引用数字"。也可选 **A 全篇历史快照**。
+- **④ 约束与非目标**：不虚构读数；不把未复跑的测试写成通过；不改 `TEST.md` 之外的文件。
+- **⑤ 验收**：全文无"现在时 + 过期数字"混用；每个计数都有日期与来源；`grep "18 个文件\|208 条\|127 passed"` 不再作为现状出现。
+- **⑥ 边界**：`tellurion-docs` 的 `docs/TEST.md`。
+- **施工记录（2026-11-13）**：`13a031b`：TEST.md §6 覆盖率门 `-total-min=52`、§7.1 52 文件/643 条、§7.2 31 spec/218 例，文首加快照声明；README 导航行同步。
