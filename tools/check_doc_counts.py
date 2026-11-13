@@ -13,10 +13,12 @@ ODR 001–073、12 仓服务卡已落地」一改台账就会腐烂（2026-11-13
   3. `docs/archive/odr/odr-*.md` 的编号区间 == README 写的「ODR NNN–NNN」；
   4. README 的「NNN 条」「已归档」清单与实测一致（清单 = superseded-adr/ 文件名编号）；
   5. README 的「N 仓已全部落地」== `check_repo_docs.REPOS` 长度（12）；给了
-     `--workspace` 时再逐仓断言 `SERVICE.md` 真的存在。
+     `--workspace` 时再逐仓断言 `SERVICE.md` 真的存在；
+  6. `docs/REPO-MAP.md` §版本 pin 表（`<!-- pins:begin -->` 块）== 12 仓
+     `go.mod` 实测 pin（只读其他仓，给了 `--workspace` 才执行）。
 
 CI 边界与 `check_guide_refs.py` 同款：CI 只 checkout 本仓，所以第 5 条的磁盘腿
-只在 `--workspace` 下执行；仓数腿（12）始终执行 —— 把「12」改成别的数字仍会红。
+与第 6 条只在 `--workspace` 下执行；仓数腿（12）与 pin 表结构腿始终执行。
 
 用法：
     python tools/check_doc_counts.py                       # CI 同款
@@ -40,6 +42,7 @@ from check_repo_docs import REPOS  # noqa: E402
 DOCS = os.path.join(REPO_ROOT, 'docs')
 ADR_MD = os.path.join(DOCS, 'ADR.md')
 README_MD = os.path.join(DOCS, 'README.md')
+REPO_MAP_MD = os.path.join(DOCS, 'REPO-MAP.md')
 ADR_DIR = os.path.join(DOCS, 'adr')
 SUPERSEDED_DIR = os.path.join(DOCS, 'archive', 'superseded-adr')
 ODR_DIR = os.path.join(DOCS, 'archive', 'odr')
@@ -56,6 +59,14 @@ README_SERVICE = re.compile(r'(\d+) 仓已全部落地')
 FILE_NO = re.compile(r'^adr-(\d{3})-')
 ODR_NO = re.compile(r'^odr-(\d{3})-', re.I)
 
+# `<!-- pins:begin -->` ... `<!-- pins:end -->` 之间的 12 行 pin 表
+PIN_BLOCK = re.compile(r'<!-- pins:begin -->\s*(.*?)\s*<!-- pins:end -->', re.S)
+PIN_ROW = re.compile(r'^\|\s*`(tellurion[a-z-]*)`[^|]*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|', re.M)
+PIN_REQUIRE = {
+    'contracts': re.compile(r'github\.com/ruoxizhnya/tellurion-contracts\s+(v\S+)'),
+    'kit': re.compile(r'github\.com/ruoxizhnya/tellurion-kit\s+(v\S+)'),
+}
+
 
 def ids_of(pattern, directory):
     ids = []
@@ -69,6 +80,55 @@ def ids_of(pattern, directory):
 def read_text(path):
     with open(path, encoding='utf-8', errors='replace') as f:
         return f.read()
+
+
+def check_pins(workspace, errors, notes):
+    """REPO-MAP §版本 pin 表：结构腿常跑，go.mod 比对腿要 --workspace。"""
+    text = read_text(REPO_MAP_MD)
+    block = PIN_BLOCK.search(text)
+    if not block:
+        errors.append('docs/REPO-MAP.md 未找到 <!-- pins:begin --> ... <!-- pins:end --> 块')
+        return
+    rows = PIN_ROW.findall(block.group(1))
+    if not rows:
+        errors.append('docs/REPO-MAP.md pin 块内未解析到 `| \\`tellurion-…\\` | contracts | kit |` 行')
+        return
+
+    listed = [r[0] for r in rows]
+    if sorted(listed) != sorted(REPOS):
+        errors.append('pin 表仓清单与 check_repo_docs.REPOS 不一致：表 %s / 清单 %s'
+                      % (sorted(listed), sorted(REPOS)))
+
+    for repo, contracts_cell, kit_cell in rows:
+        cells = (('contracts', contracts_cell.strip().strip('`')),
+                 ('kit', kit_cell.strip().strip('`')))
+        for lib, cell in cells:
+            if cell not in ('—', '未引入') and not re.fullmatch(r'v\d+\.\d+\.\d+', cell):
+                errors.append('pin 表 %s/%s 单元格「%s」既非 vX.Y.Z 也非 未引入/—'
+                              % (repo, lib, cell))
+        if workspace is None:
+            continue
+        if all(cell == '—' for _, cell in cells):
+            continue
+        gomod = os.path.join(workspace, repo, 'go.mod')
+        if not os.path.isfile(gomod):
+            errors.append('pin 表声明了 %s 的依赖，但 %s 不存在' % (repo, gomod))
+            continue
+        gotext = read_text(gomod)
+        for lib, cell in cells:
+            if cell == '—':
+                continue
+            m = PIN_REQUIRE[lib].search(gotext)
+            actual = m.group(1) if m else None
+            if cell == '未引入':
+                if actual:
+                    errors.append('%s/%s：pin 表写「未引入」，go.mod 实测 %s'
+                                  % (repo, lib, actual))
+            elif actual is None:
+                errors.append('%s/%s：pin 表写 %s，go.mod 未 require' % (repo, lib, cell))
+            elif actual != cell:
+                errors.append('%s/%s：pin 表写 %s，go.mod 实测 %s'
+                              % (repo, lib, cell, actual))
 
 
 def check(workspace):
@@ -131,13 +191,20 @@ def check(workspace):
                       % (m.group(1), len(REPOS)))
 
     if workspace is None:
-        notes.append('未给 --workspace：跳过 12 份 SERVICE.md 存在性（CI 只 checkout 本仓）')
+        notes.append('未给 --workspace：跳过 12 份 SERVICE.md 与 REPO-MAP pin ↔ go.mod 比对'
+                     '（CI 只 checkout 本仓）')
     else:
         for repo in REPOS:
             path = os.path.join(workspace, repo, 'SERVICE.md')
             if not os.path.isfile(path):
                 errors.append('缺服务卡：%s' % path)
         notes.append('12 仓 SERVICE.md 存在性已核对：%s' % workspace)
+
+    check_pins(workspace, errors, notes)
+    if workspace is not None:
+        notes.append('REPO-MAP pin 表已与 12 仓 go.mod 比对')
+    else:
+        notes.append('REPO-MAP pin 表结构已校验（go.mod 比对腿跳过）')
 
     return errors, notes
 
@@ -152,7 +219,7 @@ def main(argv=None):
     workspace = os.path.abspath(args.workspace) if args.workspace else None
     errors, notes = check(workspace)
 
-    print('入口页计数校验：ADR 索引 / ADR 文件 / ODR 范围 / 12 仓服务卡')
+    print('入口页计数校验：ADR 索引 / ADR 文件 / ODR 范围 / 12 仓服务卡 / 版本 pin')
     for n in notes:
         print('  · %s' % n)
     if errors:

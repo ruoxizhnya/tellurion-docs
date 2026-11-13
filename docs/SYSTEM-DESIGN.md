@@ -1,7 +1,7 @@
 ---
 status: evergreen
 last-verified: 2026-11-13
-verified-by: DOC-19（2026-11-13）：§7 部署路径句删除已不存在的 services 覆盖层 compose 文件（2026-11-11 回收），改指 core 唯一 `docker-compose.yml` + `--profile`（full / nt / orchestration-worker / tools，实测 core 仓 compose 服务与 profile）。此前：DOC-P3-MATRIX-TABLE-GRAIN（2026-11-12）：核验 §5 `run` 行未含 `run.backtest_results` 例外（原文按 schema 粒度把 `run.*` 全归 orchestration），按 core 审计矩阵 `:41` 与 `pkg/storage/backtest_results.go` 的事实补注「表粒度例外：结果面 `run.backtest_results` 归 core，编排只经 API 读」；`public` 行与因子派生表归属未动。此前：2026-11-11 DDD 边界审查同步（§4 批量/分析的目标态改为「core 指标权威 + analytics 只读参考，不迁移」，依据 ADR-039；§5 新增 `public` 行，钉因子治理与派生表 owner=core，依据 ADR-037/038；§2 contracts 最新版本改为 `v0.10.0`）；代码-文档对齐审计（2026-11-11）：订正 §3 依赖边（`contracts` 与 `kit` 实测互不 require）、§4「今天」四条链路、§5「今天实际」六行、§7 阶梯与过渡态；删去「生产写入仍由 core `cmd/data` 主写」「core 侧零调用方（strategy/risk）」「core `backtest_jobs` 双 owner」「core 仍留 `experiments`/`factor_hypothesis`」四处过期陈述。依据 = 各仓 `AGENTS.md` / `docs/TASKS.md` + core `internal/repoguard/*_retired_test.go` + 12 仓 `go.mod`。此前：DOC-10 + DOC-11 + DOC-12（2026-10-26）按第四轮目的对齐审计与 ADR-036 订正 §3 依赖边、§5「今天实际」、§7 阶梯/过渡态。
+verified-by: DOC-21（2026-11-13）：§2 版本 pin 数字全部改为指向 `REPO-MAP.md` §「版本 pin」（该节由脚本比对 12 仓 `go.mod`，本页不重复维护版本号）。DOC-19（2026-11-13）：§7 部署路径句删除已不存在的 services 覆盖层 compose 文件（2026-11-11 回收），改指 core 唯一 `docker-compose.yml` + `--profile`（full / nt / orchestration-worker / tools，实测 core 仓 compose 服务与 profile）。此前：DOC-P3-MATRIX-TABLE-GRAIN（2026-11-12）：核验 §5 `run` 行未含 `run.backtest_results` 例外（原文按 schema 粒度把 `run.*` 全归 orchestration），按 core 审计矩阵 `:41` 与 `pkg/storage/backtest_results.go` 的事实补注「表粒度例外：结果面 `run.backtest_results` 归 core，编排只经 API 读」；`public` 行与因子派生表归属未动。此前：2026-11-11 DDD 边界审查同步（§4 批量/分析的目标态改为「core 指标权威 + analytics 只读参考，不迁移」，依据 ADR-039；§5 新增 `public` 行，钉因子治理与派生表 owner=core，依据 ADR-037/038；§2 contracts 版本口径当时同步，2026-11-13 起统一指向 REPO-MAP）；代码-文档对齐审计（2026-11-11）：订正 §3 依赖边（`contracts` 与 `kit` 实测互不 require）、§4「今天」四条链路、§5「今天实际」六行、§7 阶梯与过渡态；删去「生产写入仍由 core `cmd/data` 主写」「core 侧零调用方（strategy/risk）」「core `backtest_jobs` 双 owner」「core 仍留 `experiments`/`factor_hypothesis`」四处过期陈述。依据 = 各仓 `AGENTS.md` / `docs/TASKS.md` + core `internal/repoguard/*_retired_test.go` + 12 仓 `go.mod`。此前：DOC-10 + DOC-11 + DOC-12（2026-10-26）按第四轮目的对齐审计与 ADR-036 订正 §3 依赖边、§5「今天实际」、§7 阶梯/过渡态。
 ---
 
 # 总体设计（SYSTEM DESIGN）
@@ -121,7 +121,7 @@ verified-by: DOC-19（2026-11-13）：§7 部署路径句删除已不存在的 s
 | **S-1** | 12 仓改名 + 建仓 + 推送 | ✅ 完成（QT-60，2026-10-20） |
 | **W0** | 契约形状冻结（abi v2 / 四契约 / 错误三分 / 重放） | ✅ 完成（2026-10-25；QT-01~04） |
 | **S1** | 契约与工具**直接落两个新仓**，core / agent 用 `require` 伪版本（**无 replace**） | ✅ 完成（ADR-D31 形态；contracts / kit 代码已落） |
-| **S2** | 两仓打 `v0.1.0`，下游换 tag；两仓自治补齐 | ✅ 完成（结案时 contracts `v0.6.0` / kit `v0.1.3`；截至 2026-11-11 最新 contracts `v0.10.0`、kit `v0.3.0`，下游按 tag pin）。**pin 升级的推进顺序与前置只写在 [`REPO-MAP.md`](REPO-MAP.md) §「版本 pin 的推进顺序与前置」，此处不重复** |
+| **S2** | 两仓打首个 tag，下游换 tag；两仓自治补齐 | ✅ 完成（细节见 ADR-D31 形态）。**pin 的现状、推进顺序与前置只写在 [`REPO-MAP.md`](REPO-MAP.md) §「版本 pin」，此处不写版本号、不重复维护** |
 | **S3** | agent 删 `replace ../tellurion`，只依赖 tag + HTTP | ✅ 完成（2026-10-25；agent 零 import core） |
 | **X1~X6** | 六个能力服务按 ADR-036 服务化 | ✅ 收口（2026-11-11）：六仓 G0–G4 全绿 —— data G3 2026-11-10、strategy G3/G4 2026-11-10、risk G1/G3/G4 2026-11-10、orchestration G1/G3 2026-11-09、broker G1/G2/G4 已落；analytics 的 `SVC-AN-G3` 由 ADR-0005 关闭、`K7` 挂起，broker `X6c` ⏸。逐仓证据见 [`SERVICE-INDEX.md`](SERVICE-INDEX.md) 与各仓台账归档 |
 
@@ -131,7 +131,7 @@ verified-by: DOC-19（2026-11-13）：§7 部署路径句删除已不存在的 s
 - **ADR-036（2026-10-26）已把六仓定性为服务**：G0/G1/G2 并行补部署、接口与数据；G3 切读/停写按依赖串行；risk 保留「控制面服务 + core 进程内裁决」；broker 先落 Mock 服务，真实 XTP 仍受 X6c 阻塞。
 - **DDL 双 owner 已收窄到一处**：`market.index_daily`（core `pkg/storage/postgres.go` Migration 057）。`run` / `strategy` / `ai` 三簇的 core 侧表已退役（Migration 065 / SVC-STRAT-G3 / SVC-CORE-AI-RETIRE）。
 - **部署路径**：core 的 `Dockerfile.service` 已于 2026-10-26 删除 `cmd/strategy` 的 build/COPY 行；六个服务仓按 ADR-036 各自持有 `Dockerfile + deploy/compose.yaml`，本地联调走 core 仓唯一的 `docker-compose.yml`，按需加 `--profile`（`full` / `nt` / `orchestration-worker` / `tools`）。**部署真相 = compose**；K8s 清单若与仓内 Dockerfile/镜像名不一致即视为 experimental。
-- **服务间凭证**：kit 最新 `v0.3.0`；core 已升 `v0.3.0`，agent/data/strategy/risk/analytics/orchestration 为 `v0.2.0`，broker 未引入。`v0.1.4` 起 `role=service` 的非数字 subject 不再 401，服务间调用可用。
+- **服务间凭证**：各仓对 kit 的当前 pin 见 [`REPO-MAP.md`](REPO-MAP.md) §「版本 pin」；自 kit 支持 `role=service` 起，非数字 subject 不再 401，服务间调用可用。
 
 > 上文过渡态由 2026-11-11 代码-文档对齐审计复核（依据各仓 `AGENTS.md` / `docs/TASKS.md`、core `internal/repoguard/*_retired_test.go`、12 仓 `go.mod`）；更早的取证见 [核心仓第四轮目的对齐审计](https://github.com/ruoxizhnya/tellurion/blob/main/docs/design/qt-decoupling/purpose-alignment-audit-2026-10-26.md)。本文不复制其正文。
 
