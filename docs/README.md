@@ -43,7 +43,7 @@ verified-by: 2026-11-13 DOC-17 入口页校准——ADR 条数 41/至 ADR-041、
 | **P0 修复基线（实施前必读）** | `tellurion:docs/design/qt-decoupling/p0-remediation-design.md`（第一轮 20 项）+ `p0-round2-review.md`（第二轮：闭环核对 + N1~N9） | **现行基线**——两份合起来才完整；依赖顺序以 round2 §4 为准（wave-0 契约冻结在最前） |
 | 查 API / 数据模型 / 契约 | [SPEC.md](https://github.com/ruoxizhnya/tellurion/blob/main/docs/SPEC.md) | 现行（Reference 类，可长） |
 | 查某个架构决策的来龙去脉 | [ADR.md](ADR.md) → [adr/](adr/) | 现行（41 条；编号至 ADR-041，009/010/012/021/022 已归档） |
-| 了解测试策略 | [TEST.md](TEST.md) | 现行 |
+| 了解测试策略 | [TEST.md](TEST.md) | **现行**（§1–§5 为 2026-09-22 快照；§6/§7 读数 2026-11-13 复核，见文首「读数快照声明」） |
 | 看阶段规划 | [ROADMAP.md](ROADMAP.md) | 现行 |
 | 本地起步（环境 / 命令 / 已知坑） | [guides/local-dev.md](guides/local-dev.md) | 现行 |
 | NT 侧车运维（版本升级 / 故障回退） | [guides/nt-sidecar-operations.md](guides/nt-sidecar-operations.md) | 现行 |
