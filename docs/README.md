@@ -83,7 +83,7 @@ PRODUCT ≤3 页 / VISION ≤2 页 / ARCHITECTURE ≤5 页 / ROADMAP ≤2 页 / 
 
 **R5 · 文档必须可被验证**
 CI 扫描常青文档里引用的文件路径、API 路径、表名、配置项，验证其真实存在。
-**这是文档不腐烂的唯一可靠机制。**（已进 CI：Markdown 相对链接由 `tools/check_doc_links.py` 校验，`guides/` 跨仓仓名由 `tools/check_guide_refs.py` 校验，入口见 `.github/workflows/ci.yml`；关键计数与路径存在性的机械校验见 TASKS.md DOC-18）
+**这是文档不腐烂的唯一可靠机制。**（已进 CI，入口 `.github/workflows/ci.yml`：Markdown 相对链接 `python tools/check_doc_links.py`；`guides/` 跨仓仓名 `python tools/check_guide_refs.py`；本页计数与 ADR/ODR 台账对齐 `python tools/check_doc_counts.py`。本地连 12 仓服务卡一起核对：`python tools/check_doc_counts.py --workspace <12 仓父目录>`）
 
 ---
 

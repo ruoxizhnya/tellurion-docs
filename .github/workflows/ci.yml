@@ -9,6 +9,10 @@ name: docs
 # `check_doc_links.py` 只认 Markdown 链接，看不见这种写法 ——
 # 于是仓名拼错（`telliurion:...`）在 CI 里完全没有执法者。
 # 只跑**仓名腿**：路径存在性要看见 12 个仓目录，而本 workflow 只 checkout 自己。
+#
+# DOC-18 追加一条：README 入口页的手写计数（ADR 条数 / ODR 范围 / 12 仓服务卡）
+# 与 ADR.md 索引、archive/odr/、archive/superseded-adr/ 实测对齐。
+# 同样只跑本仓腿；12 份 SERVICE.md 的存在性要 --workspace，本地跑。
 
 on:
   push:
@@ -25,6 +29,8 @@ jobs:
           python-version: '3.x'
       - name: Check markdown links
         run: python tools/check_doc_links.py
+      - name: Check README counts vs ADR/ODR ledgers
+        run: python tools/check_doc_counts.py
       - name: Check guides cross-repo refs (repo names only)
         run: python tools/check_guide_refs.py
       - name: Self-test the guides checker
