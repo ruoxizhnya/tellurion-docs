@@ -1,7 +1,7 @@
 ---
 status: evergreen
-last-verified: 2026-11-12
-verified-by: DOC-PRODUCT-DRIFT-FIX（2026-11-12）：QT-32 状态对齐 core 台账（2026-11-10 收口）、删除「仅 data 接线」过期断言并改指 SYSTEM-DESIGN §4/§5、实盘说明死链改指 broker ADR-0003。此前：DOC-FRONTMATTER-HYGIENE（2026-11-12）：frontmatter 校时。此前：DOC-11（2026-10-26）：修正「当前阶段」与阶段表的自相矛盾（S0 已完成、S1 进行中），补工程解耦线与产品线的分工；产品阶段判据未改。此前：产品重构讨论（2026-09-16）
+last-verified: 2026-11-13
+verified-by: DOC-24（2026-11-13）：S2 由「⬜ 待开始」改为「🔶 部分达成」——实测 core `docs/openapi.yaml` 已收录 Industry (P2-2) 四个端点与 Macro (P2-1)，`hypothesis_source` 在 12 仓零命中；出口判据逐条标注。此前：DOC-PRODUCT-DRIFT-FIX（2026-11-12）：QT-32 状态对齐 core 台账（2026-11-10 收口）、删除「仅 data 接线」过期断言并改指 SYSTEM-DESIGN §4/§5、实盘说明死链改指 broker ADR-0003。此前：DOC-FRONTMATTER-HYGIENE（2026-11-12）：frontmatter 校时。此前：DOC-11（2026-10-26）：修正「当前阶段」与阶段表的自相矛盾（S0 已完成、S1 进行中），补工程解耦线与产品线的分工；产品阶段判据未改。此前：产品重构讨论（2026-09-16）
 supersedes: archive/ROADMAP-history.md（Phase 1-4 / Sprint 1-8）
 ---
 
@@ -37,7 +37,7 @@ S0 的出口判据（回测数字可信）已达成，所以当前不是 S0。S1
 |---|---|---|---|---|
 | **S0** | 止血 | 让现有回测数字可信 | P0-1~P0-6 全部通过；CI 红绿可见；新测试能被 git 跟踪 | ✅ 完成（2026-09-17） |
 | **S1** | 通回路 | AI 能跑完一次完整实验循环 | 一条意图 → 配置 → 注册 → 回测 → 出结果，端到端可复现 | ⏳ 进行中 |
-| **S2** | 加解释 | 让因子带因果来源 | 产业链数据底座可用；每个因子有 `hypothesis_source` | ⬜ 待开始 |
+| **S2** | 加解释 | 让因子带因果来源 | 产业链数据底座可用 ✅；每个因子有 `hypothesis_source` ⬜ | 🔶 部分达成（底座 ✅ / `hypothesis_source` ⬜） |
 | **S3** | 加宽度 | 拓宽策略空间 | 宏观/跨境数据源接入；新增策略与已有策略相关性 < 0.5 | ⬜ 待开始 |
 | **S4** | 加监控 | 让失效能被发现 | 策略健康度周报可用；regime + drift 接入主流程 | ⬜ 待开始 |
 
@@ -68,11 +68,17 @@ S0 的出口判据（回测数字可信）已达成，所以当前不是 S0。S1
 
 ---
 
-## S2 · 加解释
+## S2 · 加解释 🔶（部分达成，2026-11-13 复核）
 
 schema 收口（migrations 可执行 + 版本管理）· 产业链数据底座最小版 `query_supply_chain()` · 因子增加 `hypothesis_source` 字段 · 红队验证器链落地。
 
+**现状（2026-11-13 实测）**：
+- 产业链数据底座 ✅ —— core `docs/openapi.yaml` 已收录 `Industry (P2-2)`（`/api/industry/tree` · `/edges` · `/vitality` · `/etf/{etf_code}/constituents`）与 `Macro (P2-1)`（`/api/macro/series`），路由实现在 `cmd/analysis`；
+- `hypothesis_source` ⬜ —— 12 仓 `*.go` / `*.py` / `*.sql` 零命中，字段与写入链均未开始；
+- 红队验证器链 ⬜ —— 未见落地证据。
+
 **出口**：至少 1 个"从产业链假设出发"的因子完成完整验证并带因果来源。
+**出口判据达成情况**：产业链底座可用 ✅ / 因子带 `hypothesis_source` ⬜（整体未达成，不进入 S3）。
 
 ---
 
