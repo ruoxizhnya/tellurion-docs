@@ -15,14 +15,16 @@ verified-by: DOC-FRONTMATTER-HYGIENE（2026-11-12）：补 frontmatter；正文�
 
 ## 1. 构建 / 检查
 
-本仓无代码，可执行物是四个巡检脚本：
+本仓无代码，可执行物是五个巡检脚本：
 
 ```bash
 python tools/check_doc_links.py          # 活跃层 0 断链才通过（退出码 0/1，CI 同款）
 python tools/check_doc_links.py --all    # 连历史层明细一起看
 
 python tools/check_doc_counts.py         # 入口页计数 vs ADR/ODR 台账（CI 同款）
-python tools/check_doc_counts.py --workspace ..  # 连 12 份 SERVICE.md 存在性（工作区级，不进 CI）
+python tools/check_doc_counts.py --workspace ..  # 连 12 份 SERVICE.md 与 pin↔go.mod（工作区级，不进 CI）
+
+python tools/check_archive_index.py      # 归档层清单覆盖 + status 语义（CI 同款）
 
 python tools/check_guide_refs.py         # docs/guides 的 `repo:path` 引用：只查仓名（CI 同款）
 python tools/check_guide_refs.py --workspace ..   # 连路径存在性（工作区级，不进 CI）

@@ -31,6 +31,8 @@ jobs:
         run: python tools/check_doc_links.py
       - name: Check README counts vs ADR/ODR ledgers
         run: python tools/check_doc_counts.py
+      - name: Check archive index coverage
+        run: python tools/check_archive_index.py
       - name: Check guides cross-repo refs (repo names only)
         run: python tools/check_guide_refs.py
       - name: Self-test the guides checker

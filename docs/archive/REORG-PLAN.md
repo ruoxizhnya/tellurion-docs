@@ -1,5 +1,5 @@
 ---
-status: active
+status: archived
 type: plan
 created: 2026-09-16
 last-verified: 2026-09-16
