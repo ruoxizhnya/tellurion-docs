@@ -1,7 +1,7 @@
 ---
 status: evergreen
 last-verified: 2026-11-13
-verified-by: DOC-26（2026-11-13）：按 analytics 本仓 ADR-0005 把 `tellurion-analytics` 从「扩展舱（可独立部署能力单元）」移出，单列「参考实现」角色（core 调用方 0 = 设计），删除正文「有意为之」的旧表述。DOC-25（2026-11-13）：按实测补三处能力状态标——产业链查询（core openapi Industry P2-2 / Macro P2-1 已有，UI `web/src` 零命中 ⇒ 后端可用、仅 API）、`hypothesis_source`（12 仓零命中 ⇒ 未实现，对齐 ROADMAP S2 部分达成）、测量端点（agent `handlers_pipeline.go` 已实现，契约权威在 agent `api-schema.md`，core openapi 已非真相源）。此前：DOC-PRODUCT-DRIFT-FIX（2026-11-12）：按 SYSTEM-DESIGN §4/§5 基准订正「系统构成」接线现状段（data 取数 + strategy resolve + risk resolve + broker HTTP + orchestration 队列，analytics 有意为 0），删除「其余四条无调用方」类过期断言。此前：DOC-FRONTMATTER-HYGIENE（2026-11-12）：frontmatter 校时。此前：DOC-06 成文（2026-10-25 口径三问拍定：扩展舱按"可选项"叙事 / 工程纪律不升入 VISION / 系统构能用功能粒度）——哲学层未动，只补「系统构成」一节并把架构指针从 ARCHITECTURE.md 换到 SYSTEM-DESIGN.md
+verified-by: DOC-27（2026-11-13）：成功指标节补「数据从哪来 / 多久可评 / 能否回填 / 责任仓」表——先证伪：读取 agent `handlers_pipeline.go` 与 `api-schema.md`、core `cmd/analysis/main.go` 保留期（90/365 天）、data `internal/sync` 与 `ingest.raw`、三仓 CI artifact（仅 UI e2e 7 天）；结合 ODR-072「宿主 PG 无备份」结论，明确四个指标均「可测但不可回填」。DOC-26（2026-11-13）：按 analytics 本仓 ADR-0005 把 `tellurion-analytics` 从「扩展舱（可独立部署能力单元）」移出，单列「参考实现」角色（core 调用方 0 = 设计），删除正文「有意为之」的旧表述。DOC-25（2026-11-13）：按实测补三处能力状态标——产业链查询（core openapi Industry P2-2 / Macro P2-1 已有，UI `web/src` 零命中 ⇒ 后端可用、仅 API）、`hypothesis_source`（12 仓零命中 ⇒ 未实现，对齐 ROADMAP S2 部分达成）、测量端点（agent `handlers_pipeline.go` 已实现，契约权威在 agent `api-schema.md`，core openapi 已非真相源）。此前：DOC-PRODUCT-DRIFT-FIX（2026-11-12）：按 SYSTEM-DESIGN §4/§5 基准订正「系统构成」接线现状段（data 取数 + strategy resolve + risk resolve + broker HTTP + orchestration 队列，analytics 有意为 0），删除「其余四条无调用方」类过期断言。此前：DOC-FRONTMATTER-HYGIENE（2026-11-12）：frontmatter 校时。此前：DOC-06 成文（2026-10-25 口径三问拍定：扩展舱按"可选项"叙事 / 工程纪律不升入 VISION / 系统构能用功能粒度）——哲学层未动，只补「系统构成」一节并把架构指针从 ARCHITECTURE.md 换到 SYSTEM-DESIGN.md
 supersedes: 2026-09-15 版（"双对等工作面 + 飞轮闭环"）
 ---
 
@@ -176,3 +176,18 @@ EquityDeep 提供数据与洞察（产业链图谱 + 研究洞察库），**不�
 > 📌 2026-11-12 订正：实验日志计数、采纳台账与校准计算已在 agent 仓落地（`ai.experiments` / `ai.adoption_ledger`），前三项**不再需要新建测量管道**。当前缺口只剩数据积累与人工采纳记录；证据覆盖率仍是部分实现。
 >
 > 📌 2026-11-13 状态标（DOC-25）：三个测量端点**均已实现**——`/api/pipeline/{adoption,calibration,experiments/count}` 在 `tellurion-agent:cmd/ai/handlers_pipeline.go`，契约权威为 `tellurion-agent:docs/api-schema.md` §1.2（2026-11-11 裁决：`/api/pipeline/*` 定义在 agent，core 只做纯反代，core `docs/openapi.yaml` 不再是这组路径的真相源）。「可测」指**端点可读**，不是指样本量已够：校准误差仍需半年数据积累。
+
+### 数据从哪来 / 多久可评 / 能否回填（2026-11-13 核证）
+
+> 结论先说：**四个指标都"能测"，但都不"可回填"**。回填能力受两条硬约束：① 采纳与实验日志是**人工/AI 运行时产生**，无外部源可重放；② 宿主 PG **没有备份**（ODR-072 于 2026-11-11 登记为 High：不可重建实验资产单副本）。因此本节只写真能兑现的口径，不承诺"事后补齐"。
+
+| 指标 | 数据来源（责任仓） | 积累窗口 | 能否回填 | 依据 / 缺口 |
+|---|---|---|---|---|
+| 月度可用策略数 | `ai.adoption_ledger`（agent），人工经 `POST /api/pipeline/adoption` 写入 | ≥1 个自然月 | **否**：采纳是人的判断，无法事后重建；漏记只能补录并标注补录日期 | 端点与表已落地；无自动采集 |
+| 校准误差 | `ai.adoption_ledger` × 采纳项实际表现（core `run.backtest_results`） | ≥6 个月连续记录（自首条采纳记录起算） | **部分**：满 6 个月的结论可算；core 结果面保留期为明细 90 天 / 汇总与 provenance 365 天，超期原始结果不可回填 | `CORE-RESULT-RETENTION`（core `cmd/analysis/main.go`，默认启用） |
+| 验证吞吐量 | `ai.experiments`（agent） | ≥1 个自然月 | **否**：日志随实验运行产生，没有可重放的外部事实源 | 表与计数端点已落地 |
+| 证据覆盖率 | `ingest.raw`（data）+ JSON Pointer（**未实现**） | 即时（按记录计） | **否**：JSON Pointer 未落，覆盖率当前无法机械计算，更谈不上回填 | 已知部分实现，见上表 |
+
+- **数据库备份**：无（ODR-072 High，2026-11-11 实测「宿主 PG 无备份」）⇒ 上述数据均为单副本，库损即不可恢复。修备份属运维/跨仓任务，不在本页承诺范围内；本页只如实标注。
+- **CI artifact 不是测量源**：UI e2e 报告保留 7 天（`tellurion-ui:.github/workflows/ci.yml`），core 覆盖率产物同理，均不承载产品指标。
+- **报表脚本**：目前没有独立的指标报表脚本；`/api/pipeline/*` 三个只读端点就是全部读数面。
