@@ -1,8 +1,8 @@
 ---
 status: evergreen
 type: how-to
-last-verified: 2026-11-11
-verified-by: 2026-11-11 代码-文档对齐审计订正：① core `docker-compose.yml` 的 `data-service` 已改为 `context: ../tellurion-data`（不再是 core 镜像），应用服务为 data/analysis/ai/worker/dualrun；② `cmd/data/Dockerfile` 已随目录删除，`Makefile` 的 `build-data` 是死目标（core 待修）；③ `config/data-service.yaml` 已无 Go 读取点（core 审计 G-02）；④ k8s 的 `data-deployment.yaml` 仍写 `tellurion/data:latest`，该镜像已无构建目标。此前 2026-10-26 复测订正 ①：六仓已有各自 `deploy/compose.yaml`（此前记「六仓本身无 `deploy/`」已失效）；② `Dockerfile.service` 的 `go build ./cmd/strategy` 行与 `strategy-service` COPY 行已删除；③ core `deploy/k8s/` 的 risk / analytics 两份清单**已删**（裁决 #5），k8s 现 8 份；④ agent 已自持 `config/ai-service.yaml` + `deploy/wait-for-deps.sh`；core `docker-compose.yml` 也已同步。此前：DOC-08 改 12 仓口径，逐项回实仓取证 —— ① 部署资产逐文件定归属（core
+last-verified: 2026-11-13
+verified-by: 2026-11-13 DOC-19 订正：NT 侧车容器形态由已删除的 `docker-compose.nt.yaml` 改为 core `docker-compose.yml` 的 `nt-sidecar`（`--profile nt`）。此前 2026-11-11 代码-文档对齐审计订正：① core `docker-compose.yml` 的 `data-service` 已改为 `context: ../tellurion-data`（不再是 core 镜像），应用服务为 data/analysis/ai/worker/dualrun；② `cmd/data/Dockerfile` 已随目录删除，`Makefile` 的 `build-data` 是死目标（core 待修）；③ `config/data-service.yaml` 已无 Go 读取点（core 审计 G-02）；④ k8s 的 `data-deployment.yaml` 仍写 `tellurion/data:latest`，该镜像已无构建目标。此前 2026-10-26 复测订正 ①：六仓已有各自 `deploy/compose.yaml`（此前记「六仓本身无 `deploy/`」已失效）；② `Dockerfile.service` 的 `go build ./cmd/strategy` 行与 `strategy-service` COPY 行已删除；③ core `deploy/k8s/` 的 risk / analytics 两份清单**已删**（裁决 #5），k8s 现 8 份；④ agent 已自持 `config/ai-service.yaml` + `deploy/wait-for-deps.sh`；core `docker-compose.yml` 也已同步。此前：DOC-08 改 12 仓口径，逐项回实仓取证 —— ① 部署资产逐文件定归属（core
   `docker-compose*.yml` / `Dockerfile.service` / `cmd/*/Dockerfile` / `config/*.yaml` /
   `deploy/k8s/*` / `deploy/wait-for-deps.sh`；ui `Dockerfile` + `deploy/nginx-spa.conf`；
   agent `Dockerfile` 曾依赖命名上下文 `core`）；② `deploy/k8s/` 无 ai-service 清单
@@ -33,7 +33,7 @@ verified-by: 2026-11-11 代码-文档对齐审计订正：① core `docker-compo
 | 资产 | 在哪个仓 | 说明 |
 |---|---|---|
 | `docker-compose.yml` | `tellurion` | core compose 的应用服务：`data-service`（**`context: ../tellurion-data`**）、`analysis-service`、`ai-service`、`worker`、`dualrun`（+ postgres/redis）。原 e2e 覆盖层已并入本文件（限流额度改由 `RATE_LIMIT_PER_MINUTE` env 覆盖，库名由 `DATABASE_NAME` 覆盖） |
-| `docker-compose.nt.yaml` | `tellurion` | NT 侧车的容器形态；**Windows 下不可用**（`network_mode: host` 进的是 Linux VM 命名空间，见 [nt-sidecar-operations.md](nt-sidecar-operations.md) §3） |
+| `docker-compose.yml` 的 `nt-sidecar`（`--profile nt`） | `tellurion` | NT 侧车的容器形态；**Windows 下不可用**（`network_mode: host` 进的是 Linux VM 命名空间，见 [nt-sidecar-operations.md](nt-sidecar-operations.md) §3）。原独立的 `docker-compose.nt.yaml` 已于 2026-11-11 删除，并入 core compose 的 profile |
 | `Dockerfile.service` | `tellurion` | `analysis-service` / `worker` / `dualrun` 共用这一个（多阶段） |
 | `cmd/analysis/Dockerfile` | `tellurion` | 今天**只剩这一个** `cmd/*/Dockerfile`；`cmd/data/Dockerfile` 已随目录删除，`Makefile` 的 `build-data` 目标因此是死的（core 待修） |
 | `config/{analysis,data}-service.yaml` | `tellurion` | `analysis-service.yaml` 有真实读取点；`data-service.yaml` **已无 Go 读取点**（core 2026-11-11 审计 G-02 登记为死配置）。`ai-service.yaml` core 与 `tellurion-agent` 各一份（逐值一致） |

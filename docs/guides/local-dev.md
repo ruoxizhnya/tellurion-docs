@@ -1,8 +1,8 @@
 ---
 status: evergreen
 type: how-to
-last-verified: 2026-11-11
-verified-by: 2026-11-11 代码-文档对齐审计订正：① core 已 `require` contracts `v0.9.0` / kit `v0.3.0`（§1「core 不 require 两个库仓」、§2 的 `v0.6.0`/`v0.1.1` 已废）；② 生产 `:8081` 由 `tellurion-data:cmd/dataservice` 提供（core `cmd/data` 于 2026-11-08 删除，§5.1 的 `go run ./cmd/data` 已删）；③ §5.4 端口表补六服务 8087–8091；④ `make build` 今天会失败 —— core `Makefile` 仍保留 `build-data: cmd/data/Dockerfile`，该目录已删（core 侧待修项，本文只如实描述）。此前 2026-10-26 复测订正 ①：agent 已删 `replace tellurion => ../tellurion`（S3，QT-07 ⑥）；② core 已 `require` contracts `v0.6.0` / kit `v0.1.1`（走 tag，无 `replace`）；③ `Dockerfile.service` 的 `go build ./cmd/strategy` 行已删除（现只 build `./cmd/data` / `./cmd/analysis`）；④ agent 的本地/CI 构建不再需要 core 同级或 `go mod edit -replace`。此前 DOC-08 改 12 仓口径，逐项回实仓取证 —— ① checkout 集与同级约束（core `docker-compose.yml` 的 `context: ../tellurion-agent`）；
+last-verified: 2026-11-13
+verified-by: 2026-11-13 DOC-19：§5.6 标注 `docker-compose.e2e.yml` 已于 2026-11-11 删除、覆盖层并入基础 compose。此前 2026-11-11 代码-文档对齐审计订正：① core 已 `require` contracts `v0.9.0` / kit `v0.3.0`（§1「core 不 require 两个库仓」、§2 的 `v0.6.0`/`v0.1.1` 已废）；② 生产 `:8081` 由 `tellurion-data:cmd/dataservice` 提供（core `cmd/data` 于 2026-11-08 删除，§5.1 的 `go run ./cmd/data` 已删）；③ §5.4 端口表补六服务 8087–8091；④ `make build` 今天会失败 —— core `Makefile` 仍保留 `build-data: cmd/data/Dockerfile`，该目录已删（core 侧待修项，本文只如实描述）。此前 2026-10-26 复测订正 ①：agent 已删 `replace tellurion => ../tellurion`（S3，QT-07 ⑥）；② core 已 `require` contracts `v0.6.0` / kit `v0.1.1`（走 tag，无 `replace`）；③ `Dockerfile.service` 的 `go build ./cmd/strategy` 行已删除（现只 build `./cmd/data` / `./cmd/analysis`）；④ agent 的本地/CI 构建不再需要 core 同级或 `go mod edit -replace`。此前 DOC-08 改 12 仓口径，逐项回实仓取证 —— ① checkout 集与同级约束（core `docker-compose.yml` 的 `context: ../tellurion-agent`）；
   ② `go.work` 在 12 仓 `.gitignore` 里各有一条（本机 `Get-ChildItem -Recurse -Filter go.work` 实测 0 个）；
   ③ 当时 core **不 require** 两个库仓；④ 各仓测试文件数实测（core 438 / agent 89 / contracts 23 / kit 29 /
   ui 38 vitest + 23 e2e spec）；⑤ 当时实测到一处真阻断：`Dockerfile.service` 在
@@ -270,8 +270,8 @@ Playwright 与 `tellurion-ui:e2e/tests/rbac-open-access.spec.ts` **都不带 tok
 e2e 只能打一个 open-access 的栈；开了鉴权的形态只成立 `e2e/tests/auth-login-flow.spec.ts`。
 
 限流也要放宽（整套 e2e 从 `127.0.0.1` **一个 IP** 出量，API 密集段必然撞 100/min）：
-用**命令行 env 覆盖**，**不要**改默认值 —— 原先的 `docker-compose.e2e.yml`
-覆盖层已并入基础 compose，只剩这一个旋钮：
+用**命令行 env 覆盖**，**不要**改默认值 —— 原先的 e2e 覆盖层
+（`docker-compose.e2e.yml`，2026-11-11 已删除）已并入基础 compose，只剩这一个旋钮：
 
 ```bash
 cd tellurion
