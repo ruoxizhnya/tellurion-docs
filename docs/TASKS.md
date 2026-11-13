@@ -1,7 +1,7 @@
 ---
 status: active
 last-verified: 2026-11-13
-verified-by: 2026-11-13 五角审查立单（只立单不施工）——按 `docs/reviews/2026-11-13/` 分档新立 DOC-17~DOC-24（档 1 · 文档架构与卫生）与 DOC-25~DOC-27（档 2 · 产品设计），只写台账不改既有文档；DOC-14 维持 ⏸。此前：2026-11-12 挂起任务处置批次（主任指令）——`CORE-MATRIX-FACTOR-OWNER-FIX` ✅ 完成（docs 侧）：核清 core 矩阵 `:43` 在 core HEAD `9858dd6` 仍写 `owner = tellurion-data`（该文件最后触及 `6f2cc24` 只改 fundamentals，未被任何提交修掉）；按 ADR-037 D3 修订 + §8 订正本仓 `SYSTEM-DESIGN.md` §5 `public` 行与 `ARCHITECTURE.md` 两处因子缓存/写入口径（`factor_cache` 退役遗留表、禁止新增写者、门禁不读、按需求值已落地）；core 侧残留行属 core 仓写权，本仓不代改。此前： 2026-11-12 挂起任务处置批次（主任指令）——`DOC-14` 复核维持 ⏸：上游最新 v2.0.0rc9（实测 ls-remote），仍无正式版；本地 clone 过期（2026-10-08）。此前： 2026-11-12 W7 文档维护批次：4 条全部结案（`DOC-FRONTMATTER-HYGIENE` / `DOC-ADR-REQUESTID-CORRECTION` / `DOC-PRODUCT-DRIFT-FIX` / `DOC-P3-MATRIX-TABLE-GRAIN`）——活跃层 frontmatter 校准、ARCHITECTURE 转 archived、ADR-001/024 索引标注、adr-017/027/029 追加更正注记、PRODUCT/ROADMAP 对齐 SYSTEM-DESIGN §4/§5 并清死链、REPO-MAP 与 SYSTEM-DESIGN §5 显式标 `run.backtest_results` 表粒度例外；本批施工中新立 1 条跨仓待派指针 `CORE-MATRIX-FACTOR-OWNER-FIX`。此前：2026-11-11 全面审查 W7 台账立单（A5 授权）——新立 4 条知识库维护单（`DOC-PRODUCT-DRIFT-FIX` P1 / `DOC-P3-MATRIX-TABLE-GRAIN` P2 / `DOC-ADR-REQUESTID-CORRECTION` P2 / `DOC-FRONTMATTER-HYGIENE` P3），证据坐标引 ODR-068/069/072（本仓 `docs/archive/odr/`）；本轮只立单不修复。**立单复核三处订正**：① W1-F3 的 REPO-MAP 漂移已被主任 `ad80a3d` 修复 ⇒ DOC-PRODUCT-DRIFT-FIX 收窄到 PRODUCT/ROADMAP；② W2-F11 的 DATA-FUNDAMENTALS-READ-PUBLIC 已被主任归属裁决（data `a454726` 删读面 + core `c85abff`）取代 ⇒ 该 data 单标 ✅ 作废；③ W2-F10 矩阵残留收窄到 REPO-MAP `run.*` 粒度 + core 矩阵 `:43` 行（SYSTEM-DESIGN §5 已对齐）。此前：DOC-10 + DOC-11 + DOC-12 结案（2026-10-26：按第四轮审计订正现状 + ADR-036 服务化定位落档）。此前：DOC-06 结案（2026-10-25）：口径三问全部拍定（均取 §四 建议 A），PRODUCT 新增「系统构成」一节、VISION 只加指针不动八条原则与优先级序，docs/README 两行导航换成「现行」；同日新立 DOC-10（`SYSTEM-DESIGN.md` §7 的"六服务只有占位 doc.go"与实仓冲突）
+verified-by: 2026-11-13 五角审查立单（只立单不施工）——按 `docs/reviews/2026-11-13/` 分档新立 DOC-17~DOC-24（档 1 · 文档架构与卫生）、DOC-25~DOC-27（档 2 · 产品设计）与 DOC-28~DOC-29（档 5 · 文档与代码一致性），只写台账不改既有文档；DOC-14 维持 ⏸。此前：2026-11-12 挂起任务处置批次（主任指令）——`CORE-MATRIX-FACTOR-OWNER-FIX` ✅ 完成（docs 侧）：核清 core 矩阵 `:43` 在 core HEAD `9858dd6` 仍写 `owner = tellurion-data`（该文件最后触及 `6f2cc24` 只改 fundamentals，未被任何提交修掉）；按 ADR-037 D3 修订 + §8 订正本仓 `SYSTEM-DESIGN.md` §5 `public` 行与 `ARCHITECTURE.md` 两处因子缓存/写入口径（`factor_cache` 退役遗留表、禁止新增写者、门禁不读、按需求值已落地）；core 侧残留行属 core 仓写权，本仓不代改。此前： 2026-11-12 挂起任务处置批次（主任指令）——`DOC-14` 复核维持 ⏸：上游最新 v2.0.0rc9（实测 ls-remote），仍无正式版；本地 clone 过期（2026-10-08）。此前： 2026-11-12 W7 文档维护批次：4 条全部结案（`DOC-FRONTMATTER-HYGIENE` / `DOC-ADR-REQUESTID-CORRECTION` / `DOC-PRODUCT-DRIFT-FIX` / `DOC-P3-MATRIX-TABLE-GRAIN`）——活跃层 frontmatter 校准、ARCHITECTURE 转 archived、ADR-001/024 索引标注、adr-017/027/029 追加更正注记、PRODUCT/ROADMAP 对齐 SYSTEM-DESIGN §4/§5 并清死链、REPO-MAP 与 SYSTEM-DESIGN §5 显式标 `run.backtest_results` 表粒度例外；本批施工中新立 1 条跨仓待派指针 `CORE-MATRIX-FACTOR-OWNER-FIX`。此前：2026-11-11 全面审查 W7 台账立单（A5 授权）——新立 4 条知识库维护单（`DOC-PRODUCT-DRIFT-FIX` P1 / `DOC-P3-MATRIX-TABLE-GRAIN` P2 / `DOC-ADR-REQUESTID-CORRECTION` P2 / `DOC-FRONTMATTER-HYGIENE` P3），证据坐标引 ODR-068/069/072（本仓 `docs/archive/odr/`）；本轮只立单不修复。**立单复核三处订正**：① W1-F3 的 REPO-MAP 漂移已被主任 `ad80a3d` 修复 ⇒ DOC-PRODUCT-DRIFT-FIX 收窄到 PRODUCT/ROADMAP；② W2-F11 的 DATA-FUNDAMENTALS-READ-PUBLIC 已被主任归属裁决（data `a454726` 删读面 + core `c85abff`）取代 ⇒ 该 data 单标 ✅ 作废；③ W2-F10 矩阵残留收窄到 REPO-MAP `run.*` 粒度 + core 矩阵 `:43` 行（SYSTEM-DESIGN §5 已对齐）。此前：DOC-10 + DOC-11 + DOC-12 结案（2026-10-26：按第四轮审计订正现状 + ADR-036 服务化定位落档）。此前：DOC-06 结案（2026-10-25）：口径三问全部拍定（均取 §四 建议 A），PRODUCT 新增「系统构成」一节、VISION 只加指针不动八条原则与优先级序，docs/README 两行导航换成「现行」；同日新立 DOC-10（`SYSTEM-DESIGN.md` §7 的"六服务只有占位 doc.go"与实仓冲突）
 ---
 
 # TASKS — tellurion-docs 未完成项
@@ -163,7 +163,31 @@ verified-by: 2026-11-13 五角审查立单（只立单不施工）——按 `doc
 - **⑤ 验收**：每个 GT 指标都能回答上述三问；或本条带证据作废。
 - **⑥ 边界**：`tellurion-docs` 的 `docs/PRODUCT.md` + 必要时 data/analytics 文档指针。
 
-> 除上文外，本仓无其它未做 / 挂起 / 外部依赖项（截至 2026-11-13：W7 立单 4 条已结案归档；2026-11-13 五角审查档 1 新立 DOC-17~DOC-24、档 2 新立 DOC-25~DOC-27；档 5 待后续批次追加）。跨仓施工任务不在本仓——见 §三指针。
+#### 档 5 · 文档与代码一致性
+
+### DOC-28 · `REPO-MAP.md` 六处漂移订正（中心视图对齐 go.mod/路由）[P1] ⬜
+
+> 档 5（文档与代码一致性）· 来源：04-doc-consistency P1-1 · 顺序 5-1 · 依赖：DOC-21 的机械门可后置，本条先修数
+
+- **① 目标**：让"仓矩阵唯一现行视图"与当前 `go.mod` / 路由一致，消除 agent 按旧图找错的情况。
+- **② 上下文**：实测漂移——`:17` kit 最新/pin 仍写 `v0.3.0`、`:18` agent 写 `v0.2.0`（实际 7 仓均 `v0.5.0`）；`:20` data 仍列已撤的 `/factors/{name}@{hash}`、schema 写 23（实际 25）；`:21` strategy 写"写 7 + 读 2"（实际 8 + 5 = 13）；`:22` risk 写"零 import contracts"（实际直接依赖 `contracts v0.10.0`，ADR-040 迁移后）；`:24` orchestration 写"任务 4 + 批量 4 + 算力 2 + provenance"（仓内 `api-schema.md` 为 16 条）；`:48` 重复旧数字同腐。
+- **③ 要求**：逐行改为实测值；在表头写"本表以各仓 `go.mod` / `docs/api-schema.md` 为准，最后核对日期"；`:48` 与 `:17` 单一化，不保留两份数字。
+- **④ 约束与非目标**：不复制服务仓细节表；不在本条改其他文档的数字；不删"不放过期数字"的自定规则。
+- **⑤ 验收**：6 处逐条与 `go.mod` / 路由文档对上；表头有核对日期；改错一行能被 DOC-21 的校验脚本检出（若已落地）。
+- **⑥ 边界**：`tellurion-docs` 的 `docs/REPO-MAP.md`。
+
+### DOC-29 · `TEST.md` 改为历史快照或读数链接 [P1] ⬜
+
+> 档 5（文档与代码一致性）· 来源：04-doc-consistency P1-2 · 顺序 5-2 · 依赖：无
+
+- **① 目标**：消除 `TEST.md` 正文现在时陈述与实际测试状态相反的三处。
+- **② 上下文**：`:438` 写"CI 不设覆盖率阈值"（实际 core 有 `-total-min=52`）；`:478` 前端"18 个文件 / 208 条"（当日实测 52 / 643）；`:567/:585` e2e"18 spec / 163 例、127 passed / 34 failed"（实际 31 spec、211 passed / 7 failed）；frontmatter 虽标"正文未改，实质基线 2026-09-22"，但正文会被外部读者当现状。
+- **③ 要求**：建议 **B 更新读数并注明日期与日志链接**（§6/§7 的计数改为"截至某日 + `reports/...` 或 CI 链接"）；其余章节保留 2026-09-22 历史快照并加顶部横幅"历史快照，勿引用数字"。也可选 **A 全篇历史快照**。
+- **④ 约束与非目标**：不虚构读数；不把未复跑的测试写成通过；不改 `TEST.md` 之外的文件。
+- **⑤ 验收**：全文无"现在时 + 过期数字"混用；每个计数都有日期与来源；`grep "18 个文件\|208 条\|127 passed"` 不再作为现状出现。
+- **⑥ 边界**：`tellurion-docs` 的 `docs/TEST.md`。
+
+> 除上文外，本仓无其它未做 / 挂起 / 外部依赖项（截至 2026-11-13：W7 立单 4 条已结案归档；2026-11-13 五角审查档 1 新立 DOC-17~DOC-24、档 2 新立 DOC-25~DOC-27、档 5 新立 DOC-28~DOC-29）。跨仓施工任务不在本仓——见 §三指针。
 
 ## 三、跨仓指针（不在本仓，勿双写）
 
