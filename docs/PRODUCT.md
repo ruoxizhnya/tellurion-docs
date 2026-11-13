@@ -1,7 +1,7 @@
 ---
 status: evergreen
-last-verified: 2026-11-12
-verified-by: DOC-PRODUCT-DRIFT-FIX（2026-11-12）：按 SYSTEM-DESIGN §4/§5 基准订正「系统构成」接线现状段（data 取数 + strategy resolve + risk resolve + broker HTTP + orchestration 队列，analytics 有意为 0），删除「其余四条无调用方」类过期断言。此前：DOC-FRONTMATTER-HYGIENE（2026-11-12）：frontmatter 校时。此前：DOC-06 成文（2026-10-25 口径三问拍定：扩展舱按"可选项"叙事 / 工程纪律不升入 VISION / 系统构能用功能粒度）——哲学层未动，只补「系统构成」一节并把架构指针从 ARCHITECTURE.md 换到 SYSTEM-DESIGN.md
+last-verified: 2026-11-13
+verified-by: DOC-25（2026-11-13）：按实测补三处能力状态标——产业链查询（core openapi Industry P2-2 / Macro P2-1 已有，UI `web/src` 零命中 ⇒ 后端可用、仅 API）、`hypothesis_source`（12 仓零命中 ⇒ 未实现，对齐 ROADMAP S2 部分达成）、测量端点（agent `handlers_pipeline.go` 已实现，契约权威在 agent `api-schema.md`，core openapi 已非真相源）。此前：DOC-PRODUCT-DRIFT-FIX（2026-11-12）：按 SYSTEM-DESIGN §4/§5 基准订正「系统构成」接线现状段（data 取数 + strategy resolve + risk resolve + broker HTTP + orchestration 队列，analytics 有意为 0），删除「其余四条无调用方」类过期断言。此前：DOC-FRONTMATTER-HYGIENE（2026-11-12）：frontmatter 校时。此前：DOC-06 成文（2026-10-25 口径三问拍定：扩展舱按"可选项"叙事 / 工程纪律不升入 VISION / 系统构能用功能粒度）——哲学层未动，只补「系统构成」一节并把架构指针从 ARCHITECTURE.md 换到 SYSTEM-DESIGN.md
 supersedes: 2026-09-15 版（"双对等工作面 + 飞轮闭环"）
 ---
 
@@ -68,13 +68,17 @@ supersedes: 2026-09-15 版（"双对等工作面 + 飞轮闭环"）
 
 ```
 L3  AI 编排层    AI 实验员（唯一编排者，会循环） · 因果审查（被调用，不循环）  ← 唯一需要人在环
-L2  能力层       [MCP 工具桥] → 因子计算 | 回测 | 产业链查询 | 证据查询 | 验证器链×5   ← 禁止 AI 直接摸数据
+L2  能力层       [MCP 工具桥] → 因子计算 | 回测 | 产业链查询（后端 ✅ / UI 入口 ⬜） | 证据查询 | 验证器链×5   ← 禁止 AI 直接摸数据
 L1  数据层       行情 | 财务 | 产业链图谱 | 研究洞察 | 实验日志
 ```
 
 - **AI 只能调能力层，能力层才能碰数据。编排者只有一个**（Hermes）——会自主循环、决定下一步的只有它。
 - **实验日志落在 L1**：由 AI 产生、经能力层写入，被验证器与审阅台共同读取——它是过拟合检测、路径回放、复盘的共同数据源，不是附属功能。
 EquityDeep 提供数据与洞察（产业链图谱 + 研究洞察库），**不做独立编排**。
+
+**能力状态（2026-11-13 实测）**：
+- **产业链查询：后端可用，UI 无入口** —— core `docs/openapi.yaml` 已收录 `Industry (P2-2)`（行业树 / 供应链边 / 行业活力 / ETF 成分）与 `Macro (P2-1)`（宏观序列）；UI `web/src` 零 `industry` 命中，`UI-INDUSTRY-ENTRY` 尚无裁决。性质 = **能力已具备、未暴露**，不是未实现。
+- **因果来源（`hypothesis_source`）：未实现** —— S2 中该项尚未开始（产业链底座已达成，见 [ROADMAP.md](ROADMAP.md) §S2）；12 仓代码零命中。性质 = **确实缺功能**，不随本页文案改善。
 
 ---
 
@@ -169,3 +173,5 @@ EquityDeep 提供数据与洞察（产业链图谱 + 研究洞察库），**不�
 | **证据覆盖率** | 100% 数字可回溯到唯一原始记录 | 回查脚本 | 部分（`ingest.raw` 已有，JSON Pointer 未实现） |
 
 > 📌 2026-11-12 订正：实验日志计数、采纳台账与校准计算已在 agent 仓落地（`ai.experiments` / `ai.adoption_ledger`），前三项**不再需要新建测量管道**。当前缺口只剩数据积累与人工采纳记录；证据覆盖率仍是部分实现。
+>
+> 📌 2026-11-13 状态标（DOC-25）：三个测量端点**均已实现**——`/api/pipeline/{adoption,calibration,experiments/count}` 在 `tellurion-agent:cmd/ai/handlers_pipeline.go`，契约权威为 `tellurion-agent:docs/api-schema.md` §1.2（2026-11-11 裁决：`/api/pipeline/*` 定义在 agent，core 只做纯反代，core `docs/openapi.yaml` 不再是这组路径的真相源）。「可测」指**端点可读**，不是指样本量已够：校准误差仍需半年数据积累。
