@@ -1,7 +1,7 @@
 ---
 status: active
 last-verified: 2026-11-13
-verified-by: 2026-11-13 五角审查立单（只立单不施工）——按 `docs/reviews/2026-11-13/` 分档新立 DOC-17~DOC-24（档 1 · 文档架构与卫生），只写台账不改既有文档；DOC-14 维持 ⏸。此前：2026-11-12 挂起任务处置批次（主任指令）——`CORE-MATRIX-FACTOR-OWNER-FIX` ✅ 完成（docs 侧）：核清 core 矩阵 `:43` 在 core HEAD `9858dd6` 仍写 `owner = tellurion-data`（该文件最后触及 `6f2cc24` 只改 fundamentals，未被任何提交修掉）；按 ADR-037 D3 修订 + §8 订正本仓 `SYSTEM-DESIGN.md` §5 `public` 行与 `ARCHITECTURE.md` 两处因子缓存/写入口径（`factor_cache` 退役遗留表、禁止新增写者、门禁不读、按需求值已落地）；core 侧残留行属 core 仓写权，本仓不代改。此前： 2026-11-12 挂起任务处置批次（主任指令）——`DOC-14` 复核维持 ⏸：上游最新 v2.0.0rc9（实测 ls-remote），仍无正式版；本地 clone 过期（2026-10-08）。此前： 2026-11-12 W7 文档维护批次：4 条全部结案（`DOC-FRONTMATTER-HYGIENE` / `DOC-ADR-REQUESTID-CORRECTION` / `DOC-PRODUCT-DRIFT-FIX` / `DOC-P3-MATRIX-TABLE-GRAIN`）——活跃层 frontmatter 校准、ARCHITECTURE 转 archived、ADR-001/024 索引标注、adr-017/027/029 追加更正注记、PRODUCT/ROADMAP 对齐 SYSTEM-DESIGN §4/§5 并清死链、REPO-MAP 与 SYSTEM-DESIGN §5 显式标 `run.backtest_results` 表粒度例外；本批施工中新立 1 条跨仓待派指针 `CORE-MATRIX-FACTOR-OWNER-FIX`。此前：2026-11-11 全面审查 W7 台账立单（A5 授权）——新立 4 条知识库维护单（`DOC-PRODUCT-DRIFT-FIX` P1 / `DOC-P3-MATRIX-TABLE-GRAIN` P2 / `DOC-ADR-REQUESTID-CORRECTION` P2 / `DOC-FRONTMATTER-HYGIENE` P3），证据坐标引 ODR-068/069/072（本仓 `docs/archive/odr/`）；本轮只立单不修复。**立单复核三处订正**：① W1-F3 的 REPO-MAP 漂移已被主任 `ad80a3d` 修复 ⇒ DOC-PRODUCT-DRIFT-FIX 收窄到 PRODUCT/ROADMAP；② W2-F11 的 DATA-FUNDAMENTALS-READ-PUBLIC 已被主任归属裁决（data `a454726` 删读面 + core `c85abff`）取代 ⇒ 该 data 单标 ✅ 作废；③ W2-F10 矩阵残留收窄到 REPO-MAP `run.*` 粒度 + core 矩阵 `:43` 行（SYSTEM-DESIGN §5 已对齐）。此前：DOC-10 + DOC-11 + DOC-12 结案（2026-10-26：按第四轮审计订正现状 + ADR-036 服务化定位落档）。此前：DOC-06 结案（2026-10-25）：口径三问全部拍定（均取 §四 建议 A），PRODUCT 新增「系统构成」一节、VISION 只加指针不动八条原则与优先级序，docs/README 两行导航换成「现行」；同日新立 DOC-10（`SYSTEM-DESIGN.md` §7 的"六服务只有占位 doc.go"与实仓冲突）
+verified-by: 2026-11-13 五角审查立单（只立单不施工）——按 `docs/reviews/2026-11-13/` 分档新立 DOC-17~DOC-24（档 1 · 文档架构与卫生）与 DOC-25~DOC-27（档 2 · 产品设计），只写台账不改既有文档；DOC-14 维持 ⏸。此前：2026-11-12 挂起任务处置批次（主任指令）——`CORE-MATRIX-FACTOR-OWNER-FIX` ✅ 完成（docs 侧）：核清 core 矩阵 `:43` 在 core HEAD `9858dd6` 仍写 `owner = tellurion-data`（该文件最后触及 `6f2cc24` 只改 fundamentals，未被任何提交修掉）；按 ADR-037 D3 修订 + §8 订正本仓 `SYSTEM-DESIGN.md` §5 `public` 行与 `ARCHITECTURE.md` 两处因子缓存/写入口径（`factor_cache` 退役遗留表、禁止新增写者、门禁不读、按需求值已落地）；core 侧残留行属 core 仓写权，本仓不代改。此前： 2026-11-12 挂起任务处置批次（主任指令）——`DOC-14` 复核维持 ⏸：上游最新 v2.0.0rc9（实测 ls-remote），仍无正式版；本地 clone 过期（2026-10-08）。此前： 2026-11-12 W7 文档维护批次：4 条全部结案（`DOC-FRONTMATTER-HYGIENE` / `DOC-ADR-REQUESTID-CORRECTION` / `DOC-PRODUCT-DRIFT-FIX` / `DOC-P3-MATRIX-TABLE-GRAIN`）——活跃层 frontmatter 校准、ARCHITECTURE 转 archived、ADR-001/024 索引标注、adr-017/027/029 追加更正注记、PRODUCT/ROADMAP 对齐 SYSTEM-DESIGN §4/§5 并清死链、REPO-MAP 与 SYSTEM-DESIGN §5 显式标 `run.backtest_results` 表粒度例外；本批施工中新立 1 条跨仓待派指针 `CORE-MATRIX-FACTOR-OWNER-FIX`。此前：2026-11-11 全面审查 W7 台账立单（A5 授权）——新立 4 条知识库维护单（`DOC-PRODUCT-DRIFT-FIX` P1 / `DOC-P3-MATRIX-TABLE-GRAIN` P2 / `DOC-ADR-REQUESTID-CORRECTION` P2 / `DOC-FRONTMATTER-HYGIENE` P3），证据坐标引 ODR-068/069/072（本仓 `docs/archive/odr/`）；本轮只立单不修复。**立单复核三处订正**：① W1-F3 的 REPO-MAP 漂移已被主任 `ad80a3d` 修复 ⇒ DOC-PRODUCT-DRIFT-FIX 收窄到 PRODUCT/ROADMAP；② W2-F11 的 DATA-FUNDAMENTALS-READ-PUBLIC 已被主任归属裁决（data `a454726` 删读面 + core `c85abff`）取代 ⇒ 该 data 单标 ✅ 作废；③ W2-F10 矩阵残留收窄到 REPO-MAP `run.*` 粒度 + core 矩阵 `:43` 行（SYSTEM-DESIGN §5 已对齐）。此前：DOC-10 + DOC-11 + DOC-12 结案（2026-10-26：按第四轮审计订正现状 + ADR-036 服务化定位落档）。此前：DOC-06 结案（2026-10-25）：口径三问全部拍定（均取 §四 建议 A），PRODUCT 新增「系统构成」一节、VISION 只加指针不动八条原则与优先级序，docs/README 两行导航换成「现行」；同日新立 DOC-10（`SYSTEM-DESIGN.md` §7 的"六服务只有占位 doc.go"与实仓冲突）
 ---
 
 # TASKS — tellurion-docs 未完成项
@@ -128,7 +128,42 @@ verified-by: 2026-11-13 五角审查立单（只立单不施工）——按 `doc
 - **⑤ 验收**：S2 状态与出口判据自洽；与 `PRODUCT.md` 的能力状态表述一致（见 DOC-25）。
 - **⑥ 边界**：`tellurion-docs` 的 `docs/ROADMAP.md`。
 
-> 除上文外，本仓无其它未做 / 挂起 / 外部依赖项（截至 2026-11-13：W7 立单 4 条已结案归档；2026-11-13 五角审查档 1 新立 DOC-17~DOC-24，档 2/5 待后续批次追加）。跨仓施工任务不在本仓——见 §三指针。
+#### 档 2 · 产品设计
+
+### DOC-25 · PRODUCT 能力状态显式化（产业链 / EquityDeep / S2）[P2] ⬜
+
+> 档 2（产品设计）· 来源：01-product-design P1-1/P2-1/P2-2 · 顺序 2-7 · 依赖：与 UI-INDUSTRY-ENTRY 裁决、DOC-24 保持一致
+
+- **① 目标**：把 `PRODUCT.md` 的现在时承诺与"已实现 / 仅 API / 未实现"对齐，避免读者把设计设想读成现状。
+- **② 上下文**：`PRODUCT.md:71` 把"产业链查询"列为 L2，但 UI 无入口（性质 = 能力已具备未暴露）；`:166-168` 把 adoption / calibration / experiments/count 写成"可测"当前能力，但 core `openapi.yaml` 未收录（性质 = 契约索引缺口）；S2 的 `hypothesis_source` 12 仓零命中（性质 = 确实缺功能）。
+- **③ 要求**：三处加状态标——① 产业链："后端可用；UI 入口见 UI-INDUSTRY-ENTRY 裁决"（若裁 B 则写"仅 API"）；② 测量端点："已实现；core 契约索引补齐中（见档 5 `CORE-OPENAPI-MEASUREMENT-INDEX`）"；③ 因果来源："S2 未开始，依赖 S1 出口"。
+- **④ 约束与非目标**：不新增需求；不把 S2 写成已开始；不动八条原则与优先级序。
+- **⑤ 验收**：三处均能区分"已实现 / 仅 API / 未实现"；与 ROADMAP S2、UI 裁决单口径一致。
+- **⑥ 边界**：`tellurion-docs` 的 `docs/PRODUCT.md`。
+
+### DOC-26 · PRODUCT 对 analytics 的定位对齐 ADR-0005（参考实现）[P3] ⬜
+
+> 档 2（产品设计）· 来源：01-product-design P2-4 · 顺序 2-8 · 依赖：无
+
+- **① 目标**：消除"扩展舱"叙事与"core 调用方为 0"的落差。
+- **② 上下文**：`PRODUCT.md:58/61` 把 analytics 列为扩展舱；`REPO-MAP.md:23` 与 ADR-0005 已裁决 core 调用方为 0、analytics 是独立只读参考实现。性质 = 透明接受的产品冗余，不是隐瞒，但叙事应降级。
+- **③ 要求**：PRODUCT 中 analytics 改为"参考实现（非主流程依赖）"，并写"进入主流程"的重开条件（出现真实消费者 + 数据一致性验收 + 新 ADR）；不删仓、不新增对接需求。
+- **④ 约束与非目标**：不动 VISION 八条原则；不把"参考实现"写成"将被替换"。
+- **⑤ 验收**：PRODUCT / REPO-MAP / ADR-0005 三处口径一致；无"将接入主流程"式现在时承诺。
+- **⑥ 边界**：`tellurion-docs` 的 `docs/PRODUCT.md`（必要时 `SERVICE-INDEX.md` 一行指针）。
+
+### DOC-27 · 测量口径的数据积累与回填策略落档（先证伪）[P3] ⬜
+
+> 档 2（产品设计）· 来源：01-product-design P3-1（"缺少回填策略"为**推断**）· 顺序 2-9 · 依赖：无
+
+- **① 目标**：让 GT-1~GT-6 的"可测"有数据来源、积累窗口与回填能力说明。
+- **② 上下文**：`PRODUCT.md:164-169` 自评"采纳记录需人工、校准需半年数据、证据覆盖率部分（JSON Pointer 未实现）"；审查在 TASKS/ADR 未检索到回填策略，但明确标注为推断。施工第一步必须先证伪前提——查 data 同步/备份脚本、CI artifact、报表脚本、run 结果保留策略（`CORE-RESULT-RETENTION` 已定 90/365 天）。
+- **③ 要求**：① 核实现有积累与回填机制并记录证据；② 若有缺口，在 PRODUCT 测量节写清"数据从哪来 / 多久可评 / 能否回填 / 责任仓"；③ 若确认无缺口，本条标 ✅ 作废并附证据。
+- **④ 约束与非目标**：不新造指标；不写无法兑现的"可回填"承诺；不改 `CORE-RESULT-RETENTION` 已定保留期。
+- **⑤ 验收**：每个 GT 指标都能回答上述三问；或本条带证据作废。
+- **⑥ 边界**：`tellurion-docs` 的 `docs/PRODUCT.md` + 必要时 data/analytics 文档指针。
+
+> 除上文外，本仓无其它未做 / 挂起 / 外部依赖项（截至 2026-11-13：W7 立单 4 条已结案归档；2026-11-13 五角审查档 1 新立 DOC-17~DOC-24、档 2 新立 DOC-25~DOC-27；档 5 待后续批次追加）。跨仓施工任务不在本仓——见 §三指针。
 
 ## 三、跨仓指针（不在本仓，勿双写）
 
